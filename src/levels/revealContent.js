@@ -1,0 +1,100 @@
+export const REVEALS = {
+  leading_coefficient: {
+    conceptId: 'leading_coefficient',
+    title: 'The Leading Coefficient',
+    subtitle: 'You just used y = ax²',
+    body: [
+      'The number <b>a</b> in y = ax² is called the <b>leading coefficient</b>.',
+      'It controls how wide or narrow the parabola opens:',
+      '• Bigger |a| → narrower arc (steeper descent)',
+      '• Smaller |a| → wider arc (gentler descent)',
+      '• Negative a → parabola opens downward',
+      '',
+      'Every parabola you\'ve seen so far is just y = ax² with a different a.',
+    ].join('\n'),
+    vocabulary: ['leading coefficient', 'vertical stretch', 'compression'],
+  },
+
+  negative_a_intro: {
+    conceptId: 'negative_a_intro',
+    title: 'Negative a — Upside Down',
+    subtitle: 'Flipping the parabola',
+    body: [
+      'When <b>a is negative</b>, the parabola opens <b>downward</b>.',
+      'When <b>a is positive</b>, it opens <b>upward</b>.',
+      '',
+      'Same shape — just reflected over its vertex.',
+      '',
+      '→ Negative a = <b>frown</b> (opens down)',
+      '→ Positive a = <b>smile</b> (opens up)',
+    ].join('\n'),
+    vocabulary: ['reflection', 'concave up', 'concave down'],
+  },
+
+  vertex_form: {
+    conceptId: 'vertex_form',
+    title: 'The Vertex',
+    subtitle: 'y = a(x − h)² + k',
+    body: [
+      'Every parabola has a <b>vertex</b> — its highest or lowest point.',
+      '',
+      'In y = a(x − h)² + k, the vertex is the point <b>(h, k)</b>.',
+      '',
+      '• <b>h</b> shifts the parabola left or right',
+      '• <b>k</b> shifts it up or down',
+      '',
+      'This is called <b>vertex form</b> because h and k directly give you the vertex.',
+    ].join('\n'),
+    vocabulary: ['vertex', 'axis of symmetry', 'horizontal shift', 'vertical shift'],
+  },
+
+  negative_a: {
+    conceptId: 'negative_a',
+    title: 'The Sign of a',
+    subtitle: 'Smile vs. frown',
+    body: [
+      'The <b>sign of a</b> tells you which way the parabola opens:',
+      '',
+      '• <b>a > 0</b> → opens upward (U-shape, smile ☺)',
+      '• <b>a < 0</b> → opens downward (∩-shape, frown ☹)',
+      '',
+      'The <b>magnitude</b> of a (|a|) controls width.',
+      'The <b>sign</b> of a controls orientation.',
+    ].join('\n'),
+    vocabulary: ['leading coefficient', 'orientation', 'concavity'],
+  },
+
+  factored_form: {
+    conceptId: 'factored_form',
+    title: 'Roots — Where the Arc Lands',
+    subtitle: 'y = a(x − r₁)(x − r₂)',
+    body: [
+      'The <b>roots</b> r₁ and r₂ are where y = 0 — where the arc crosses the x-axis.',
+      '',
+      'Factored form y = a(x − r₁)(x − r₂) puts those landing points front and center.',
+      '',
+      'Every quadratic with two real roots can be written this way.',
+      '',
+      '→ Set r₂ to match the target\'s x, and the arc lands there.',
+    ].join('\n'),
+    vocabulary: ['roots', 'zeros', 'factored form', 'x-intercepts'],
+  },
+
+  standard_form: {
+    conceptId: 'standard_form',
+    title: 'Standard Form',
+    subtitle: 'y = ax² + bx + c',
+    body: [
+      'All three forms — vertex, factored, standard — describe the <b>same parabola</b>.',
+      '',
+      'Standard form y = ax² + bx + c tells you:',
+      '• <b>a</b>: shape and direction (same as always)',
+      '• <b>c</b>: the y-intercept (height at x = 0)',
+      '• <b>b</b>: the slope at the launch point',
+      '',
+      'You can convert between forms using algebra.',
+      'They\'re just different ways of looking at the same curve.',
+    ].join('\n'),
+    vocabulary: ['standard form', 'y-intercept', 'equivalent forms', 'completing the square'],
+  },
+};

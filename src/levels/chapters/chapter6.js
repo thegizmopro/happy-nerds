@@ -1,0 +1,303 @@
+// Chapter 6: MULTI-SHOT — two or three projectiles, each with its own equation.
+// Sequential mode: configure shot 1, launch, then configure shot 2, launch.
+// All shots required to clear the level.
+
+const LAUNCHER = { x: 1, y: 0.8 };
+const THEME = 'space';
+
+const stdSliders = {
+  a: { min: -0.40, max: -0.02, step: 0.01 },
+  h: { min: 1.0,  max: 8.0,  step: 0.1  },
+};
+
+function shot(label, targetIds, defaults) {
+  return {
+    label,
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { ...defaults, k: 0 },
+    targetIds,
+  };
+}
+
+export const CHAPTER_6 = [
+  {
+    id: 'ch6-l1', chapter: 6, levelInChapter: 1,
+    title: 'Double Trouble',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 3.5, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['left'],  { a: -0.20, h: 2.5 }),
+        shot('Shot 2', ['right'], { a: -0.08, h: 5.5 }),
+      ],
+    },
+    targets: [
+      { id: 'left',  x: 4.5, y: 0.8, radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
+      { id: 'right', x: 8.5, y: 0.8, radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
+    ],
+    obstacles: [], bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Two pigs, two shots. Configure each arc separately.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l2', chapter: 6, levelInChapter: 2,
+    title: 'High and Low',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['high'],  { a: -0.12, h: 3.0 }),
+        shot('Shot 2', ['low'],   { a: -0.20, h: 4.0 }),
+      ],
+    },
+    targets: [
+      { id: 'high', x: 5.5, y: 3.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'low',  x: 8.0, y: 0.8, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null },
+    ],
+    obstacles: [], bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'One pig high, one at ground. Different arcs for each.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l3', chapter: 6, levelInChapter: 3,
+    title: 'Clear the Path',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.18, h: 3.5, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1 (clear)', ['blocker'], { a: -0.25, h: 2.5 }),
+        shot('Shot 2 (target)', ['main'],   { a: -0.10, h: 5.0 }),
+      ],
+    },
+    targets: [
+      { id: 'blocker', x: 4.5, y: 0.8, radius: 0.42, pigType: 'whistle', hp: 1, moving: null },
+      { id: 'main',    x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',    hp: 1, moving: null },
+    ],
+    obstacles: [{ id: 'w', x: 5.5, y: 0.8, width: 0.4, height: 2.2 }],
+    bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Hit the blocker first to clear the path, then arc over to the King.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l4', chapter: 6, levelInChapter: 4,
+    title: 'Triple Shot',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.20, h: 3.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['t1'], { a: -0.35, h: 1.5 }),
+        shot('Shot 2', ['t2'], { a: -0.15, h: 3.5 }),
+        shot('Shot 3', ['t3'], { a: -0.07, h: 6.0 }),
+      ],
+    },
+    targets: [
+      { id: 't1', x: 3.5, y: 0.8, radius: 0.40, pigType: 'helmet', hp: 1, moving: null },
+      { id: 't2', x: 6.5, y: 0.8, radius: 0.40, pigType: 'helmet', hp: 1, moving: null },
+      { id: 't3', x: 9.0, y: 0.8, radius: 0.40, pigType: 'helmet', hp: 1, moving: null },
+    ],
+    obstacles: [], bonusRing: null,
+    starThresholds: [5, 12], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Three pigs at increasing distances. Three arcs — one for each.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l5', chapter: 6, levelInChapter: 5,
+    title: 'Timed Sequence',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['moving'], { a: -0.18, h: 3.5 }),
+        shot('Shot 2', ['static'], { a: -0.10, h: 5.5 }),
+      ],
+    },
+    targets: [
+      { id: 'moving', x: 6.0, y: 0.8, radius: 0.42, pigType: 'cool', hp: 1, moving: { axis: 'x', min: 4.5, max: 7.5, speed: 1.2 } },
+      { id: 'static', x: 8.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+    ],
+    obstacles: [], bonusRing: null,
+    starThresholds: [3, 8], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Moving pig first, then static elevated pig. Plan both arcs before shooting.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l6', chapter: 6, levelInChapter: 6,
+    title: 'Walled Garden',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.18, h: 3.5, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['t1'], { a: -0.22, h: 2.5 }),
+        shot('Shot 2', ['t2'], { a: -0.12, h: 5.5 }),
+      ],
+    },
+    targets: [
+      { id: 't1', x: 4.5, y: 2.0, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't2', x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',      hp: 1, moving: null },
+    ],
+    obstacles: [
+      { id: 'w1', x: 3.5, y: 0.8, width: 0.4, height: 1.8 },
+      { id: 'w2', x: 6.0, y: 0.8, width: 0.4, height: 2.8 },
+    ],
+    bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Two walls divide the field. Each pig is on a different side.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l7', chapter: 6, levelInChapter: 7,
+    title: 'King\'s Guard',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1 (guard)', ['guard'], { a: -0.30, h: 2.0 }),
+        shot('Shot 2 (king)',  ['king'],  { a: -0.09, h: 5.5 }),
+      ],
+    },
+    targets: [
+      { id: 'guard', x: 4.0, y: 0.8, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'king',  x: 8.5, y: 2.8, radius: 0.55, pigType: 'king',      hp: 1, moving: null },
+    ],
+    obstacles: [{ id: 'w', x: 5.5, y: 0.8, width: 0.4, height: 2.5 }],
+    bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Defeat the guard, then get to the King over the wall.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l8', chapter: 6, levelInChapter: 8,
+    title: 'Bonus Combo',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['t1'], { a: -0.20, h: 2.5 }),
+        shot('Shot 2', ['t2'], { a: -0.10, h: 5.0 }),
+      ],
+    },
+    targets: [
+      { id: 't1', x: 5.0, y: 0.8, radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
+      { id: 't2', x: 8.5, y: 1.5, radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
+    ],
+    obstacles: [],
+    bonusRing: { x: 3.5, y: 3.0, radius: 0.28 },
+    starThresholds: [3, 8], starMode: 'bonus',
+    revealAfter: null,
+    hint: 'Thread Shot 1 through the bonus ring for 3★, then nail Shot 2.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l9', chapter: 6, levelInChapter: 9,
+    title: 'Relay Race',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.18, h: 3.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['t1'], { a: -0.28, h: 1.5 }),
+        shot('Shot 2', ['t2'], { a: -0.14, h: 3.5 }),
+        shot('Shot 3', ['t3'], { a: -0.07, h: 6.5 }),
+      ],
+    },
+    targets: [
+      { id: 't1', x: 3.5, y: 2.5, radius: 0.40, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't2', x: 6.5, y: 0.8, radius: 0.40, pigType: 'helmet',    hp: 1, moving: null },
+      { id: 't3', x: 9.0, y: 3.0, radius: 0.40, pigType: 'letterman', hp: 1, moving: null },
+    ],
+    obstacles: [{ id: 'w', x: 5.0, y: 0.8, width: 0.4, height: 2.0 }],
+    bonusRing: null,
+    starThresholds: [6, 14], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Three pigs at varied heights. One wall. Plan all three shots.',
+    theme: THEME,
+  },
+  {
+    id: 'ch6-l10', chapter: 6, levelInChapter: 10,
+    title: 'Grand Combo',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: stdSliders,
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        shot('Shot 1', ['m1'],  { a: -0.30, h: 2.0 }),
+        shot('Shot 2', ['m2'],  { a: -0.16, h: 4.0 }),
+        shot('Shot 3', ['king'],{ a: -0.07, h: 6.0 }),
+      ],
+    },
+    targets: [
+      { id: 'm1',  x: 4.0, y: 0.8, radius: 0.42, pigType: 'whistle', hp: 1, moving: null },
+      { id: 'm2',  x: 6.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'king',x: 9.0, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null },
+    ],
+    obstacles: [
+      { id: 'w1', x: 5.0, y: 0.8, width: 0.4, height: 2.0 },
+      { id: 'w2', x: 7.5, y: 0.8, width: 0.4, height: 1.5 },
+    ],
+    bonusRing: null,
+    starThresholds: [6, 14], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Whistle Pig → elevated Letterman → King. Three shots, two walls. Calculate carefully.',
+    theme: THEME,
+  },
+];

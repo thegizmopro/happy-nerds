@@ -1,0 +1,167 @@
+// Chapter 8: BOSS LEVELS — timed, multi-form, multi-target
+// 5 levels. Each has a timer. High stakes, high reward.
+
+const LAUNCHER = { x: 1, y: 0.8 };
+const THEME = 'space';
+
+export const CHAPTER_8 = [
+  {
+    id: 'ch8-l1', chapter: 8, levelInChapter: 1,
+    title: 'Time Pressure',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: {
+      a: { min: -0.45, max: -0.03, step: 0.01 },
+      h: { min: 1.0,  max: 8.0,  step: 0.1 },
+    },
+    defaultParams: { a: -0.15, h: 4.5, k: 0 },
+    launcher: LAUNCHER,
+    timer: { seconds: 60 },
+    targets: [
+      { id: 't1', x: 5.0, y: 0.8, radius: 0.45, pigType: 'helmet',    hp: 1, moving: null },
+      { id: 't2', x: 8.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null },
+    ],
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.25, h:2.5, k:0 }, targetIds: ['t1'] },
+        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.12, h:5.5, k:0 }, targetIds: ['t2'] },
+      ],
+    },
+    obstacles: [], bonusRing: null,
+    starThresholds: [6, 14], starMode: 'moves',
+    revealAfter: null,
+    hint: '60 seconds. Two shots, two targets. Move fast — every slider adjustment counts.',
+    theme: THEME,
+  },
+  {
+    id: 'ch8-l2', chapter: 8, levelInChapter: 2,
+    title: 'The Fortress',
+    equationForm: 'standard',
+    activeCoefficients: ['a', 'b', 'c'],
+    sliderConfig: {
+      a: { min: -0.40, max: -0.01, step: 0.01 },
+      b: { min:  0.10, max:  3.00, step: 0.05 },
+      c: { min: -1.00, max:  1.00, step: 0.05 },
+    },
+    defaultParams: { a: -0.12, b: 1.5, c: 0 },
+    launcher: LAUNCHER,
+    timer: { seconds: 90 },
+    targets: [{ id: 'king', x: 8.5, y: 3.5, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    obstacles: [
+      { id: 'w1', x: 3.0, y: 0.8, width: 0.4, height: 3.0 },
+      { id: 'w2', x: 5.0, y: 2.0, width: 0.4, height: 2.5 },
+      { id: 'w3', x: 7.0, y: 0.8, width: 0.4, height: 2.0 },
+    ],
+    bonusRing: null,
+    starThresholds: [3, 8], starMode: 'moves',
+    revealAfter: null,
+    hint: '90 seconds. Three walls defend the King. Standard form gives maximum precision.',
+    theme: THEME,
+  },
+  {
+    id: 'ch8-l3', chapter: 8, levelInChapter: 3,
+    title: 'Moving Army',
+    equationForm: 'vertex',
+    activeCoefficients: ['a', 'h'],
+    sliderConfig: {
+      a: { min: -0.45, max: -0.03, step: 0.01 },
+      h: { min: 1.0,  max: 8.0,  step: 0.1 },
+    },
+    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    launcher: LAUNCHER,
+    timer: { seconds: 90 },
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.30, h:2.0, k:0 }, targetIds: ['m1'] },
+        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.15, h:4.0, k:0 }, targetIds: ['m2'] },
+        { label: 'Shot 3', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.07, h:6.5, k:0 }, targetIds: ['m3'] },
+      ],
+    },
+    targets: [
+      { id: 'm1', x: 3.5, y: 0.8, radius: 0.42, pigType: 'cool', hp: 1, moving: { axis: 'x', min: 3.0, max: 5.0, speed: 1.5 } },
+      { id: 'm2', x: 6.5, y: 0.8, radius: 0.42, pigType: 'cool', hp: 1, moving: { axis: 'x', min: 5.5, max: 7.5, speed: 2.0 } },
+      { id: 'm3', x: 8.5, y: 2.0, radius: 0.42, pigType: 'cool', hp: 1, moving: { axis: 'x', min: 8.0, max: 9.2, speed: 1.0 } },
+    ],
+    obstacles: [], bonusRing: null,
+    starThresholds: [4, 10], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Three moving Cool Pigs. 90 seconds. Time each shot for when the pig is in the arc\'s path.',
+    theme: THEME,
+  },
+  {
+    id: 'ch8-l4', chapter: 8, levelInChapter: 4,
+    title: 'Factored Finale',
+    equationForm: 'factored',
+    activeCoefficients: ['a', 'r1', 'r2'],
+    sliderConfig: {
+      a:  { min: -0.45, max: -0.02, step: 0.01 },
+      r1: { min: -1.0,  max: 3.0,   step: 0.1 },
+      r2: { min: 3.0,   max: 9.5,   step: 0.1 },
+    },
+    defaultParams: { a: -0.12, r1: 0, r2: 8.0 },
+    launcher: LAUNCHER,
+    timer: { seconds: 90 },
+    targets: [
+      { id: 't1', x: 3.5, y: 0.8, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't2', x: 6.5, y: 2.0, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't3', x: 9.0, y: 0.8, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null },
+    ],
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        { label: 'Shot 1', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.15, r1:0, r2:7.0 }, targetIds: ['t1','t3'] },
+        { label: 'Shot 2', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.18, h:3.5, k:0 }, targetIds: ['t2'] },
+      ],
+    },
+    obstacles: [{ id: 'w', x: 5.0, y: 0.8, width: 0.4, height: 2.5 }],
+    bonusRing: null,
+    starThresholds: [5, 12], starMode: 'moves',
+    revealAfter: null,
+    hint: 'Mixed forms: factored for the ground pigs, vertex for the elevated one.',
+    theme: THEME,
+  },
+  {
+    id: 'ch8-l5', chapter: 8, levelInChapter: 5,
+    title: 'The Final Exam',
+    equationForm: 'standard',
+    activeCoefficients: ['a', 'b', 'c'],
+    sliderConfig: {
+      a: { min: -0.40, max: -0.01, step: 0.01 },
+      b: { min:  0.10, max:  4.00, step: 0.05 },
+      c: { min: -2.00, max:  2.00, step: 0.05 },
+    },
+    defaultParams: { a: -0.12, b: 1.8, c: 0 },
+    launcher: LAUNCHER,
+    timer: { seconds: 120 },
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        { label: 'Shot 1', equationForm: 'standard', activeCoefficients: ['a','b','c'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05} }, defaultParams: { a:-0.20, b:1.5, c:0 }, targetIds: ['t1','t2'] },
+        { label: 'Shot 2', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.10, h:5.5, k:0 }, targetIds: ['t3'] },
+        { label: 'Shot 3', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.10, r1:0, r2:9.0 }, targetIds: ['king'] },
+      ],
+    },
+    targets: [
+      { id: 't1',  x: 3.5, y: 0.8, radius: 0.42, pigType: 'whistle',   hp: 1, moving: null },
+      { id: 't2',  x: 5.5, y: 0.8, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't3',  x: 7.5, y: 3.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'king',x: 9.0, y: 0.8, radius: 0.60, pigType: 'king',      hp: 1, moving: null },
+    ],
+    obstacles: [
+      { id: 'w1', x: 4.5, y: 0.8, width: 0.4, height: 3.0 },
+      { id: 'w2', x: 6.5, y: 2.0, width: 0.4, height: 2.5 },
+      { id: 'w3', x: 8.0, y: 0.8, width: 0.4, height: 2.0 },
+    ],
+    bonusRing: { x: 6.0, y: 4.5, radius: 0.25 },
+    starThresholds: [5, 12], starMode: 'bonus',
+    revealAfter: null,
+    hint: '120 seconds. Three shots, three forms, four pigs, three walls. This IS the final exam.',
+    theme: THEME,
+  },
+];
