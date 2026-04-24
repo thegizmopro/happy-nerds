@@ -124,7 +124,7 @@ export const CHAPTER_1 = [
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
-    revealAfter: 'negative_a_intro',
+    revealAfter: null,
     hint: 'Two walls at different heights. One value of a clears both — find it.',
     theme: THEME,
   },

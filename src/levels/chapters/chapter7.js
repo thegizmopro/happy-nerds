@@ -20,7 +20,7 @@ export const CHAPTER_7 = [
     targets: [{ id: 'main', x: 8.0, y: 2.5, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
-    revealAfter: null,
+    revealAfter: 'cubic_intro',
     hint: 'Cubic: y = a(x−h)³. S-shaped curve. Positive a rises from left to right.',
     theme: THEME,
   },

@@ -97,4 +97,35 @@ export const REVEALS = {
     ].join('\n'),
     vocabulary: ['standard form', 'y-intercept', 'equivalent forms', 'completing the square'],
   },
+
+  multi_shot_strategy: {
+    conceptId: 'multi_shot_strategy',
+    title: 'Multi-Shot Strategy',
+    subtitle: 'One equation at a time',
+    body: [
+      'Sometimes one equation isn\'t enough.',
+      '',
+      'In multi-shot levels, you launch multiple projectiles — each with its own equation.',
+      'Use your first shot to clear the path, and your second to hit the target.',
+      '',
+      'Think of it as solving a system: each equation does a different job.',
+    ].join('\n'),
+    vocabulary: ['system of equations', 'multi-shot', 'strategic launch'],
+  },
+
+  cubic_intro: {
+    conceptId: 'cubic_intro',
+    title: 'Beyond Parabolas: Cubic Functions',
+    subtitle: 'y = a(x − h)³ + k',
+    body: [
+      'Not every path is a parabola.',
+      '',
+      'Cubic functions like y = a(x−h)³ + k create S-shaped curves that can loop around obstacles.',
+      '',
+      'The cube (³) means the curve can change direction — going up, then leveling, then up again.',
+      '',
+      'This opens up entirely new paths that parabolas can\'t reach.',
+    ].join('\n'),
+    vocabulary: ['cubic function', 'inflection point', 'S-curve', 'degree'],
+  },
 };

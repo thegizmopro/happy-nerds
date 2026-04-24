@@ -44,7 +44,7 @@ export const CHAPTER_6 = [
     ],
     obstacles: [], bonusRing: null,
     starThresholds: [4, 10], starMode: 'moves',
-    revealAfter: null,
+    revealAfter: 'multi_shot_strategy',
     hint: 'Two pigs, two shots. Configure each arc separately.',
     theme: THEME,
   },
