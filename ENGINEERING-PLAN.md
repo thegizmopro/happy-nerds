@@ -216,14 +216,12 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Auto-miss on expiry
 - **Verified**: `GameController` timer flow
 
-### E-32: Whistle pig spawn mechanic ❌
-- **Current state**: whistle pig is visual only
-- **What to build**:
-  1. On whistle pig hit, spawn a new helmet pig at a random valid position near the whistle pig
-  2. New pig appears immediately with a brief "spawn" animation (pop-in)
-  3. New pig is a valid target — can be hit on same or subsequent shots
-  4. Limit: max 1 spawn per whistle pig (prevent infinite chain)
-- **Depends on**: E-06
+### E-32: Whistle pig spawn mechanic ✅
+- **Built**: On whistle pig hit → tweet sound + new helmet pig spawns nearby
+- Spawn position: random within 1.5 units, avoids obstacles/overlaps/ground, fallback to exact position
+- Max 1 spawn per whistle pig (hasSpawned flag, no chains)
+- Pop-in animation: radius scales 0→full over 200ms
+- Multi-shot: spawned pig added to current shot's targetIds
 - **Files**: `GameController.js`, `LevelSession.js`, `Renderer.js`
 
 ### E-33: Multi-HP targets 🔧
