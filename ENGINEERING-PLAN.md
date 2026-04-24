@@ -107,15 +107,12 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Red `×` splat marker drawn on canvas at obstacle intersection point
 - **Files**: `collision.js`, `arc.js`, `GameController.js`, `Renderer.js`
 
-### E-15: Chapter progression gate 🔧
-- **Current state**: all chapters accessible immediately
-- **What to build**:
-  1. Chapter N unlocks when all levels in Chapter N-1 have at least 1 star
-  2. Chapters 1-3 are free (always unlocked)
-  3. Chapters 4-8 require prior chapter completion AND premium unlock
-  4. Visual lock icon on locked chapters in level select
-- **Depends on**: E-10
-- **Files**: `UIController.js`, `ProgressStore.js`
+### E-15: Chapter progression gate ✅
+- **Fixed**: Chapters now unlock sequentially — Ch N unlocks when all Ch N-1 levels have ≥1 star
+- Ch1 always unlocked, Ch2-3 require progression only, Ch4-8 require progression AND premium
+- Level select shows 🔒 on locked chapters with reason ("Complete Chapter N" or "Premium content")
+- Toast on tapping locked chapters
+- **Files**: `ProgressStore.js`, `levelLoader.js`, `UIController.js`, `style.css`
 
 ### E-16: Star criteria enforcement 🔧
 - **Current state**: stars based on move count only, bonus ring infrastructure exists but few levels have rings
