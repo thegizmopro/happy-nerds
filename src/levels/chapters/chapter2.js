@@ -61,8 +61,8 @@ export const CHAPTER_2 = [
     launcher: LAUNCHER,
     // Solution: h=5, a≈-0.033 → localY at tx=7: a*(49-70)=-0.033*(-21)=0.693, worldY≈1.5
     targets: [{ id: 'main', x: 8.0, y: 1.5, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
-    obstacles: [], bonusRing: null,
-    starThresholds: [2, 6], starMode: 'moves',
+    obstacles: [], bonusRing: { x: 5.5, y: 3.5, radius: 0.3 },
+    starThresholds: [2, 6], starMode: 'bonus',
     revealAfter: 'vertex_form',
     hint: 'The vertex marks the peak of the parabola. Place it between the launcher and target.',
     theme: THEME,

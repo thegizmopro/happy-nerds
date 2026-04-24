@@ -60,8 +60,8 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     // Target elevated — arc must be at the right height at the target's x
     targets: [{ id: 'main', x: 4.5, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
-    obstacles: [], bonusRing: null,
-    starThresholds: [2, 5], starMode: 'moves',
+    obstacles: [], bonusRing: { x: 3.5, y: 3.5, radius: 0.3 },
+    starThresholds: [2, 5], starMode: 'bonus',
     revealAfter: null,
     hint: 'Target is elevated — the arc passes through it on the way up. r₂ > target x.',
     theme: THEME,
@@ -142,8 +142,8 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [{ id: 'main', x: 6.5, y: 2.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [{ id: 'plat', x: 5.8, y: 2.5, width: 2.5, height: 0.3 }], // pig sits on platform
-    bonusRing: null,
-    starThresholds: [2, 6], starMode: 'moves',
+    bonusRing: { x: 4.5, y: 4.0, radius: 0.3 },
+    starThresholds: [2, 6], starMode: 'bonus',
     revealAfter: null,
     hint: 'Target on a platform. Arc must be at the right height at that x.',
     theme: THEME,
