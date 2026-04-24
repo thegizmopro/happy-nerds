@@ -5,6 +5,8 @@ const DEFAULTS = {
   revealsSeen: [],    // string[] of conceptIds already shown
   unlocked: false,    // premium unlock
   currentLevel: 0,   // last level played
+  volume: 70,         // master volume 0-100
+  muted: false,       // mute toggle
 };
 
 export function loadProgress() {

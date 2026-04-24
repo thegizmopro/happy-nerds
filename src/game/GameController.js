@@ -7,6 +7,7 @@ import { loadProgress, saveProgress, recordStar, markRevealSeen, isChapterUnlock
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
 import { REVEALS } from '../levels/revealContent.js';
 import { WORLD_W } from '../constants.js';
+import { SoundManager } from '../audio/SoundManager.js';
 
 export class GameController {
   constructor({ renderer, ui }) {
@@ -17,6 +18,7 @@ export class GameController {
     this.currentLevelIndex = this.progress.currentLevel ?? 0;
     this._rafId = null;
     this._animating = false;
+    this.sound = new SoundManager();
   }
 
   // ─── Init ──────────────────────────────────────────────────────────────────
@@ -28,6 +30,16 @@ export class GameController {
     this.ui.onSelectLevel = (idx) => this.loadLevel(idx);
     this.ui.onCoeffChange = (coeff, val) => this.onCoeffChange(coeff, val);
     this.ui.onMenuOpen = () => this.progress;
+    this.ui.onSliderDragStart = (coeff, val) => {
+      this._ensureAudioInit();
+      this.sound.startArcTone(this.session?.params?.a ?? val);
+    };
+    this.ui.onSliderDragEnd = () => this.sound.stopArcTone();
+    this.ui.onMuteToggle = () => {
+      this.sound.muted = !this.sound.muted;
+      this.ui.updateMuteButton(this.sound.muted);
+    };
+    this.ui.updateMuteButton(this.sound.muted);
 
     this._controlPoints = new ControlPoints(
       () => this.session,
@@ -37,6 +49,15 @@ export class GameController {
     this._initCanvasEvents();
 
     this.loadLevel(this.currentLevelIndex);
+  }
+
+  _ensureAudioInit() {
+    if (!this.sound._ctx) {
+      this.sound.init(this.progress);
+      this.ui.updateMuteButton(this.sound.muted);
+    } else {
+      this.sound._resume();
+    }
   }
 
   // ─── Level Loading ─────────────────────────────────────────────────────────
@@ -77,6 +98,8 @@ export class GameController {
     this.ui.updateEquation(this.session);
     this.ui.updateHint(this.session);
     if (!this._animating) this.renderer.draw(this.session);
+    // Arc tone: update frequency on every coefficient change
+    this.sound.updateArcTone(this.session.params.a ?? val);
   }
 
   _rebuildArc() {
@@ -102,6 +125,7 @@ export class GameController {
     this.ui.updateEquation(this.session);
     this.ui.updateHint(this.session);
     if (!this._animating) this.renderer.draw(this.session);
+    this.sound.updateArcTone(this.session.params.a);
   }
 
   _initCanvasEvents() {
@@ -115,11 +139,13 @@ export class GameController {
     };
 
     canvas.addEventListener('mousedown', (e) => {
+      this._ensureAudioInit();
       const { cx, cy } = getXY(e.clientX, e.clientY);
       const cp = this._controlPoints.hitTest(cx, cy);
       if (cp) {
         this._controlPoints.startDrag(cp);
         canvas.style.cursor = 'grabbing';
+        this.sound.startArcTone(this.session?.params?.a);
       }
     });
 
@@ -138,11 +164,13 @@ export class GameController {
     });
 
     canvas.addEventListener('mouseup', () => {
+      if (this._controlPoints.isDragging()) this.sound.stopArcTone();
       this._controlPoints.endDrag();
       canvas.style.cursor = 'default';
     });
 
     canvas.addEventListener('mouseleave', () => {
+      if (this._controlPoints.isDragging()) this.sound.stopArcTone();
       this._controlPoints.endDrag();
       this._controlPoints.setHovered(null);
       if (!this._animating && this.session?.gameState === 'idle') {
@@ -152,10 +180,14 @@ export class GameController {
 
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
+      this._ensureAudioInit();
       const t = e.touches[0];
       const { cx, cy } = getXY(t.clientX, t.clientY);
       const cp = this._controlPoints.hitTest(cx, cy);
-      if (cp) this._controlPoints.startDrag(cp);
+      if (cp) {
+        this._controlPoints.startDrag(cp);
+        this.sound.startArcTone(this.session?.params?.a);
+      }
     }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
@@ -167,6 +199,7 @@ export class GameController {
     }, { passive: false });
 
     canvas.addEventListener('touchend', () => {
+      if (this._controlPoints.isDragging()) this.sound.stopArcTone();
       this._controlPoints.endDrag();
     });
   }
@@ -177,6 +210,8 @@ export class GameController {
     if (this.session.gameState !== 'idle') return;
     if (this.session.isTimedOut()) return;
 
+    this._ensureAudioInit();
+
     const cfg = this.session.config;
     const launcher = cfg.launcher;
     const params = this.session.getEffectiveParams();
@@ -185,6 +220,7 @@ export class GameController {
     const fullArc = buildArcPoints(this.session.currentForm(), params, launcher, span, 300);
     const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles);
     this.session.arcPoints = arcPts;
+    this.session.hitObstacle = cfg.obstacles?.length > 0 && arcPts.length < fullArc.length;
 
     // Bonus ring — achievable only if arc reaches it (i.e. not blocked by an obstacle)
     if (cfg.bonusRing && arcHitsTarget(arcPts, cfg.bonusRing)) {
@@ -200,6 +236,8 @@ export class GameController {
     this.session.flyFrame = 0;
     this.session.trail = [];
     this.ui.setControlsEnabled(false);
+
+    this.sound.playLaunch();
 
     this._stopLoop();
     this._animateLaunch(arcPts, targetIds);
@@ -237,6 +275,7 @@ export class GameController {
           const dy = ballPt.y - wt.y;
           if (dx * dx + dy * dy <= wt.radius * wt.radius) {
             this.session.recordHit(t.id);
+            this.sound.playHit();
           }
         }
       }
@@ -287,7 +326,11 @@ export class GameController {
     session.gameState = allHit ? 'hit' : 'miss';
     this.renderer.draw(session);
 
+    if (!allHit && session.hitObstacle) this.sound.playObstacleSplat();
+    if (!allHit) this.sound.playMiss();
+
     if (allHit) {
+      if (session.bonusAchieved) this.sound.playBonusChime();
       const stars = calcStars({
         sliderMoves: session.sliderMoves,
         starThresholds: cfg.starThresholds,
@@ -295,6 +338,7 @@ export class GameController {
         bonusAchieved: session.bonusAchieved,
       });
       recordStar(this.progress, this.currentLevelIndex, stars);
+      if (stars > 0) this.sound.playStar();
 
       const revealId = cfg.revealAfter;
       if (revealId && !this.progress.revealsSeen.includes(revealId) && REVEALS[revealId]) {

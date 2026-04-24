@@ -6,12 +6,15 @@ import { starStr } from '../core/scoring.js';
 
 export class UIController {
   // Callbacks wired by GameController
-  onLaunch   = null;
-  onRetry    = null;
-  onNext     = null;
-  onSelectLevel = null;
-  onCoeffChange = null;
-  onMenuOpen = null; // () => progress object
+  onLaunch        = null;
+  onRetry         = null;
+  onNext          = null;
+  onSelectLevel   = null;
+  onCoeffChange   = null;
+  onMenuOpen      = null; // () => progress object
+  onSliderDragStart = null; // (coeff, value) => void
+  onSliderDragEnd   = null; // () => void
+  onMuteToggle      = null; // () => void
 
   constructor() {
     this._refs = {};
@@ -27,6 +30,7 @@ export class UIController {
         <span id="level-title"></span>
         <span id="timer-display" class="hidden"></span>
         <span id="prev-stars"></span>
+        <button id="btn-mute" title="Toggle mute">🔊</button>
       </div>
       <canvas id="game-canvas"></canvas>
       <div id="ui-panel">
@@ -61,6 +65,7 @@ export class UIController {
       revealOverlay: $('reveal-card-overlay'),
       paywall: $('paywall-screen'),
       btnMenu: $('btn-menu'),
+      btnMute: $('btn-mute'),
       toast: $('toast'),
     };
 
@@ -68,6 +73,15 @@ export class UIController {
     this._refs.btnRetry.addEventListener('click',  () => this.onRetry?.());
     this._refs.btnNext.addEventListener('click',   () => this.onNext?.());
     this._refs.btnMenu.addEventListener('click',   () => this._toggleLevelSelect());
+    this._refs.btnMute.addEventListener('click',   () => {
+      this.onMuteToggle?.();
+    });
+  }
+
+  updateMuteButton(muted) {
+    if (this._refs.btnMute) {
+      this._refs.btnMute.textContent = muted ? '🔇' : '🔊';
+    }
   }
 
   get canvas() { return this._refs.canvas; }
@@ -154,6 +168,14 @@ export class UIController {
         this.onCoeffChange?.(coeff, v);
       };
       slider.addEventListener('input', listener);
+      slider.addEventListener('pointerdown', () => {
+        if (locked) return;
+        this.onSliderDragStart?.(coeff, parseFloat(slider.value));
+      });
+      slider.addEventListener('pointerup', () => {
+        if (locked) return;
+        this.onSliderDragEnd?.();
+      });
       this._sliderListeners[coeff] = { el: slider, listener, locked };
     }
   }
