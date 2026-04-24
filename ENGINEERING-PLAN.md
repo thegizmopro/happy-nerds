@@ -150,19 +150,14 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Standard form, all three coefficients
 - **Verified**: all 10 levels playable
 
-### E-21: Reveal system — wire all cards 🔧
-- **Current state**: 6 reveal cards authored in `revealContent.js`, but most levels have `revealAfter: null`
-- **What to build**:
-  1. Assign `revealAfter` to designated levels:
-     - Ch1-L3 → `leading_coefficient` ✅ (already wired)
-     - Ch2-L3 → `vertex_form`
-     - Ch3-L2 → `negative_a_intro` and Ch3-L5 → `negative_a`
-     - Ch4-L2 → `factored_form`
-     - Ch5-L1 → `standard_form`
-  2. Add reveal cards for Ch6-8 concepts (multi-shot strategy, cubic intro, piecewise)
-  3. Verify reveal never repeats (tracked in progress.revealsSeen)
-- **Depends on**: E-09, E-17, E-18
-- **Files**: `chapter2.js`–`chapter5.js`, `revealContent.js`
+### E-21: Reveal system — wire all cards ✅
+- **Fixed**: All 8 reveal cards now wired to correct levels
+- Ch1-L3 → leading_coefficient, Ch2-L3 → vertex_form
+- Ch3-L1 → negative_a_intro, Ch3-L5 → negative_a
+- Ch4-L2 → factored_form, Ch5-L1 → standard_form
+- Ch6-L1 → multi_shot_strategy (new card), Ch7-L1 → cubic_intro (new card)
+- Removed duplicates: negative_a_intro was in Ch1-L7 (moved to Ch3), factored_form was in Ch4-L1 and Ch4-L2 (kept only L2)
+- **Files**: `chapter1.js`, `chapter3.js`, `chapter4.js`, `chapter6.js`, `chapter7.js`, `revealContent.js`
 
 ### E-22: Bounce mechanic ❌
 - **Current state**: Chapter 4 levels 6-7 mention bounce but arc system doesn't model it
