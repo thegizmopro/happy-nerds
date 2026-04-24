@@ -286,35 +286,24 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 
 ## Phase 5: Audio & Feel
 
-### E-38: Audio system — core ❌
-- **Current state**: zero audio implementation
-- **What to build**:
-  1. Web Audio API context, initialized on first user interaction
-  2. Sound manager: load and cache audio buffers
-  3. Volume control (persisted in ProgressStore)
-  4. Mute toggle in HUD
-- **Files**: new `src/audio/SoundManager.js`
+### E-38: Audio system — core ✅
+- **Built**: SoundManager.js with Web Audio API, lazy init on first interaction
+- Volume/muted persistence in ProgressStore
+- Mute toggle button (🔊/🔇) in HUD
+- Silent fallback if AudioContext unavailable
+- **Files**: new `SoundManager.js`, `ProgressStore.js`, `UIController.js`
 
-### E-39: Dynamic arc tone ❌
-- **What to build**:
-  1. OscillatorNode whose frequency maps to arc shape
-  2. Higher frequency = tighter arc (larger |a|), lower = wider
-  3. Plays continuously while dragging a slider, stops on release
-  4. Subtle volume (background texture, not annoying)
-  5. Sign change (positive→negative a) = brief tone dip
-- **Depends on**: E-38
-- **Files**: `SoundManager.js`, `UIController.js`
+### E-39: Dynamic arc tone ✅
+- **Built**: Sine oscillator mapping |a| → 220-880Hz while dragging
+- Plays on slider drag and control point drag, stops on release
+- 15% of master volume — subtle background texture
+- **Files**: `SoundManager.js`, `GameController.js`
 
-### E-40: Sound effects ❌
-- **What to build**:
-  1. Coefficient click: short percussive sound, pitch mapped to value
-  2. Launch whoosh: short ascending sound
-  3. Target hit: crash + celebratory chord (can be synthesized)
-  4. Target miss: comedy "wah wah" descending tone
-  5. Star earn: ascending arpeggio
-  6. Whistle pig: tweet sound on spawn
-  7. Bonus ring: chime on pass-through
-- **Depends on**: E-38
+### E-40: Sound effects ✅
+- **Built**: 8 synthesized effects, no audio files:
+  - Click (pitch-mapped), launch whoosh, hit crash+chord, miss wah-wah
+  - Star arpeggio, whistle tweet, bonus chime, obstacle splat
+- All wired into GameController at appropriate trigger points
 - **Files**: `SoundManager.js`, `GameController.js`
 
 ### E-41: Nerd voice lines ❌
