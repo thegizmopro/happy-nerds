@@ -165,10 +165,12 @@ export class UIController {
     const form = session.currentForm();
     this._refs.equationDisplay.innerHTML = formatEquation(form, params, COEFF_COLORS);
 
-    // Update slider value labels
+    // Sync slider position and value label (programmatic value set doesn't fire 'input')
     for (const [coeff, { el }] of Object.entries(this._sliderListeners)) {
+      const v = params[coeff] ?? 0;
+      el.value = v;
       const valEl = document.getElementById(`sv-${coeff}`);
-      if (valEl) valEl.textContent = (params[coeff] ?? 0).toFixed(2);
+      if (valEl) valEl.textContent = v.toFixed(2);
     }
   }
 

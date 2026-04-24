@@ -1,4 +1,5 @@
 import { LevelSession } from './LevelSession.js';
+import { ControlPoints } from '../ui/ControlPoints.js';
 import { buildArcPoints, clipArcAtObstacle } from '../core/arc.js';
 import { arcHitsTarget } from '../core/collision.js';
 import { calcStars } from '../core/scoring.js';
@@ -27,6 +28,13 @@ export class GameController {
     this.ui.onSelectLevel = (idx) => this.loadLevel(idx);
     this.ui.onCoeffChange = (coeff, val) => this.onCoeffChange(coeff, val);
     this.ui.onMenuOpen = () => this.progress;
+
+    this._controlPoints = new ControlPoints(
+      () => this.session,
+      (changes) => this._onControlPointDrag(changes),
+    );
+    this.renderer.setControlPointsProvider(this._controlPoints);
+    this._initCanvasEvents();
 
     this.loadLevel(this.currentLevelIndex);
   }
@@ -82,6 +90,85 @@ export class GameController {
   _activeContext() {
     const cfg = this.session.config;
     return { config: cfg, launcher: cfg.launcher };
+  }
+
+  _onControlPointDrag(changes) {
+    if (!this.session || this.session.gameState !== 'idle') return;
+    for (const [coeff, val] of Object.entries(changes)) {
+      this.session.params[coeff] = val;
+    }
+    this.session.sliderMoves++;
+    this._rebuildArc();
+    this.ui.updateEquation(this.session);
+    this.ui.updateHint(this.session);
+    if (!this._animating) this.renderer.draw(this.session);
+  }
+
+  _initCanvasEvents() {
+    const canvas = this.ui.canvas;
+
+    const getXY = (clientX, clientY) => {
+      const rect  = canvas.getBoundingClientRect();
+      const scaleX = canvas.width  / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return { cx: (clientX - rect.left) * scaleX, cy: (clientY - rect.top) * scaleY };
+    };
+
+    canvas.addEventListener('mousedown', (e) => {
+      const { cx, cy } = getXY(e.clientX, e.clientY);
+      const cp = this._controlPoints.hitTest(cx, cy);
+      if (cp) {
+        this._controlPoints.startDrag(cp);
+        canvas.style.cursor = 'grabbing';
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const { cx, cy } = getXY(e.clientX, e.clientY);
+      if (this._controlPoints.isDragging()) {
+        this._controlPoints.updateDrag(cx, cy);
+      } else {
+        const cp = this._controlPoints.hitTest(cx, cy);
+        this._controlPoints.setHovered(cp?.coeff ?? null);
+        canvas.style.cursor = cp ? 'grab' : 'default';
+        if (!this._animating && this.session?.gameState === 'idle') {
+          this.renderer.draw(this.session);
+        }
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      this._controlPoints.endDrag();
+      canvas.style.cursor = 'default';
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      this._controlPoints.endDrag();
+      this._controlPoints.setHovered(null);
+      if (!this._animating && this.session?.gameState === 'idle') {
+        this.renderer.draw(this.session);
+      }
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const t = e.touches[0];
+      const { cx, cy } = getXY(t.clientX, t.clientY);
+      const cp = this._controlPoints.hitTest(cx, cy);
+      if (cp) this._controlPoints.startDrag(cp);
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!this._controlPoints.isDragging()) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      const { cx, cy } = getXY(t.clientX, t.clientY);
+      this._controlPoints.updateDrag(cx, cy);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      this._controlPoints.endDrag();
+    });
   }
 
   // ─── Launch ────────────────────────────────────────────────────────────────

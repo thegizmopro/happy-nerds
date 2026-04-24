@@ -24,6 +24,10 @@ export class Renderer {
     this._theme = cfg.theme ?? 'desert';
   }
 
+  setControlPointsProvider(provider) {
+    this._cpProvider = provider;
+  }
+
   draw(session) {
     const ctx = this.ctx;
     const cfg = this._cfg;
@@ -49,6 +53,10 @@ export class Renderer {
     this._drawTrail(session.trail);
     this._drawProjectile(session);
     this._drawLauncher(cfg.launcher, session.gameState);
+
+    if (session.gameState === 'idle' && this._cpProvider) {
+      this._drawControlPoints(this._cpProvider.getControlPoints());
+    }
   }
 
   // ── Background ──────────────────────────────────────────────────────────────
@@ -262,20 +270,6 @@ export class Renderer {
       ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
       ctx.beginPath(); ctx.moveTo(vx, groundCy); ctx.lineTo(vx, Math.max(peakCy, 2)); ctx.stroke();
       ctx.restore();
-
-      // Vertex dot
-      const { cx: vdx, cy: vdy } = w2c(vertex.x, vertex.y);
-      if (vdy > 0 && vdy < CANVAS_H) {
-        ctx.save();
-        ctx.fillStyle = COEFF_COLORS.h;
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1.5; ctx.setLineDash([]);
-        ctx.beginPath(); ctx.arc(vdx, vdy, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = COEFF_COLORS.h;
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText('vertex', vdx + 7, vdy - 4);
-        ctx.restore();
-      }
     }
 
     // Arc line
@@ -346,6 +340,31 @@ export class Renderer {
     }
     ctx.stroke();
     ctx.restore();
+  }
+
+  // ── Control Points ───────────────────────────────────────────────────────────
+
+  _drawControlPoints(cps) {
+    if (!cps?.length) return;
+    const ctx = this.ctx;
+    for (const cp of cps) {
+      const { cx, cy } = w2c(cp.x, cp.y);
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.fillStyle = cp.color;
+      ctx.beginPath();
+      ctx.arc(cx, cy, cp.radius, 0, Math.PI * 2);
+      ctx.fill();
+      if (cp.active) {
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.fillStyle = cp.color;
+      ctx.font = 'bold 10px monospace';
+      ctx.fillText(cp.label, cx + cp.radius + 3, cy - 3);
+      ctx.restore();
+    }
   }
 
   _drawProjectile(session) {
