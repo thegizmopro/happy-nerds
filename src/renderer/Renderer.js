@@ -140,10 +140,17 @@ export class Renderer {
   // ── Targets ─────────────────────────────────────────────────────────────────
 
   _drawTargets(targets, session) {
+    const now = Date.now();
     for (const t of targets) {
       const worldPos = session.getTargetWorld(t);
       const dead = (session.targetHP[t.id] ?? 1) <= 0;
-      this._drawPig(worldPos.x, worldPos.y, t.radius, t.pigType, dead, session.gameState === 'hit' && dead);
+      let radius = t.radius;
+      const spawnTime = session.spawnTimes?.[t.id];
+      if (spawnTime) {
+        const elapsed = now - spawnTime;
+        if (elapsed < 200) radius = t.radius * (elapsed / 200);
+      }
+      this._drawPig(worldPos.x, worldPos.y, radius, t.pigType, dead, session.gameState === 'hit' && dead);
     }
   }
 

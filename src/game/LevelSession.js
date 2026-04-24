@@ -49,6 +49,9 @@ export class LevelSession {
     for (const t of levelConfig.targets) {
       this.targetHP[t.id] = t.hp ?? 1;
     }
+
+    // Spawn animation timestamps: targetId → ms timestamp of spawn
+    this.spawnTimes = {};
   }
 
   // Call every animation frame when targets are moving or timer is running.
@@ -132,5 +135,13 @@ export class LevelSession {
 
   isTimedOut() {
     return this.timerSeconds !== null && this.timeRemaining <= 0;
+  }
+
+  spawnTarget(newTarget) {
+    this.config.targets.push(newTarget);
+    this.targetHP[newTarget.id] = newTarget.hp ?? 1;
+    this.targetsHit.delete(newTarget.id);
+    this.spawnTimes[newTarget.id] = Date.now();
+    return newTarget;
   }
 }

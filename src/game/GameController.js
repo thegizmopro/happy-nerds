@@ -276,6 +276,22 @@ export class GameController {
           if (dx * dx + dy * dy <= wt.radius * wt.radius) {
             this.session.recordHit(t.id);
             this.sound.playHit();
+            if (t.pigType === 'whistle' && !t.hasSpawned) {
+              t.hasSpawned = true;
+              this.sound.playWhistleTweet();
+              const spawnPos = this._findWhistleSpawnPos(t, cfg);
+              const newTarget = {
+                id: `spawn-${t.id}-${Date.now()}`,
+                x: spawnPos.x,
+                y: spawnPos.y,
+                radius: t.radius,
+                pigType: 'helmet',
+                hp: 1,
+                moving: null,
+              };
+              this.session.spawnTarget(newTarget);
+              if (targetIds) targetIds.add(newTarget.id);
+            }
           }
         }
       }
@@ -394,6 +410,31 @@ export class GameController {
       this._rafId = null;
     }
     this._animating = false;
+  }
+
+  _findWhistleSpawnPos(whistle, cfg) {
+    const launcher = cfg.launcher;
+    for (let i = 0; i < 10; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * 1.5;
+      const x = whistle.x + Math.cos(angle) * dist;
+      const y = whistle.y + Math.sin(angle) * dist;
+      if (x < 1 || x > WORLD_W - 1) continue;
+      if (y < launcher.y) continue;
+      const inObstacle = cfg.obstacles?.some(obs =>
+        x >= obs.x && x <= obs.x + obs.width &&
+        y >= obs.y && y <= obs.y + obs.height
+      );
+      if (inObstacle) continue;
+      const overlaps = cfg.targets.some(t => {
+        const dx = t.x - x;
+        const dy = t.y - y;
+        return dx * dx + dy * dy < (t.radius + whistle.radius) * (t.radius + whistle.radius);
+      });
+      if (overlaps) continue;
+      return { x, y };
+    }
+    return { x: whistle.x, y: whistle.y };
   }
 
   _isLastLevel() {
