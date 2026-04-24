@@ -49,3 +49,18 @@ export function isChapterUnlocked(chapterNum, progress) {
   if (chapterNum < PREMIUM_CHAPTER_START) return true;
   return progress.unlocked;
 }
+
+export function isChapterProgressionUnlocked(chapterNum, progress, chapters) {
+  if (chapterNum === 1) return true;
+  const prevCh = chapters.find(ch => ch.num === chapterNum - 1);
+  if (!prevCh) return true;
+  let offset = 0;
+  for (const ch of chapters) {
+    if (ch.num === chapterNum - 1) break;
+    offset += ch.levels.length;
+  }
+  for (let i = 0; i < prevCh.levels.length; i++) {
+    if ((progress.stars[offset + i] ?? 0) < 1) return false;
+  }
+  return true;
+}

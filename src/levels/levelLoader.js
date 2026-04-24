@@ -7,6 +7,7 @@ import { CHAPTER_6 } from './chapters/chapter6.js';
 import { CHAPTER_7 } from './chapters/chapter7.js';
 import { CHAPTER_8 } from './chapters/chapter8.js';
 import { PREMIUM_CHAPTER_START } from '../constants.js';
+import { isChapterProgressionUnlocked } from '../save/ProgressStore.js';
 
 export const CHAPTERS = [
   { num: 1, title: 'Stretch',          concept: 'y = ax²',                  levels: CHAPTER_1 },
@@ -47,6 +48,7 @@ export function globalIndexOf(chapter, levelInChapter) {
 }
 
 export function isChapterLocked(chapterNum, progress) {
+  if (!isChapterProgressionUnlocked(chapterNum, progress, CHAPTERS)) return true;
   if (chapterNum < PREMIUM_CHAPTER_START) return false;
   return !progress.unlocked;
 }

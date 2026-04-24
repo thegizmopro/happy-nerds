@@ -1,5 +1,5 @@
-import { CHAPTERS, getChapterForLevel, totalLevels } from '../levels/levelLoader.js';
-import { getStars } from '../save/ProgressStore.js';
+import { CHAPTERS, getChapterForLevel, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
+import { getStars, isChapterProgressionUnlocked } from '../save/ProgressStore.js';
 import { formatEquation } from '../core/equation.js';
 import { COEFF_COLORS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
@@ -44,6 +44,7 @@ export class UIController {
       <div id="level-select-screen" class="hidden"></div>
       <div id="reveal-card-overlay"  class="hidden"></div>
       <div id="paywall-screen"       class="hidden"></div>
+      <div id="toast"                class="hidden"></div>
     `;
 
     const $ = id => document.getElementById(id);
@@ -60,6 +61,7 @@ export class UIController {
       revealOverlay: $('reveal-card-overlay'),
       paywall: $('paywall-screen'),
       btnMenu: $('btn-menu'),
+      toast: $('toast'),
     };
 
     this._refs.btnLaunch.addEventListener('click', () => this.onLaunch?.());
@@ -278,23 +280,37 @@ export class UIController {
       <button id="ls-close">✕</button>
       <h2>Level Select</h2>
       ${CHAPTERS.map(ch => {
-        const chHTML = ch.levels.map((lvl, i) => {
-          const gi = offset + i;
-          const s = getStars(progress, gi) || 0;
-          return `<button class="ls-level-btn" data-idx="${gi}" title="${lvl.title}">
-            <span class="ls-lvl-num">${i + 1}</span>
-            <span class="ls-stars">${starStr(s)}</span>
-          </button>`;
-        }).join('');
+        const locked = isChapterLocked(ch.num, progress);
+        let lockReason = '';
+        if (locked) {
+          lockReason = isChapterProgressionUnlocked(ch.num, progress, CHAPTERS)
+            ? 'Premium content — unlock to play'
+            : `Complete Chapter ${ch.num - 1} to unlock`;
+        }
+        const chHTML = locked
+          ? `<div class="ls-lock-info">🔒 ${lockReason}</div>`
+          : ch.levels.map((lvl, i) => {
+              const gi = offset + i;
+              const s = getStars(progress, gi) || 0;
+              return `<button class="ls-level-btn" data-idx="${gi}" title="${lvl.title}">
+                <span class="ls-lvl-num">${i + 1}</span>
+                <span class="ls-stars">${starStr(s)}</span>
+              </button>`;
+            }).join('');
         offset += ch.levels.length;
-        return `<div class="ls-chapter">
-          <div class="ls-chapter-title">Ch${ch.num}: ${ch.title}</div>
+        return `<div class="ls-chapter${locked ? ' ls-chapter-locked' : ''}" ${locked ? `data-lock-reason="${lockReason}"` : ''}>
+          <div class="ls-chapter-title">Ch${ch.num}: ${ch.title}${locked ? ' 🔒' : ''}</div>
           <div class="ls-levels">${chHTML}</div>
         </div>`;
       }).join('')}
     </div>`;
 
     el.querySelector('#ls-close').addEventListener('click', () => el.classList.add('hidden'));
+    el.querySelectorAll('.ls-chapter-locked').forEach(chDiv => {
+      chDiv.addEventListener('click', () => {
+        this._showToast(chDiv.dataset.lockReason);
+      });
+    });
     el.querySelectorAll('.ls-level-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.dataset.idx);
@@ -302,6 +318,14 @@ export class UIController {
         this.onSelectLevel?.(idx);
       });
     });
+  }
+
+  _showToast(msg) {
+    const el = this._refs.toast;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => el.classList.add('hidden'), 2500);
   }
 
   // ─── Misc ──────────────────────────────────────────────────────────────────────
