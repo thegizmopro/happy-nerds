@@ -241,20 +241,15 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 
 ## Phase 4: Input Polish
 
-### E-34: Draggable control points on arc ❌
-- **Current state**: sliders only, no on-canvas drag
-- **What to build**:
-  1. Vertex control point: draggable circle on the arc vertex. Dragging updates (h,k) in real-time
-     - Vertex form: directly sets h, k
-     - Standard form: solve for b, c from vertex position and current a
-     - Factored form: recompute roots from new vertex and current a
-  2. Root control points (factored form only): draggable circles at y=0 intersections. Dragging updates r₁, r₂
-  3. Y-intercept control point: draggable circle at x=0. Dragging updates c (standard form) or equivalent
-  4. Control points are 20px circles, 44px touch target (invisible hit area)
-  5. Visual: same color as the corresponding coefficient slider
-  6. Sliders update when control point is dragged (bidirectional)
-- **Depends on**: E-03, E-17, E-18
-- **Files**: `UIController.js` (or new `ControlPoints.js`), `equation.js`, `Renderer.js`
+### E-34: Draggable control points on arc ✅
+- **Built**: Full ControlPoints.js with hit testing, drag lifecycle, reverse-solving
+- Vertex drag works in vertex form (h,k), standard form (b,c), factored form (r1,r2)
+- Root points draggable in factored form, y-intercept draggable in standard form
+- 44px touch targets, color-matched to coefficient sliders
+- Bidirectional sync: dragging updates sliders, slider moves update control points
+- Touch events with passive:false prevent scroll on canvas
+- Control points hidden during flight, only shown when idle
+- **Files**: new `ControlPoints.js`, `GameController.js`, `Renderer.js`, `UIController.js`
 
 ### E-35: Direct coefficient text entry ❌
 - **Current state**: sliders only
