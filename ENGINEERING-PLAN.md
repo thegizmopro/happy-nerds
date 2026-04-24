@@ -114,16 +114,12 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Toast on tapping locked chapters
 - **Files**: `ProgressStore.js`, `levelLoader.js`, `UIController.js`, `style.css`
 
-### E-16: Star criteria enforcement 🔧
-- **Current state**: stars based on move count only, bonus ring infrastructure exists but few levels have rings
-- **What to build**:
-  1. Author bonus rings for chapters 1-5 (at least 3 per chapter)
-  2. 3-star = hit target AND pass through bonus ring
-  3. 2-star = hit target with ≤ N coefficient changes
-  4. 1-star = hit target any way
-  5. Add more bonus rings to chapter level data
-- **Depends on**: E-09
-- **Files**: chapter1-5.js, `scoring.js`
+### E-16: Star criteria & bonus rings ✅
+- **Built**: 15 bonus rings across chapters 1-5 (3 per chapter)
+- All levels with rings set to starMode: 'bonus' (3-star requires ring)
+- Ring positions placed at arc vertices/peaks requiring precise arcs
+- Ch1: L2, L5, L9 | Ch2: L3, L6, L9 | Ch3: L1, L6, L10 | Ch4: L3, L7, L9 | Ch5: L4, L6, L10
+- **Files**: chapter1-4.js (ch5 already had 3)
 
 ---
 
