@@ -62,6 +62,10 @@ html, body {
 #controls input[type=range] { flex: 1; height: 34px; cursor: pointer; touch-action: none; }
 .coeff-value { width: 50px; text-align: right; font-size: 0.9rem; flex-shrink: 0; }
 
+/* ── Locked Sliders ─────────────────────────────────────────── */
+.slider-locked { opacity: 0.5; }
+.slider-locked input[type=range] { pointer-events: none; cursor: not-allowed; }
+
 /* ── Action Buttons ─────────────────────────────────────────── */
 #actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 button {

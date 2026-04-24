@@ -124,6 +124,7 @@ export class UIController {
     const sliderCfg = session.currentSliderConfig();
     const activeCoeffs = session.currentActiveCoeffs();
     const params = session.getEffectiveParams();
+    const lockedCoeffs = session.config.lockedCoefficients ?? {};
     const controls = this._refs.controls;
     controls.innerHTML = '';
     this._sliderListeners = {};
@@ -133,24 +134,27 @@ export class UIController {
       if (!sc) continue;
       const color = COEFF_COLORS[coeff] ?? '#e2e8f0';
       const val = params[coeff] ?? 0;
+      const locked = Object.prototype.hasOwnProperty.call(lockedCoeffs, coeff);
 
       const label = document.createElement('label');
+      if (locked) label.classList.add('slider-locked');
       label.innerHTML = `
-        <span class="coeff-label" style="color:${color}">${coeff}</span>
+        <span class="coeff-label" style="color:${color}">${coeff}${locked ? ' 🔒' : ''}</span>
         <input type="range" id="sl-${coeff}"
           min="${sc.min}" max="${sc.max}" step="${sc.step}" value="${val}"
-          style="accent-color:${color}" />
+          style="accent-color:${color}"${locked ? ' disabled' : ''} />
         <span class="coeff-value" id="sv-${coeff}" style="color:${color}">${val.toFixed(2)}</span>
       `;
       controls.appendChild(label);
 
       const slider = label.querySelector('input');
       const listener = () => {
+        if (locked) return;
         const v = parseFloat(slider.value);
         this.onCoeffChange?.(coeff, v);
       };
       slider.addEventListener('input', listener);
-      this._sliderListeners[coeff] = { el: slider, listener };
+      this._sliderListeners[coeff] = { el: slider, listener, locked };
     }
   }
 
@@ -332,8 +336,8 @@ export class UIController {
 
   setControlsEnabled(enabled) {
     this._refs.btnLaunch.disabled = !enabled;
-    for (const { el } of Object.values(this._sliderListeners)) {
-      el.disabled = !enabled;
+    for (const { el, locked } of Object.values(this._sliderListeners)) {
+      el.disabled = !enabled || locked;
     }
   }
 
