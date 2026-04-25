@@ -226,16 +226,15 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Multi-shot: spawned pig added to current shot's targetIds
 - **Files**: `GameController.js`, `LevelSession.js`, `Renderer.js`
 
-### E-33: Multi-HP targets 🔧
-- **Current state**: all pigs are `hp: 1`, multi-HP infrastructure exists but disabled
-- **Design decision**: The original design had letterman (2 HP) and king (3 HP) pigs. These were removed because single-launch-hit logic couldn't decrement HP. Now that collision is real-time per-frame, multi-HP works naturally.
-- **What to build**:
-  1. Re-enable letterman pig (2 HP) and king pig (3 HP) in level data
-  2. Visual feedback: pig flashes/changes on each hit, X-eyes only on final hit
-  3. In multi-shot levels, same target can be hit across multiple shots
-  4. Single-shot levels: if arc passes through target multiple times (e.g., peaks through it going up and coming down), each pass counts as a hit
-- **Depends on**: E-06, E-32
-- **Files**: `GameController.js`, chapter level files, `Renderer.js`
+### E-33: Multi-HP targets ✅
+- **Built**: Letterman 2HP, king 3HP across all chapters
+- HP dots rendered above multi-HP pigs
+- Pig flashes white on non-lethal hit (200ms)
+- X-eyes + fade-out on kill
+- Projectile continues through multi-HP targets
+- Per-shot hit tracking prevents same-frame multi-hits
+- HP persists between shots in multi-shot levels
+- **Files**: all chapter files, `GameController.js`, `LevelSession.js`, `Renderer.js`
 
 ---
 
