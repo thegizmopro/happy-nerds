@@ -1,7 +1,7 @@
 import { CHAPTERS, getChapterForLevel, totalLevels, isChapterLocked, PREMIUM_CHAPTERS, getLockReason } from '../levels/levelLoader.js';
 import { getStars, isChapterProgressionUnlocked, purchasePremium } from '../save/ProgressStore.js';
 import { formatEquation } from '../core/equation.js';
-import { COEFF_COLORS } from '../constants.js';
+import { COEFF_COLORS, COEFF_LABELS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
 import { Tutorial } from './Tutorial.js';
 import { RevealCard } from './RevealCard.js';
@@ -160,7 +160,7 @@ export class UIController {
       const label = document.createElement('label');
       if (locked) label.classList.add('slider-locked');
       label.innerHTML = `
-        <span class="coeff-label" style="color:${color}">${coeff}${locked ? ' 🔒' : ''}</span>
+        <span class="coeff-label" style="color:${color}">${COEFF_LABELS[coeff] ?? coeff}${locked ? ' 🔒' : ''}</span>
         <input type="range" id="sl-${coeff}"
           min="${sc.min}" max="${sc.max}" step="${sc.step}" value="${val}"
           style="accent-color:${color}"${locked ? ' disabled' : ''} />

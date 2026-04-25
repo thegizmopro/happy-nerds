@@ -21,4 +21,15 @@ export const COEFF_COLORS = {
   c:  '#34d399', // green
 };
 
+// Semantic labels shown on sliders — helps math novices understand what each coefficient does
+export const COEFF_LABELS = {
+  a:  'a (width)',
+  h:  'h (shift)',
+  k:  'k (height)',
+  r1: 'r\u2081 (root)',
+  r2: 'r\u2082 (root)',
+  b:  'b (tilt)',
+  c:  'c (start)',
+};
+
 export const PREMIUM_CHAPTER_START = 4; // chapters 4-8 require unlock
