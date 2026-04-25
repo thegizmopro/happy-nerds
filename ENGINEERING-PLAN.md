@@ -194,6 +194,14 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Cubic, absolute value, piecewise
 - **Verified**: all 10 levels playable
 
+### E-28b: Premium chapter gate ✅
+- **Built**: Ch4-7 locked behind premium, purchasePremium() stub
+- isPremium flag persisted in ProgressStore
+- Premium gate stacks with progression gate, different lock reasons
+- Premium modal with Unlock $4.99 button + Maybe Later
+- Gold lock styling on premium chapters in level select
+- **Files**: `ProgressStore.js`, `levelLoader.js`, `UIController.js`, `style.css`
+
 ### E-29: Chapter 8 levels — Boss ✅
 - 5 levels authored in `chapter8.js`
 - Timed, multi-target, mixed forms
