@@ -307,6 +307,14 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - **Depends on**: E-07
 - **Files**: `GameController.js`, `Renderer.js`
 
+### E-41b: Tutorial overlay ✅
+- **Built**: 3-step overlay for Ch1-L1 first-time players
+- Steps: drag slider → watch arc → launch
+- tutorialDone flag persisted in ProgressStore
+- Semi-transparent overlay with positioned tooltip bubbles + arrows
+- Pulsing highlight on targeted UI elements
+- **Files**: new `Tutorial.js`, `UIController.js`, `ProgressStore.js`, `style.css`
+
 ---
 
 ## Phase 6: Visual Polish
