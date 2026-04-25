@@ -54,7 +54,7 @@ export class Renderer {
     this._drawTrail(session);
     this._drawSparks(session);
     this._drawProjectile(session);
-    this._drawLauncher(cfg.launcher, session.gameState);
+    this._drawLauncher(cfg.launcher, session);
 
     if (session.gameState === 'idle' && this._cpProvider) {
       this._drawControlPoints(this._cpProvider.getControlPoints());
@@ -348,9 +348,16 @@ export class Renderer {
 
   // ── Launcher ─────────────────────────────────────────────────────────────────
 
-  _drawLauncher(launcher, gameState) {
+  _drawLauncher(launcher, session) {
     const ctx = this.ctx;
-    const { cx, cy } = w2c(launcher.x, launcher.y);
+    // Compute where the arc actually starts — draw the nerd there
+    // so the arc always originates from the character
+    const params = session.getEffectiveParams();
+    const form = session.currentForm();
+    const originLocalY = evalForm(0, form, params);
+    const drawX = launcher.x;
+    const drawY = launcher.y + originLocalY;
+    const { cx, cy } = w2c(drawX, drawY);
     // Head
     ctx.fillStyle = '#fde68a';
     ctx.beginPath(); ctx.arc(cx, cy - 24, 14, 0, Math.PI * 2); ctx.fill();
@@ -364,7 +371,7 @@ export class Renderer {
     ctx.fillRect(cx - 11, cy - 10, 22, 26);
     // Arms — up if excited, normal otherwise
     ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-    const armY = gameState === 'hit' ? cy - 22 : cy - 10;
+    const armY = session.gameState === 'hit' ? cy - 22 : cy - 10;
     ctx.beginPath();
     ctx.moveTo(cx - 11, cy - 5); ctx.lineTo(cx - 22, armY);
     ctx.moveTo(cx + 11, cy - 5); ctx.lineTo(cx + 22, armY);
