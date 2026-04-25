@@ -124,7 +124,41 @@ export class LevelSession {
       this.killTime[targetId] = Date.now();
     } else {
       this.hitFlash[targetId] = Date.now();
+      // Multi-HP pig dodges to a new position after being hit
+      this._dodgeTarget(t);
     }
+  }
+
+  _dodgeTarget(t) {
+    const launcher = this.config.launcher;
+    // Move pig to a random position that's different enough to require a new arc
+    // Keep x between launcher.x+1 and WORLD_W-1, y above ground
+    const WORLD_W = 10;
+    const minX = launcher.x + 2;
+    const maxX = WORLD_W - 1;
+    const minY = 0.5;
+    const maxY = 4.0;
+    // Try up to 10 positions, pick one far enough from current position
+    const minDist = 1.5;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const newX = minX + Math.random() * (maxX - minX);
+      const newY = minY + Math.random() * (maxY - minY);
+      const dist = Math.sqrt((newX - t.x) ** 2 + (newY - t.y) ** 2);
+      if (dist >= minDist) {
+        // Check not inside an obstacle
+        const blocked = (this.config.obstacles ?? []).some(obs => {
+          return newX >= obs.x - obs.width/2 && newX <= obs.x + obs.width/2 &&
+                 newY >= obs.y - obs.height/2 && newY <= obs.y + obs.height/2;
+        });
+        if (!blocked) {
+          t.x = parseFloat(newX.toFixed(2));
+          t.y = parseFloat(newY.toFixed(2));
+          return;
+        }
+      }
+    }
+    // Fallback: just shift by +2 in x
+    t.x = Math.min(maxX, parseFloat((t.x + 2).toFixed(2)));
   }
 
   advanceShot() {
