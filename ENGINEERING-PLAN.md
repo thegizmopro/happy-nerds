@@ -434,6 +434,16 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 
 ---
 
+## Maybe Later
+
+### E-51: Destructible stacked obstacles
+- **Idea**: Obstacles have HP — hit them and they crack/break. When a lower block breaks, blocks above fall down (simple gravity, no physics engine). Falling blocks can crush targets.
+- **Why**: Gives the "knock over the tower" satisfaction of Angry Birds without a full physics engine. Strategy: "which block do I hit to collapse the tower onto the pig?"
+- **Scope**: 3-4 hours. New obstacle types (stacked, breakable), gravity fall animation, crush detection.
+- **Status**: Maybe later — get core game working solid first.
+
+---
+
 ## Dependency Graph (Critical Path)
 
 ```
