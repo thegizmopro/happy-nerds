@@ -4,6 +4,7 @@ import { formatEquation } from '../core/equation.js';
 import { COEFF_COLORS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
 import { Tutorial } from './Tutorial.js';
+import { RevealCard } from './RevealCard.js';
 
 export class UIController {
   // Callbacks wired by GameController
@@ -23,6 +24,7 @@ export class UIController {
     this._tutorial = new Tutorial();
     this._pendingTutorialProgress = null;
     this._buildDOM();
+    this._revealCard = new RevealCard(document.getElementById('app'));
   }
 
   _buildDOM() {
@@ -49,7 +51,6 @@ export class UIController {
         <div id="math-hint" class="hidden"></div>
       </div>
       <div id="level-select-screen" class="hidden"></div>
-      <div id="reveal-card-overlay"  class="hidden"></div>
       <div id="paywall-screen"       class="hidden"></div>
       <div id="toast"                class="hidden"></div>
     `;
@@ -65,7 +66,6 @@ export class UIController {
       btnLaunch: $('btn-launch'), btnRetry: $('btn-retry'), btnNext: $('btn-next'),
       result: $('result'), hint: $('math-hint'),
       levelSelect: $('level-select-screen'),
-      revealOverlay: $('reveal-card-overlay'),
       paywall: $('paywall-screen'),
       btnMenu: $('btn-menu'),
       btnMute: $('btn-mute'),
@@ -93,6 +93,7 @@ export class UIController {
 
   loadLevel(cfg, globalIndex, progress) {
     this._tutorial.hide();
+    this._revealCard.hide();
     this._pendingTutorialProgress = this._tutorial.shouldShow(globalIndex, progress) ? progress : null;
 
     const info = getChapterForLevel(globalIndex);
@@ -261,26 +262,7 @@ export class UIController {
   // ─── Reveal Card ──────────────────────────────────────────────────────────────
 
   showRevealCard(data, onDismiss) {
-    const overlay = this._refs.revealOverlay;
-    overlay.innerHTML = `
-      <div id="reveal-card">
-        <div class="reveal-title">${data.title}</div>
-        <div class="reveal-subtitle">${data.subtitle}</div>
-        <div class="reveal-body">${data.body.replace(/\n/g, '<br>')}</div>
-        <div class="reveal-vocab">
-          ${data.vocabulary.map(v => `<span class="vocab-chip">${v}</span>`).join('')}
-        </div>
-        <button id="btn-got-it">Got it! →</button>
-      </div>
-    `;
-    overlay.classList.remove('hidden');
-    overlay.querySelector('#btn-got-it').addEventListener('click', () => {
-      overlay.classList.add('hidden');
-      onDismiss?.();
-    });
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) { overlay.classList.add('hidden'); onDismiss?.(); }
-    });
+    this._revealCard.show(data.conceptId, onDismiss);
   }
 
   // ─── Premium Modal ────────────────────────────────────────────────────────────

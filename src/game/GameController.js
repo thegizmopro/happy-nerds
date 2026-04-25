@@ -9,6 +9,13 @@ import { REVEALS } from '../levels/revealContent.js';
 import { WORLD_W } from '../constants.js';
 import { SoundManager } from '../audio/SoundManager.js';
 
+const HIT_LINES   = ['NICE!', 'Calculated!', 'Bullseye!', "That's what I call a solution!", 'Textbook!'];
+const STAR_LINES  = ['Elegant!', "Now THAT'S math!", 'Beautiful solution!', 'A+!'];
+const MISS_LINES  = ['Close!', 'Recalculate!', 'Almost!', 'Try again!', 'Adjust and fire!'];
+const BLOCK_LINES = ['Blocked!', 'Find another path!', 'Wrong angle!'];
+
+const randomFrom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
 export class GameController {
   constructor({ renderer, ui }) {
     this.renderer = renderer;
@@ -429,6 +436,14 @@ export class GameController {
     if (!allHit && session.hitObstacle) this.sound.playObstacleSplat();
     if (!allHit) this.sound.playMiss();
 
+    if (!allHit) {
+      if (session.hitObstacle) {
+        this.renderer.showVoiceBubble(randomFrom(BLOCK_LINES));
+      } else {
+        this.renderer.showVoiceBubble(randomFrom(MISS_LINES));
+      }
+    }
+
     if (allHit) {
       if (session.bonusAchieved) this.sound.playBonusChime();
       const stars = calcStars({
@@ -439,6 +454,12 @@ export class GameController {
       });
       recordStar(this.progress, this.currentLevelIndex, stars);
       if (stars > 0) this.sound.playStar();
+
+      if (stars >= 3) {
+        this.renderer.showVoiceBubble(randomFrom(STAR_LINES));
+      } else {
+        this.renderer.showVoiceBubble(randomFrom(HIT_LINES));
+      }
 
       const revealId = cfg.revealAfter;
       if (revealId && !this.progress.revealsSeen.includes(revealId) && REVEALS[revealId]) {

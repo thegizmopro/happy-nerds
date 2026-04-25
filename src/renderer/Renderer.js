@@ -17,6 +17,7 @@ export class Renderer {
     this.canvas.height = CANVAS_H;
     this._theme = 'desert';
     this._cfg = null;
+    this._voiceBubble = null;
   }
 
   loadLevel(cfg) {
@@ -58,6 +59,56 @@ export class Renderer {
     if (session.gameState === 'idle' && this._cpProvider) {
       this._drawControlPoints(this._cpProvider.getControlPoints());
     }
+
+    this._drawVoiceBubble();
+  }
+
+  showVoiceBubble(text) {
+    this._voiceBubble = { text, startTime: performance.now(), duration: 1500 };
+  }
+
+  _drawVoiceBubble() {
+    const b = this._voiceBubble;
+    if (!b) return;
+    const elapsed = performance.now() - b.startTime;
+    if (elapsed > b.duration) { this._voiceBubble = null; return; }
+
+    let alpha;
+    if (elapsed < 200) alpha = elapsed / 200;
+    else if (elapsed < 1000) alpha = 1;
+    else alpha = 1 - (elapsed - 1000) / 500;
+
+    const x = 60, y = 30;
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    ctx.font = 'bold 14px sans-serif';
+    const textW = ctx.measureText(b.text).width;
+    const padX = 10, padY = 6, r = 6;
+    const bx = x - padX, by = y - padY - 14;
+    const bw = textW + padX * 2, bh = 14 + padY * 2;
+
+    // Shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 2;
+
+    // Background
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, r);
+    ctx.fill();
+
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Text
+    ctx.fillStyle = '#000000';
+    ctx.fillText(b.text, x, y);
+
+    ctx.restore();
   }
 
   // ── Background ──────────────────────────────────────────────────────────────

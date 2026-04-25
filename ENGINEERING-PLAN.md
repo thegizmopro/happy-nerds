@@ -272,7 +272,7 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - **Depends on**: E-02
 - **Files**: `UIController.js`, `Renderer.js`, `ProgressStore.js`
 
-### E-37: Coefficient locking ❌
+### E-37: Coefficient locking ✅
 - **Current state**: all available coefficients are editable
 - **What to build**:
   1. Level schema already has `lockedCoefficients` field
