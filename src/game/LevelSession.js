@@ -43,6 +43,8 @@ export class LevelSession {
     this.arcPoints = [];
     this.flyFrame = 0;
     this.trail = [];
+    this.bounceFrames = [];  // frame indices where bounces occur
+    this.bouncePoints = [];  // world-space {x,y} of each bounce impact
 
     // HP tracking for targets with hp > 1
     this.targetHP = {};

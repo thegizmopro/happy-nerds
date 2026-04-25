@@ -36,3 +36,16 @@ export function findObstacleIntersection(arcPoints, obstacle) {
   }
   return -1;
 }
+
+// Determine which surface of the obstacle the projectile hit.
+// prevPt: the arc point just before entering the obstacle (outside it).
+// obs: { x, y, width, height } bottom-left origin world coords.
+// Returns { reflectX: bool, reflectY: bool }
+export function detectBounceSurface(prevPt, obs) {
+  const prevInsideH = prevPt.x >= obs.x && prevPt.x <= obs.x + obs.width;
+  const prevInsideV = prevPt.y >= obs.y && prevPt.y <= obs.y + obs.height;
+  let reflectX = !prevInsideH;
+  let reflectY = !prevInsideV;
+  if (!reflectX && !reflectY) { reflectX = true; reflectY = true; }
+  return { reflectX, reflectY };
+}

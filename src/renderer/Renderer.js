@@ -50,7 +50,8 @@ export class Renderer {
       this._drawPredictedArc(session);
     }
 
-    this._drawTrail(session.trail);
+    this._drawTrail(session);
+    this._drawSparks(session);
     this._drawProjectile(session);
     this._drawLauncher(cfg.launcher, session.gameState);
 
@@ -332,21 +333,62 @@ export class Renderer {
 
   // ── Trail & Projectile ───────────────────────────────────────────────────────
 
-  _drawTrail(trail) {
+  _drawTrail(session) {
+    const trail = session.trail;
     if (!trail || trail.length < 2) return;
     const ctx = this.ctx;
-    ctx.save();
-    ctx.strokeStyle = 'rgba(251,146,60,0.5)';
-    ctx.lineWidth = 2.5; ctx.setLineDash([]);
-    ctx.beginPath();
-    const s = w2c(trail[0].x, trail[0].y);
-    ctx.moveTo(s.cx, s.cy);
-    for (let i = 1; i < trail.length; i++) {
-      const { cx, cy } = w2c(trail[i].x, trail[i].y);
-      ctx.lineTo(cx, cy);
+    const bounceFrames = session.bounceFrames ?? [];
+    const segColors = [
+      'rgba(251,146,60,0.5)',
+      'rgba(249,115,22,0.6)',
+      'rgba(239,68,68,0.7)',
+      'rgba(220,38,38,0.8)',
+    ];
+
+    const drawSegment = (from, to, color) => {
+      if (to <= from) return;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5; ctx.setLineDash([]);
+      ctx.beginPath();
+      const s = w2c(trail[from].x, trail[from].y);
+      ctx.moveTo(s.cx, s.cy);
+      for (let i = from + 1; i <= to && i < trail.length; i++) {
+        const { cx, cy } = w2c(trail[i].x, trail[i].y);
+        ctx.lineTo(cx, cy);
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    let segStart = 0;
+    for (let si = 0; si < bounceFrames.length; si++) {
+      const bf = bounceFrames[si];
+      if (bf >= trail.length) break;
+      drawSegment(segStart, bf, segColors[si] ?? segColors[segColors.length - 1]);
+      segStart = bf;
     }
-    ctx.stroke();
-    ctx.restore();
+    drawSegment(segStart, trail.length - 1, segColors[bounceFrames.length] ?? segColors[segColors.length - 1]);
+  }
+
+  _drawSparks(session) {
+    if (session.gameState !== 'flying') return;
+    const bounceFrames = session.bounceFrames;
+    const bouncePoints = session.bouncePoints;
+    if (!bounceFrames?.length) return;
+    const ctx = this.ctx;
+    for (let i = 0; i < bounceFrames.length; i++) {
+      const dist = session.flyFrame - bounceFrames[i];
+      if (dist >= 0 && dist <= 2) {
+        const { cx, cy } = w2c(bouncePoints[i].x, bouncePoints[i].y);
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
   }
 
   // ── Control Points ───────────────────────────────────────────────────────────

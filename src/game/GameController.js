@@ -1,7 +1,7 @@
 import { LevelSession } from './LevelSession.js';
 import { ControlPoints } from '../ui/ControlPoints.js';
 import { buildArcPoints, clipArcAtObstacle } from '../core/arc.js';
-import { arcHitsTarget } from '../core/collision.js';
+import { arcHitsTarget, detectBounceSurface } from '../core/collision.js';
 import { calcStars } from '../core/scoring.js';
 import { loadProgress, saveProgress, recordStar, markRevealSeen, isChapterUnlocked } from '../save/ProgressStore.js';
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
@@ -219,11 +219,18 @@ export class GameController {
 
     const fullArc = buildArcPoints(this.session.currentForm(), params, launcher, span, 300);
     const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles);
-    this.session.arcPoints = arcPts;
-    this.session.hitObstacle = cfg.obstacles?.length > 0 && arcPts.length < fullArc.length;
 
-    // Bonus ring — achievable only if arc reaches it (i.e. not blocked by an obstacle)
-    if (cfg.bonusRing && arcHitsTarget(arcPts, cfg.bonusRing)) {
+    // Build bounce segments (up to 3 bounces off obstacles)
+    const { allPts, bounceFrames, bouncePoints, finalHitObstacle } =
+      this._buildBounceArc(arcPts, fullArc, cfg);
+
+    this.session.arcPoints = allPts;
+    this.session.bounceFrames = bounceFrames;
+    this.session.bouncePoints = bouncePoints;
+    this.session.hitObstacle = finalHitObstacle;
+
+    // Bonus ring — achievable pre- or post-bounce
+    if (cfg.bonusRing && arcHitsTarget(allPts, cfg.bonusRing)) {
       this.session.bonusAchieved = true;
     }
 
@@ -240,7 +247,7 @@ export class GameController {
     this.sound.playLaunch();
 
     this._stopLoop();
-    this._animateLaunch(arcPts, targetIds);
+    this._animateLaunch(allPts, targetIds);
   }
 
   // Collision is checked frame-by-frame so moving targets keep moving and hits
@@ -248,7 +255,9 @@ export class GameController {
   // arcPts is already clipped at any obstacle, so targets beyond the obstacle
   // are unreachable — no extra hitObstacle guard needed.
   _animateLaunch(arcPts, targetIds) {
-    const DURATION = 1300;
+    // Extend duration proportionally so post-bounce segments animate at similar speed
+    const BASE_STEPS = 300;
+    const DURATION = 1300 * Math.max(1, Math.ceil(arcPts.length / BASE_STEPS));
     const total = arcPts.length;
     const cfg = this.session.config;
     let startTime = null;
@@ -309,6 +318,81 @@ export class GameController {
       }
     };
     this._rafId = requestAnimationFrame(step);
+  }
+
+  // Compute bounce segments for a shot, returning the flat all-points array and metadata.
+  _buildBounceArc(arcPts, fullArc, cfg) {
+    const DAMPING = 0.7;
+    const MAX_BOUNCES = 3;
+    let allPts = [...arcPts];
+    const bounceFrames = [];
+    const bouncePoints = [];
+    let lastSegPts = arcPts;
+    let didHitObstacle = (cfg.obstacles?.length > 0) && (arcPts.length < fullArc.length);
+
+    for (let bi = 0; bi < MAX_BOUNCES && didHitObstacle; bi++) {
+      const lastIdx = lastSegPts.length - 1;
+      if (lastIdx < 2) break;
+
+      const collPt = lastSegPts[lastIdx];
+      const prevPt = lastSegPts[lastIdx - 1];
+      const prevPt2 = lastSegPts[lastIdx - 2];
+
+      const hitObs = (cfg.obstacles || []).find(obs =>
+        collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
+        collPt.y >= obs.y && collPt.y <= obs.y + obs.height
+      );
+      if (!hitObs) break;
+
+      const { reflectX, reflectY } = detectBounceSurface(prevPt, hitObs);
+
+      // Velocity via finite differences from the last two arc steps
+      let vx = collPt.x - prevPt.x;
+      let vy = collPt.y - prevPt.y;
+      // Second difference gives per-step gravity (constant for a parabola)
+      const gravity = collPt.y - 2 * prevPt.y + prevPt2.y;
+
+      if (reflectX) vx = -vx * DAMPING;
+      if (reflectY) vy = -vy * DAMPING;
+
+      const seg = this._computePhysicsSegment(collPt, vx, vy, gravity, cfg.obstacles);
+
+      bounceFrames.push(allPts.length - 1);
+      bouncePoints.push({ x: collPt.x, y: collPt.y });
+      allPts = allPts.concat(seg.points.slice(1)); // skip duplicate of collPt
+      lastSegPts = seg.points;
+      didHitObstacle = !!seg.hitObstacle;
+    }
+
+    return { allPts, bounceFrames, bouncePoints, finalHitObstacle: didHitObstacle };
+  }
+
+  // Step a projectile forward frame-by-frame from (startPt) with given velocity and gravity.
+  // Returns { points, hitObstacle } where hitObstacle is the first obstacle struck (or null).
+  _computePhysicsSegment(startPt, vx, vy, gravity, obstacles) {
+    const pts = [startPt];
+    let x = startPt.x, y = startPt.y;
+    let cvx = vx, cvy = vy;
+    let hitObstacle = null;
+
+    for (let i = 0; i < 300; i++) {
+      x += cvx;
+      y += cvy;
+      cvy += gravity;
+      pts.push({ x, y });
+
+      if (x > WORLD_W + 1 || x < -1 || y < -3) break;
+
+      for (const obs of (obstacles || [])) {
+        if (x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
+          hitObstacle = obs;
+          break;
+        }
+      }
+      if (hitObstacle) break;
+    }
+
+    return { points: pts, hitObstacle };
   }
 
   _onLaunchComplete(targetIds) {
