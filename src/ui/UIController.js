@@ -3,6 +3,7 @@ import { getStars, isChapterProgressionUnlocked } from '../save/ProgressStore.js
 import { formatEquation } from '../core/equation.js';
 import { COEFF_COLORS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
+import { Tutorial } from './Tutorial.js';
 
 export class UIController {
   // Callbacks wired by GameController
@@ -19,6 +20,8 @@ export class UIController {
   constructor() {
     this._refs = {};
     this._sliderListeners = {};
+    this._tutorial = new Tutorial();
+    this._pendingTutorialProgress = null;
     this._buildDOM();
   }
 
@@ -89,6 +92,9 @@ export class UIController {
   // ─── Level Load ─────────────────────────────────────────────────────────────
 
   loadLevel(cfg, globalIndex, progress) {
+    this._tutorial.hide();
+    this._pendingTutorialProgress = this._tutorial.shouldShow(globalIndex, progress) ? progress : null;
+
     const info = getChapterForLevel(globalIndex);
     this._refs.levelNum.textContent = `Ch${cfg.chapter} · L${cfg.levelInChapter}`;
     this._refs.levelTitle.textContent = cfg.title;
@@ -383,5 +389,9 @@ export class UIController {
     this._buildSliders(session);
     this.updateEquation(session);
     this.updateHint(session);
+    if (this._pendingTutorialProgress) {
+      this._tutorial.show(this._pendingTutorialProgress);
+      this._pendingTutorialProgress = null;
+    }
   }
 }

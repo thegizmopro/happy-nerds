@@ -7,6 +7,7 @@ const DEFAULTS = {
   currentLevel: 0,   // last level played
   volume: 70,         // master volume 0-100
   muted: false,       // mute toggle
+  tutorialDone: false,
 };
 
 export function loadProgress() {
