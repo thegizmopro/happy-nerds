@@ -352,11 +352,14 @@ export class Renderer {
     const ctx = this.ctx;
     // Compute where the arc actually starts — draw the nerd there
     // so the arc always originates from the character
+    // Clamp so the nerd stays within the visible canvas
     const params = session.getEffectiveParams();
     const form = session.currentForm();
     const originLocalY = evalForm(0, form, params);
+    const MIN_Y = 0.3; // just above ground
+    const MAX_Y = WORLD_H - 0.5; // just below top edge
     const drawX = launcher.x;
-    const drawY = launcher.y + originLocalY;
+    const drawY = Math.max(MIN_Y, Math.min(MAX_Y, launcher.y + originLocalY));
     const { cx, cy } = w2c(drawX, drawY);
     // Head
     ctx.fillStyle = '#fde68a';

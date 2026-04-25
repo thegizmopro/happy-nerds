@@ -18,7 +18,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.15, h: 5.0, k: 0 }, // k derived in-game
     launcher: LAUNCHER,
@@ -38,7 +38,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.10, h: 5.5, k: 0 },
     launcher: LAUNCHER,
@@ -58,7 +58,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.15, h: 3.0, k: 0 },
     launcher: LAUNCHER,
@@ -78,7 +78,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.12, h: 3.0, k: 0 },
     launcher: LAUNCHER,
@@ -98,7 +98,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.005 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.08, h: 3.5, k: 0 },
     launcher: LAUNCHER,
@@ -118,7 +118,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.005 },
       h: { min: 1.0, max: 8.0, step: 0.05 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.18, h: 4.0, k: 0 },
     launcher: LAUNCHER,
@@ -139,7 +139,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.05, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.15, h: 5.0, k: 0 },
     launcher: LAUNCHER,
@@ -160,7 +160,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.05, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.20, h: 4.0, k: 0 },
     launcher: LAUNCHER,
@@ -183,7 +183,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.005 },
       h: { min: 1.0, max: 8.0, step: 0.05 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.14, h: 4.5, k: 0 },
     launcher: LAUNCHER,
@@ -203,7 +203,7 @@ export const CHAPTER_2 = [
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0, max: 8.0, step: 0.1 },
-      k: { min: -2.0, max: 5.0, step: 0.1 },
+      k: { min: -0.5, max: 4.5, step: 0.1 },
     },
     defaultParams: { a: -0.18, h: 4.0, k: 0 },
     launcher: LAUNCHER,
