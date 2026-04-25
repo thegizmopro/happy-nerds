@@ -152,17 +152,15 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - Removed duplicates: negative_a_intro was in Ch1-L7 (moved to Ch3), factored_form was in Ch4-L1 and Ch4-L2 (kept only L2)
 - **Files**: `chapter1.js`, `chapter3.js`, `chapter4.js`, `chapter6.js`, `chapter7.js`, `revealContent.js`
 
-### E-22: Bounce mechanic ❌
-- **Current state**: Chapter 4 levels 6-7 mention bounce but arc system doesn't model it
-- **What to build**:
-  1. When arc reaches a root (y=0), compute a reflected arc
-  2. Reflection: new parabola with `a` negated, vertex at bounce point
-  3. Projectile visually bounces and continues on new arc
-  4. Collision detection continues on second arc
-  5. Max 2 bounces per launch
-- **Design decision**: The bounce should produce a *visually obvious* second arc. Consider drawing it in a different shade to show "this is the bounce path"
-- **Depends on**: E-17
-- **Files**: `arc.js`, `trajectory.js`, `GameController.js`, `Renderer.js`
+### E-22: Bounce mechanic ✅
+- **Built**: Projectile bounces off obstacles with velocity reflection + 0.7 damping
+- Surface detection (horizontal/vertical/corner) via detectBounceSurface()
+- Max 3 bounces, then stops
+- Post-bounce trajectory via Euler integration with derived gravity
+- Arc segments render progressively warmer colors (orange→red)
+- Spark flash at bounce points
+- Post-bounce hits count for targets + bonus rings
+- **Files**: `collision.js`, `GameController.js`, `LevelSession.js`, `Renderer.js`
 
 ---
 
