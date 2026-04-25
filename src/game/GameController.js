@@ -254,6 +254,8 @@ export class GameController {
     this.sound.playLaunch();
 
     this._stopLoop();
+    // Reset hitFlash for this shot so existing flashes don't carry over
+    this.session.hitFlash = {};
     this._animateLaunch(allPts, targetIds);
   }
 
@@ -269,6 +271,8 @@ export class GameController {
     const cfg = this.session.config;
     let startTime = null;
     let prevFrame = 0;
+    // Track which targets the ball was inside last frame to register one hit per entry
+    let prevInTarget = new Set();
     this._animating = true;
 
     const step = (ts) => {
@@ -279,10 +283,14 @@ export class GameController {
       // Keep moving targets alive during flight
       this.session.tick(ts);
 
-      // Real-time collision: scan every arc point from last frame to this one
+      // Real-time collision: scan every arc point from last frame to this one.
+      // Only register a hit when the ball *enters* a target (wasn't inside last frame).
+      // This prevents multi-HP pigs from absorbing dozens of hits per pass-through,
+      // while still allowing a second pass (e.g. on a bounce) to count as a new hit.
       for (let fi = prevFrame; fi <= newFrame; fi++) {
         const ballPt = arcPts[fi];
         if (!ballPt) continue;
+        const inTargetNow = new Set();
         for (const t of cfg.targets) {
           if (this.session.targetsHit.has(t.id)) continue;
           if (targetIds && !targetIds.has(t.id)) continue;
@@ -290,26 +298,31 @@ export class GameController {
           const dx = ballPt.x - wt.x;
           const dy = ballPt.y - wt.y;
           if (dx * dx + dy * dy <= wt.radius * wt.radius) {
-            this.session.recordHit(t.id);
-            this.sound.playHit();
-            if (t.pigType === 'whistle' && !t.hasSpawned) {
-              t.hasSpawned = true;
-              this.sound.playWhistleTweet();
-              const spawnPos = this._findWhistleSpawnPos(t, cfg);
-              const newTarget = {
-                id: `spawn-${t.id}-${Date.now()}`,
-                x: spawnPos.x,
-                y: spawnPos.y,
-                radius: t.radius,
-                pigType: 'helmet',
-                hp: 1,
-                moving: null,
-              };
-              this.session.spawnTarget(newTarget);
-              if (targetIds) targetIds.add(newTarget.id);
+            inTargetNow.add(t.id);
+            if (!prevInTarget.has(t.id)) {
+              // Ball just entered this target — register one hit
+              this.session.recordHit(t.id);
+              this.sound.playHit();
+              if (t.pigType === 'whistle' && !t.hasSpawned) {
+                t.hasSpawned = true;
+                this.sound.playWhistleTweet();
+                const spawnPos = this._findWhistleSpawnPos(t, cfg);
+                const newTarget = {
+                  id: `spawn-${t.id}-${Date.now()}`,
+                  x: spawnPos.x,
+                  y: spawnPos.y,
+                  radius: t.radius,
+                  pigType: 'helmet',
+                  hp: 1,
+                  moving: null,
+                };
+                this.session.spawnTarget(newTarget);
+                if (targetIds) targetIds.add(newTarget.id);
+              }
             }
           }
         }
+        prevInTarget = inTargetNow;
       }
 
       prevFrame = newFrame + 1;
@@ -433,6 +446,9 @@ export class GameController {
     session.gameState = allHit ? 'hit' : 'miss';
     this.renderer.draw(session);
 
+    // Drive kill-fade redraws (500ms) so fading pigs animate smoothly
+    this._startKillFadeLoop();
+
     if (!allHit && session.hitObstacle) this.sound.playObstacleSplat();
     if (!allHit) this.sound.playMiss();
 
@@ -475,6 +491,18 @@ export class GameController {
     }
 
     if (session.hasMovingTargets) this._startLoop();
+  }
+
+  _startKillFadeLoop() {
+    const FADE_MS = 500;
+    const session = this.session;
+    const start = performance.now();
+    const fade = (ts) => {
+      if (ts - start >= FADE_MS) return;
+      this.renderer.draw(session);
+      requestAnimationFrame(fade);
+    };
+    requestAnimationFrame(fade);
   }
 
   // ─── Actions ───────────────────────────────────────────────────────────────

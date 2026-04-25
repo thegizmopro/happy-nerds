@@ -65,7 +65,7 @@ export const CHAPTER_6 = [
       ],
     },
     targets: [
-      { id: 'high', x: 5.5, y: 3.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'high', x: 5.5, y: 3.5, radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
       { id: 'low',  x: 8.0, y: 0.8, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null },
     ],
     obstacles: [], bonusRing: null,
@@ -92,7 +92,7 @@ export const CHAPTER_6 = [
     },
     targets: [
       { id: 'blocker', x: 4.5, y: 0.8, radius: 0.42, pigType: 'whistle', hp: 1, moving: null },
-      { id: 'main',    x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',    hp: 1, moving: null },
+      { id: 'main',    x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',    hp: 3, moving: null },
     ],
     obstacles: [{ id: 'w', x: 5.5, y: 0.8, width: 0.4, height: 2.2 }],
     bonusRing: null,
@@ -147,7 +147,7 @@ export const CHAPTER_6 = [
     },
     targets: [
       { id: 'moving', x: 6.0, y: 0.8, radius: 0.42, pigType: 'cool', hp: 1, moving: { axis: 'x', min: 4.5, max: 7.5, speed: 1.2 } },
-      { id: 'static', x: 8.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'static', x: 8.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
     ],
     obstacles: [], bonusRing: null,
     starThresholds: [3, 8], starMode: 'moves',
@@ -172,8 +172,8 @@ export const CHAPTER_6 = [
       ],
     },
     targets: [
-      { id: 't1', x: 4.5, y: 2.0, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
-      { id: 't2', x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',      hp: 1, moving: null },
+      { id: 't1', x: 4.5, y: 2.0, radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
+      { id: 't2', x: 8.0, y: 0.8, radius: 0.42, pigType: 'king',      hp: 3, moving: null },
     ],
     obstacles: [
       { id: 'w1', x: 3.5, y: 0.8, width: 0.4, height: 1.8 },
@@ -202,8 +202,8 @@ export const CHAPTER_6 = [
       ],
     },
     targets: [
-      { id: 'guard', x: 4.0, y: 0.8, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
-      { id: 'king',  x: 8.5, y: 2.8, radius: 0.55, pigType: 'king',      hp: 1, moving: null },
+      { id: 'guard', x: 4.0, y: 0.8, radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
+      { id: 'king',  x: 8.5, y: 2.8, radius: 0.55, pigType: 'king',      hp: 3, moving: null },
     ],
     obstacles: [{ id: 'w', x: 5.5, y: 0.8, width: 0.4, height: 2.5 }],
     bonusRing: null,
@@ -257,9 +257,9 @@ export const CHAPTER_6 = [
       ],
     },
     targets: [
-      { id: 't1', x: 3.5, y: 2.5, radius: 0.40, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't1', x: 3.5, y: 2.5, radius: 0.40, pigType: 'letterman', hp: 2, moving: null },
       { id: 't2', x: 6.5, y: 0.8, radius: 0.40, pigType: 'helmet',    hp: 1, moving: null },
-      { id: 't3', x: 9.0, y: 3.0, radius: 0.40, pigType: 'letterman', hp: 1, moving: null },
+      { id: 't3', x: 9.0, y: 3.0, radius: 0.40, pigType: 'letterman', hp: 2, moving: null },
     ],
     obstacles: [{ id: 'w', x: 5.0, y: 0.8, width: 0.4, height: 2.0 }],
     bonusRing: null,
@@ -287,8 +287,8 @@ export const CHAPTER_6 = [
     },
     targets: [
       { id: 'm1',  x: 4.0, y: 0.8, radius: 0.42, pigType: 'whistle', hp: 1, moving: null },
-      { id: 'm2',  x: 6.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
-      { id: 'king',x: 9.0, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null },
+      { id: 'm2',  x: 6.5, y: 2.5, radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
+      { id: 'king',x: 9.0, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null },
     ],
     obstacles: [
       { id: 'w1', x: 5.0, y: 0.8, width: 0.4, height: 2.0 },

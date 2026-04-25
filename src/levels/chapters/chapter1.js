@@ -63,7 +63,7 @@ export const CHAPTER_1 = [
     defaultParams: { a: -0.20, h: 0, k: 0 },
     launcher: LAUNCHER,
     // exact a = (2.5-4.5)/(5-1)² = -2.0/16 = -0.125
-    targets: [{ id: 'main', x: 5.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 5.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
@@ -79,7 +79,7 @@ export const CHAPTER_1 = [
     defaultParams: { a: -0.08, h: 0, k: 0 },
     launcher: LAUNCHER,
     // exact a = (3.0-4.5)/(7-1)² = -1.5/36 = -0.0417
-    targets: [{ id: 'main', x: 7.0, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 7.0, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: { x: 5.0, y: 4.0, radius: 0.3 },
     starThresholds: [2, 5], starMode: 'bonus',
     revealAfter: null,

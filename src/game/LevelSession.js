@@ -48,6 +48,8 @@ export class LevelSession {
 
     // HP tracking for targets with hp > 1
     this.targetHP = {};
+    this.hitFlash = {};   // targetId → ms timestamp of last non-lethal hit
+    this.killTime = {};   // targetId → ms timestamp of kill
     for (const t of levelConfig.targets) {
       this.targetHP[t.id] = t.hp ?? 1;
     }
@@ -117,7 +119,12 @@ export class LevelSession {
     const t = this.config.targets.find(t => t.id === targetId);
     if (!t) return;
     this.targetHP[targetId] = Math.max(0, (this.targetHP[targetId] ?? 1) - 1);
-    if (this.targetHP[targetId] === 0) this.targetsHit.add(targetId);
+    if (this.targetHP[targetId] === 0) {
+      this.targetsHit.add(targetId);
+      this.killTime[targetId] = Date.now();
+    } else {
+      this.hitFlash[targetId] = Date.now();
+    }
   }
 
   advanceShot() {

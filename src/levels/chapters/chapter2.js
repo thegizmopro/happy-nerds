@@ -41,7 +41,7 @@ export const CHAPTER_2 = [
     defaultParams: { a: -0.10, h: 5.5, k: 0 },
     launcher: LAUNCHER,
     // Solution example: h=4, a≈-0.183 → localY at tx=6: -0.183*(36-48)=2.196, worldY=3.0
-    targets: [{ id: 'main', x: 7.0, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 7.0, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
     revealAfter: null,
@@ -79,7 +79,7 @@ export const CHAPTER_2 = [
     defaultParams: { a: -0.12, h: 3.0, k: 0 },
     launcher: LAUNCHER,
     // Solution: h=4, a≈-0.113 → localY at tx=5: a*(25-40)=1.7, worldY=2.5
-    targets: [{ id: 'main', x: 6.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 6.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
     revealAfter: null,
@@ -98,7 +98,7 @@ export const CHAPTER_2 = [
     defaultParams: { a: -0.08, h: 3.5, k: 0 },
     launcher: LAUNCHER,
     // Solution: h=5, a≈-0.129 → localY at tx=7: a*(49-70)=2.7, worldY=3.5
-    targets: [{ id: 'main', x: 8.0, y: 3.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 8.0, y: 3.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
     revealAfter: null,
@@ -156,7 +156,7 @@ export const CHAPTER_2 = [
     },
     defaultParams: { a: -0.20, h: 4.0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'main', x: 8.5, y: 2.0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 8.5, y: 2.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [
       { id: 'wall1', x: 3.5, y: 0.8, width: 0.4, height: 1.8 },
       { id: 'plat',  x: 5.5, y: 3.5, width: 2.5, height: 0.3 }, // horizontal platform above target approach

@@ -106,7 +106,7 @@ export const CHAPTER_3 = [
     defaultParams: { a: -0.25, h: 3.5, k: 0 },
     launcher: LAUNCHER,
     // Target on top of a tall column — wide arc that barely reaches the top
-    targets: [{ id: 'main', x: 7.5, y: 4.2, radius: 0.40, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 7.5, y: 4.2, radius: 0.40, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [
       { id: 'col', x: 7.1, y: 0.8, width: 0.8, height: 3.4 }, // column body
     ],
@@ -215,7 +215,7 @@ export const CHAPTER_3 = [
     },
     defaultParams: { a: -0.14, h: 4.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 8.0, y: 2.5, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    targets: [{ id: 'king', x: 8.0, y: 2.5, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
     obstacles: [
       { id: 'w1', x: 3.5, y: 0.8, width: 0.4, height: 2.0 },
       { id: 'w2', x: 6.0, y: 0.8, width: 0.4, height: 1.5 },

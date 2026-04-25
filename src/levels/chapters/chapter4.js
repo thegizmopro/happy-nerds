@@ -59,7 +59,7 @@ export const CHAPTER_4 = [
     defaultParams: { a: -0.10, r1: 0, r2: 8.0 },
     launcher: LAUNCHER,
     // Target elevated — arc must be at the right height at the target's x
-    targets: [{ id: 'main', x: 4.5, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 4.5, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: { x: 3.5, y: 3.5, radius: 0.3 },
     starThresholds: [2, 5], starMode: 'bonus',
     revealAfter: null,
@@ -140,7 +140,7 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.10, r1: 0, r2: 8.0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'main', x: 6.5, y: 2.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 6.5, y: 2.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [{ id: 'plat', x: 5.8, y: 2.5, width: 2.5, height: 0.3 }], // pig sits on platform
     bonusRing: { x: 4.5, y: 4.0, radius: 0.3 },
     starThresholds: [2, 6], starMode: 'bonus',
@@ -160,7 +160,7 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.14, r1: 0, r2: 7.0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 8.5, y: 2.0, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    targets: [{ id: 'king', x: 8.5, y: 2.0, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
     obstacles: [
       { id: 'w1', x: 4.0, y: 0.8, width: 0.4, height: 2.5 },
       { id: 'w2', x: 6.5, y: 0.8, width: 0.4, height: 1.5 },

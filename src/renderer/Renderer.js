@@ -195,21 +195,75 @@ export class Renderer {
     const now = Date.now();
     for (const t of targets) {
       const worldPos = session.getTargetWorld(t);
-      const dead = (session.targetHP[t.id] ?? 1) <= 0;
+      const hp = session.targetHP[t.id] ?? 1;
+      const dead = hp <= 0;
+
+      // Fade out over 500ms on kill
+      let opacity = 1;
+      if (dead) {
+        const kt = session.killTime?.[t.id];
+        if (kt) {
+          const elapsed = now - kt;
+          if (elapsed >= 500) continue; // fully faded
+          opacity = 1 - elapsed / 500;
+        }
+      }
+
       let radius = t.radius;
       const spawnTime = session.spawnTimes?.[t.id];
       if (spawnTime) {
         const elapsed = now - spawnTime;
         if (elapsed < 200) radius = t.radius * (elapsed / 200);
       }
-      this._drawPig(worldPos.x, worldPos.y, radius, t.pigType, dead, session.gameState === 'hit' && dead);
+
+      // White flash for 200ms on non-lethal hit
+      const flashTime = session.hitFlash?.[t.id];
+      const flashWhite = !dead && !!flashTime && (now - flashTime) < 200;
+
+      this._drawPig(worldPos.x, worldPos.y, radius, t.pigType, dead,
+                    session.gameState === 'hit' && dead, flashWhite, opacity);
+
+      // HP dots above alive multi-HP pigs
+      const maxHP = t.hp ?? 1;
+      if (!dead && maxHP > 1) {
+        this._drawHPDots(worldPos.x, worldPos.y, radius, hp, maxHP);
+      }
     }
   }
 
-  _drawPig(wx, wy, radius, type, dead, celebrating) {
+  _drawHPDots(wx, wy, radius, hp, maxHP) {
     const ctx = this.ctx;
     const { cx, cy } = w2c(wx, wy);
     const r = radius * SCALE;
+    const dotR = 4;
+    const spacing = dotR * 2.8;
+    const totalWidth = (maxHP - 1) * spacing;
+    const startX = cx - totalWidth / 2;
+    const dotY = cy - r - 10;
+
+    ctx.setLineDash([]);
+    for (let i = 0; i < maxHP; i++) {
+      const dotX = startX + i * spacing;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
+      if (i < hp) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+      } else {
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+    }
+  }
+
+  _drawPig(wx, wy, radius, type, dead, celebrating, flashWhite = false, opacity = 1) {
+    const ctx = this.ctx;
+    const { cx, cy } = w2c(wx, wy);
+    const r = radius * SCALE;
+
+    ctx.save();
+    if (opacity < 1) ctx.globalAlpha = opacity;
 
     // Outer ring
     const ringColor = dead ? '#4ade80' : '#ef4444';
@@ -280,6 +334,16 @@ export class Renderer {
       ctx.moveTo(cx + ex + es, cy - ey - es); ctx.lineTo(cx + ex - es, cy - ey + es);
       ctx.stroke();
     }
+
+    // White flash overlay on non-lethal hit
+    if (flashWhite) {
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
   }
 
   // ── Launcher ─────────────────────────────────────────────────────────────────

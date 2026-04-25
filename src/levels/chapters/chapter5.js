@@ -57,7 +57,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.12, b: 1.5, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'main', x: 6.5, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 6.5, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
     obstacles: [], bonusRing: null,
     starThresholds: [3, 8], starMode: 'moves',
     revealAfter: null,
@@ -96,7 +96,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.08, b: 2.5, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'main', x: 9.0, y: 4.5, radius: 0.45, pigType: 'king', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 9.0, y: 4.5, radius: 0.45, pigType: 'king', hp: 3, moving: null }],
     obstacles: [
       { id: 'w1', x: 4.0, y: 0.8, width: 0.4, height: 3.0 },
       { id: 'w2', x: 6.5, y: 0.8, width: 0.4, height: 2.0 },
@@ -207,7 +207,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.10, b: 1.8, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 8.5, y: 3.0, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    targets: [{ id: 'king', x: 8.5, y: 3.0, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
     obstacles: [
       { id: 'w1', x: 3.5, y: 0.8, width: 0.4, height: 2.5 },
       { id: 'w2', x: 6.0, y: 2.0, width: 0.4, height: 2.5 },
