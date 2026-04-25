@@ -197,7 +197,8 @@ export class UIController {
     // Sync slider position and value label (programmatic value set doesn't fire 'input')
     for (const [coeff, { el }] of Object.entries(this._sliderListeners)) {
       const v = params[coeff] ?? 0;
-      el.value = v;
+      const clamped = Math.max(parseFloat(el.min), Math.min(parseFloat(el.max), v));
+      el.value = clamped;
       const valEl = document.getElementById(`sv-${coeff}`);
       if (valEl) valEl.textContent = v.toFixed(2);
     }

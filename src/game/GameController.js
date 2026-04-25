@@ -100,6 +100,16 @@ export class GameController {
   onCoeffChange(coeff, val) {
     if (this.session.gameState !== 'idle') return;
     this.session.params[coeff] = val;
+
+    // In vertex form, auto-derive k so the arc stays pinned to the launcher
+    // Arc at localX=0: y = a(0-h)² + k. For y=0: k = -a*h²
+    const form = this.session.currentForm();
+    if ((form === 'vertex' || form === 'cubic' || form === 'abs') && coeff !== 'k') {
+      const a = this.session.params.a;
+      const h = this.session.params.h ?? 0;
+      this.session.params.k = -a * h * h;
+    }
+
     this.session.sliderMoves++;
     this._rebuildArc();
     this.ui.updateEquation(this.session);
