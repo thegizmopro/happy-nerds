@@ -566,36 +566,417 @@ export class Renderer {
 
   _drawLauncher(launcher, session) {
     const ctx = this.ctx;
-    // Compute where the arc actually starts — draw the nerd there
-    // so the arc always originates from the character
-    // Clamp so the nerd stays within the visible canvas
     const params = session.getEffectiveParams();
     const form = session.currentForm();
     const originLocalY = evalForm(0, form, params);
-    const MIN_Y = 0.3; // just above ground
-    const MAX_Y = WORLD_H - 0.5; // just below top edge
+    const MIN_Y = 0.3;
+    const MAX_Y = WORLD_H - 0.5;
     const drawX = launcher.x;
     const drawY = Math.max(MIN_Y, Math.min(MAX_Y, launcher.y + originLocalY));
     const { cx, cy } = w2c(drawX, drawY);
+
+    const chapter = session.config?.chapter ?? 1;
+    const state = session.gameState;
+
+    if (chapter <= 2) this._drawCarl(ctx, cx, cy, state);
+    else if (chapter <= 4) this._drawFiona(ctx, cx, cy, state);
+    else this._drawPete(ctx, cx, cy, state);
+  }
+
+  _drawCarl(ctx, cx, cy, state) {
+    ctx.save();
+    ctx.setLineDash([]);
+
+    const armUp = state === 'hit';
+    const slumped = state === 'miss';
+    const lArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+    const rArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+
+    // Arms (behind body)
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 9, cy - 12); ctx.lineTo(cx - 20, lArmEndY);
+    ctx.moveTo(cx + 9, cy - 12); ctx.lineTo(cx + 20, rArmEndY);
+    ctx.stroke();
+
+    // Pencil in right hand
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx + 20, rArmEndY);
+    ctx.lineTo(cx + 22, rArmEndY + (armUp ? -9 : 9));
+    ctx.stroke();
+    ctx.fillStyle = '#fb923c';
+    ctx.beginPath();
+    ctx.arc(cx + 22, rArmEndY + (armUp ? -9 : 9), 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Legs
+    ctx.fillStyle = '#1e40af';
+    ctx.fillRect(cx - 9, cy + 2, 7, 12);
+    ctx.fillRect(cx + 2, cy + 2, 7, 12);
+
+    // Shoes
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.roundRect(cx - 11, cy + 13, 10, 5, 2);
+    ctx.roundRect(cx + 1,  cy + 13, 10, 5, 2);
+    ctx.fill();
+
+    // Shirt body
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath();
+    ctx.roundRect(cx - 10, cy - 20, 20, 23, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Calculator icon on chest
+    ctx.fillStyle = '#1d4ed8';
+    ctx.fillRect(cx - 6, cy - 17, 12, 9);
+    ctx.fillStyle = '#bfdbfe';
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < 3; c++) {
+        ctx.fillRect(cx - 5 + c * 4, cy - 16 + r * 4, 2.5, 2.5);
+      }
+    }
+
+    // Neck
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(cx - 4, cy - 24, 8, 6);
+
     // Head
     ctx.fillStyle = '#fde68a';
-    ctx.beginPath(); ctx.arc(cx, cy - 24, 14, 0, Math.PI * 2); ctx.fill();
-    // Glasses
-    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2; ctx.setLineDash([]);
-    ctx.strokeRect(cx - 15, cy - 33, 12, 9);
-    ctx.strokeRect(cx + 3,  cy - 33, 12, 9);
-    ctx.beginPath(); ctx.moveTo(cx - 3, cy - 28); ctx.lineTo(cx + 3, cy - 28); ctx.stroke();
-    // Body
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(cx - 11, cy - 10, 22, 26);
-    // Arms — up if excited, normal otherwise
-    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-    const armY = session.gameState === 'hit' ? cy - 22 : cy - 10;
     ctx.beginPath();
-    ctx.moveTo(cx - 11, cy - 5); ctx.lineTo(cx - 22, armY);
-    ctx.moveTo(cx + 11, cy - 5); ctx.lineTo(cx + 22, armY);
+    ctx.arc(cx, cy - 32, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Brown hair swoosh
+    ctx.fillStyle = '#92400e';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 32, 12, -Math.PI * 0.9, -Math.PI * 0.1);
+    ctx.lineTo(cx, cy - 32);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 3, cy - 41, 7, Math.PI * 0.6, Math.PI * 1.5);
+    ctx.fill();
+
+    // Ears
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.ellipse(cx - 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx - 4, cy - 33, 3, 0, Math.PI * 2);
+    ctx.arc(cx + 4, cy - 33, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(cx - 4, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.arc(cx + 4, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glasses frames
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.strokeRect(cx - 8.5, cy - 36.5, 7, 6);
+    ctx.strokeRect(cx + 1.5, cy - 36.5, 7, 6);
+    ctx.beginPath();
+    ctx.moveTo(cx - 1.5, cy - 33.5); ctx.lineTo(cx + 1.5, cy - 33.5);
     ctx.stroke();
+
+    // Smile
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 28, 4, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+
     ctx.lineCap = 'butt';
+    ctx.restore();
+  }
+
+  _drawFiona(ctx, cx, cy, state) {
+    ctx.save();
+    ctx.setLineDash([]);
+
+    const armUp = state === 'hit';
+    const slumped = state === 'miss';
+    const lArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+    const rArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+
+    // Long purple hair curtains (behind character)
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.moveTo(cx - 12, cy - 38);
+    ctx.quadraticCurveTo(cx - 18, cy - 20, cx - 16, cy - 4);
+    ctx.lineTo(cx - 10, cy - 4);
+    ctx.quadraticCurveTo(cx - 12, cy - 20, cx - 8, cy - 32);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx + 12, cy - 38);
+    ctx.quadraticCurveTo(cx + 18, cy - 20, cx + 16, cy - 4);
+    ctx.lineTo(cx + 10, cy - 4);
+    ctx.quadraticCurveTo(cx + 12, cy - 20, cx + 8, cy - 32);
+    ctx.closePath();
+    ctx.fill();
+
+    // Arms
+    ctx.strokeStyle = '#ec4899';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 9, cy - 12); ctx.lineTo(cx - 20, lArmEndY);
+    ctx.moveTo(cx + 9, cy - 12); ctx.lineTo(cx + 20, rArmEndY);
+    ctx.stroke();
+
+    // Notebook in right hand
+    ctx.fillStyle = '#fef9c3';
+    ctx.fillRect(cx + 14, rArmEndY - 8, 12, 10);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx + 14, rArmEndY - 8, 12, 10);
+    ctx.strokeStyle = '#9ca3af';
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + 16, rArmEndY - 6 + i * 3);
+      ctx.lineTo(cx + 24, rArmEndY - 6 + i * 3);
+      ctx.stroke();
+    }
+
+    // Legs
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fillRect(cx - 9, cy + 2, 7, 12);
+    ctx.fillRect(cx + 2, cy + 2, 7, 12);
+
+    // Shoes
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.roundRect(cx - 11, cy + 13, 10, 5, 2);
+    ctx.roundRect(cx + 1,  cy + 13, 10, 5, 2);
+    ctx.fill();
+
+    // Pink shirt body
+    ctx.fillStyle = '#ec4899';
+    ctx.beginPath();
+    ctx.roundRect(cx - 10, cy - 20, 20, 23, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Integral symbol on shirt
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('∫', cx, cy - 9);
+
+    // Neck
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(cx - 4, cy - 24, 8, 6);
+
+    // Head
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 32, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Purple hair on top
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 32, 12, -Math.PI * 0.95, -Math.PI * 0.05);
+    ctx.lineTo(cx, cy - 32);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ears
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.ellipse(cx - 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx - 4, cy - 33, 3, 0, Math.PI * 2);
+    ctx.arc(cx + 4, cy - 33, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(cx - 4, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.arc(cx + 4, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cat-eye glasses (angled lenses)
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.8;
+    ctx.save();
+    ctx.translate(cx - 5, cy - 33.5);
+    ctx.rotate(-0.18);
+    ctx.strokeRect(-4, -3, 8, 5);
+    ctx.restore();
+    ctx.save();
+    ctx.translate(cx + 5, cy - 33.5);
+    ctx.rotate(0.18);
+    ctx.strokeRect(-4, -3, 8, 5);
+    ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(cx - 1.5, cy - 33.5); ctx.lineTo(cx + 1.5, cy - 33.5);
+    ctx.stroke();
+
+    // Smile
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 28, 4, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+
+    ctx.lineCap = 'butt';
+    ctx.restore();
+  }
+
+  _drawPete(ctx, cx, cy, state) {
+    ctx.save();
+    ctx.setLineDash([]);
+
+    const armUp = state === 'hit';
+    const slumped = state === 'miss';
+    const lArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+    const rArmEndY = armUp ? cy - 26 : slumped ? cy + 8 : cy - 2;
+
+    // Lab coat arms (white)
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 9, cy - 12); ctx.lineTo(cx - 20, lArmEndY);
+    ctx.moveTo(cx + 9, cy - 12); ctx.lineTo(cx + 20, rArmEndY);
+    ctx.stroke();
+
+    // Test tube in right hand
+    const ttX = cx + 22;
+    const ttY = rArmEndY - 9;
+    ctx.fillStyle = '#d1fae5';
+    ctx.fillRect(ttX - 3, ttY, 6, 10);
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(ttX - 3, ttY + 5, 6, 5);
+    ctx.strokeStyle = '#6ee7b7';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(ttX - 3, ttY, 6, 10);
+    ctx.fillStyle = '#6b7280';
+    ctx.fillRect(ttX - 3.5, ttY - 2.5, 7, 3);
+
+    // Legs
+    ctx.fillStyle = '#374151';
+    ctx.fillRect(cx - 9, cy + 2, 7, 12);
+    ctx.fillRect(cx + 2, cy + 2, 7, 12);
+
+    // Shoes
+    ctx.fillStyle = '#1f2937';
+    ctx.beginPath();
+    ctx.roundRect(cx - 11, cy + 13, 10, 5, 2);
+    ctx.roundRect(cx + 1,  cy + 13, 10, 5, 2);
+    ctx.fill();
+
+    // Green shirt collar peek
+    ctx.fillStyle = '#059669';
+    ctx.fillRect(cx - 5, cy - 22, 10, 4);
+
+    // Lab coat body
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.roundRect(cx - 10, cy - 20, 20, 23, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Lab coat lapels
+    ctx.strokeStyle = '#d1d5db';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - 3, cy - 20); ctx.lineTo(cx - 2, cy - 8);
+    ctx.moveTo(cx + 3, cy - 20); ctx.lineTo(cx + 2, cy - 8);
+    ctx.stroke();
+
+    // Neck
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(cx - 4, cy - 24, 8, 6);
+
+    // Head
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 32, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Spiky white/gray hair
+    ctx.fillStyle = '#e5e7eb';
+    ctx.beginPath();
+    ctx.moveTo(cx - 12, cy - 32);
+    ctx.lineTo(cx - 11, cy - 42);
+    ctx.lineTo(cx - 7,  cy - 37);
+    ctx.lineTo(cx - 4,  cy - 44);
+    ctx.lineTo(cx,      cy - 38);
+    ctx.lineTo(cx + 4,  cy - 44);
+    ctx.lineTo(cx + 7,  cy - 37);
+    ctx.lineTo(cx + 11, cy - 42);
+    ctx.lineTo(cx + 12, cy - 32);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ears
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.ellipse(cx - 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 12, cy - 32, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes (behind goggles)
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(cx - 4.5, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.arc(cx + 4.5, cy - 33, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Goggle strap
+    ctx.strokeStyle = '#4b5563';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 12, cy - 33); ctx.lineTo(cx + 12, cy - 33);
+    ctx.stroke();
+
+    // Goggle lenses
+    ctx.fillStyle = '#bfdbfe';
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    ctx.arc(cx - 4.5, cy - 33, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 4.5, cy - 33, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.arc(cx - 4.5, cy - 33, 4.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx + 4.5, cy - 33, 4.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Smile
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 28, 3.5, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+
+    ctx.lineCap = 'butt';
+    ctx.restore();
   }
 
   // ── Predicted Arc ────────────────────────────────────────────────────────────
