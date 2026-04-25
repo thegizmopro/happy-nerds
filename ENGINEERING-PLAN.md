@@ -306,14 +306,15 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - All wired into GameController at appropriate trigger points
 - **Files**: `SoundManager.js`, `GameController.js`
 
-### E-41: Nerd voice lines ❌
-- **What to build**:
-  1. On hit: random cheer ("NICE!", "Calculated!", "That's what I call a solution!", "Bullseye!")
-  2. On 3-star: extra celebration ("Elegant!", "Textbook!", "Now THAT'S math!")
-  3. On miss: encouraging ("Close!", "Recalculate!", "Almost!")
-  4. Display as text bubble near launcher character (no voice acting needed for MVP)
-- **Depends on**: E-07
-- **Files**: `GameController.js`, `Renderer.js`
+### E-41: Nerd voice lines ✅
+- **Built**: Text bubbles near launcher on hit/miss/star/block
+- HIT: NICE!, Calculated!, Bullseye!, etc
+- 3-STAR: Elegant!, Now THAT'S math!, A+!
+- MISS: Close!, Recalculate!, Almost!, etc
+- BLOCK: Blocked!, Find another path!, Wrong angle!
+- Fade in (200ms) → hold (800ms) → fade out (500ms), 1500ms total
+- New bubble replaces old one
+- **Files**: `Renderer.js`, `GameController.js`
 
 ### E-41b: Tutorial overlay ✅
 - **Built**: 3-step overlay for Ch1-L1 first-time players
