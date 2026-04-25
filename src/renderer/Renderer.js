@@ -263,87 +263,303 @@ export class Renderer {
     const r = radius * SCALE;
 
     ctx.save();
+    ctx.setLineDash([]);
     if (opacity < 1) ctx.globalAlpha = opacity;
 
-    // Outer ring
-    const ringColor = dead ? '#4ade80' : '#ef4444';
-    ctx.strokeStyle = ringColor;
-    ctx.lineWidth = 2.5;
-    ctx.setLineDash([]);
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = dead ? 'rgba(74,222,128,0.15)' : 'rgba(239,68,68,0.08)';
-    ctx.fill();
+    const bodyColor = flashWhite ? '#ffffff' : '#4ade80';
 
-    // Face
-    const faceColors = {
-      helmet:   dead ? '#4ade80' : '#86efac',
-      letterman:dead ? '#4ade80' : '#6ee7b7',
-      cool:     dead ? '#4ade80' : '#5eead4',
-      whistle:  dead ? '#4ade80' : '#fbbf24',
-      king:     dead ? '#4ade80' : '#a3e635',
-    };
-    const pr = r * 0.65;
-    ctx.fillStyle = faceColors[type] ?? faceColors.helmet;
-    ctx.beginPath(); ctx.arc(cx, cy, pr, 0, Math.PI * 2); ctx.fill();
-
-    if (!dead) {
-      // Eyes
-      ctx.fillStyle = '#1a2e1a';
-      ctx.beginPath();
-      ctx.arc(cx - pr * 0.3, cy - pr * 0.2, pr * 0.13, 0, Math.PI * 2);
-      ctx.arc(cx + pr * 0.3, cy - pr * 0.2, pr * 0.13, 0, Math.PI * 2);
-      ctx.fill();
-      // Nose
-      ctx.fillStyle = '#4d7a4d';
-      ctx.beginPath();
-      ctx.ellipse(cx, cy + pr * 0.2, pr * 0.22, pr * 0.16, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // Nostrils
-      ctx.fillStyle = '#1a2e1a';
-      ctx.beginPath();
-      ctx.arc(cx - pr * 0.1, cy + pr * 0.2, pr * 0.07, 0, Math.PI * 2);
-      ctx.arc(cx + pr * 0.1, cy + pr * 0.2, pr * 0.07, 0, Math.PI * 2);
-      ctx.fill();
-      // Type-specific accessory
-      if (type === 'helmet') {
-        ctx.fillStyle = '#92400e';
-        ctx.beginPath();
-        ctx.arc(cx, cy - pr * 0.55, pr * 0.65, Math.PI, 0);
-        ctx.fill();
-      } else if (type === 'king') {
-        ctx.fillStyle = '#f59e0b';
-        ctx.beginPath();
-        ctx.moveTo(cx - pr * 0.4, cy - pr * 0.6);
-        ctx.lineTo(cx, cy - pr);
-        ctx.lineTo(cx + pr * 0.4, cy - pr * 0.6);
-        ctx.fill();
-      } else if (type === 'cool') {
-        ctx.fillStyle = '#1e3a5f';
-        ctx.fillRect(cx - pr * 0.45, cy - pr * 0.35, pr * 0.35, pr * 0.2);
-        ctx.fillRect(cx + pr * 0.1,  cy - pr * 0.35, pr * 0.35, pr * 0.2);
-      }
-    } else {
-      // Dead: X eyes
-      ctx.strokeStyle = '#1a2e1a';
-      ctx.lineWidth = 2;
-      const ex = pr * 0.3, ey = pr * 0.2, es = pr * 0.12;
-      ctx.beginPath();
-      ctx.moveTo(cx - ex - es, cy - ey - es); ctx.lineTo(cx - ex + es, cy - ey + es);
-      ctx.moveTo(cx - ex + es, cy - ey - es); ctx.lineTo(cx - ex - es, cy - ey + es);
-      ctx.moveTo(cx + ex - es, cy - ey - es); ctx.lineTo(cx + ex + es, cy - ey + es);
-      ctx.moveTo(cx + ex + es, cy - ey - es); ctx.lineTo(cx + ex - es, cy - ey + es);
-      ctx.stroke();
-    }
-
-    // White flash overlay on non-lethal hit
-    if (flashWhite) {
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fill();
+    switch (type) {
+      case 'letterman': this._drawLettermanPig(ctx, cx, cy, r, bodyColor, dead); break;
+      case 'cool':      this._drawCoolPig(ctx, cx, cy, r, bodyColor, dead); break;
+      case 'whistle':   this._drawWhistlePig(ctx, cx, cy, r, bodyColor, dead); break;
+      case 'king':      this._drawKingPig(ctx, cx, cy, r, bodyColor, dead); break;
+      default:          this._drawHelmetPig(ctx, cx, cy, r, bodyColor, dead); break;
     }
 
     ctx.restore();
+  }
+
+  // ── Pig shared helpers ────────────────────────────────────────────────────────
+
+  _pgBody(ctx, cx, cy, r, bodyColor) {
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#16a34a';
+    ctx.lineWidth = Math.max(1, r * 0.07);
+    ctx.stroke();
+  }
+
+  _pgSnout(ctx, cx, cy, r) {
+    ctx.fillStyle = '#fda4af';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + r * 0.27, r * 0.26, r * 0.18, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#9f1239';
+    ctx.beginPath();
+    ctx.arc(cx - r * 0.1, cy + r * 0.27, r * 0.065, 0, Math.PI * 2);
+    ctx.arc(cx + r * 0.1, cy + r * 0.27, r * 0.065, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  _pgEyes(ctx, cx, cy, r, dead) {
+    const lx = cx - r * 0.27, rx = cx + r * 0.27, ey = cy - r * 0.1;
+    if (dead) {
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth = Math.max(1.5, r * 0.08);
+      const s = r * 0.11;
+      ctx.beginPath();
+      ctx.moveTo(lx - s, ey - s); ctx.lineTo(lx + s, ey + s);
+      ctx.moveTo(lx + s, ey - s); ctx.lineTo(lx - s, ey + s);
+      ctx.moveTo(rx - s, ey - s); ctx.lineTo(rx + s, ey + s);
+      ctx.moveTo(rx + s, ey - s); ctx.lineTo(rx - s, ey + s);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath();
+      ctx.arc(lx, ey, r * 0.1, 0, Math.PI * 2);
+      ctx.arc(rx, ey, r * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  _pgAngryBrows(ctx, cx, cy, r) {
+    ctx.strokeStyle = '#14532d';
+    ctx.lineWidth = Math.max(1.5, r * 0.08);
+    const ey = cy - r * 0.1;
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.44, ey - r * 0.14);
+    ctx.lineTo(cx - r * 0.14, ey - r * 0.28);
+    ctx.moveTo(cx + r * 0.14, ey - r * 0.28);
+    ctx.lineTo(cx + r * 0.44, ey - r * 0.14);
+    ctx.stroke();
+  }
+
+  _pgTongue(ctx, cx, cy, r) {
+    ctx.fillStyle = '#f43f5e';
+    ctx.beginPath();
+    ctx.ellipse(cx + r * 0.08, cy + r * 0.5, r * 0.13, r * 0.09, Math.PI * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // ── Pig type renderers ────────────────────────────────────────────────────────
+
+  _drawHelmetPig(ctx, cx, cy, r, bodyColor, dead) {
+    this._pgBody(ctx, cx, cy, r, bodyColor);
+
+    // Yellow football helmet covering top half
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.94, Math.PI, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Helmet center stripe
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = Math.max(2, r * 0.1);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r * 0.94);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+
+    // Face mask bars (horizontal + center stub)
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = Math.max(1.5, r * 0.07);
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.46, cy + r * 0.12);
+    ctx.lineTo(cx + r * 0.46, cy + r * 0.12);
+    ctx.moveTo(cx, cy + r * 0.12);
+    ctx.lineTo(cx, cy + r * 0.4);
+    ctx.stroke();
+
+    if (!dead) this._pgAngryBrows(ctx, cx, cy, r);
+    this._pgEyes(ctx, cx, cy, r, dead);
+    this._pgSnout(ctx, cx, cy, r);
+    if (dead) this._pgTongue(ctx, cx, cy, r);
+  }
+
+  _drawLettermanPig(ctx, cx, cy, r, bodyColor, dead) {
+    this._pgBody(ctx, cx, cy, r, bodyColor);
+
+    // Blue cap across top
+    ctx.fillStyle = '#1e40af';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.85, Math.PI * 1.12, Math.PI * 1.88);
+    ctx.closePath();
+    ctx.fill();
+    // Cap brim
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(cx - r * 0.48, cy - r * 0.38, r * 0.96, r * 0.11);
+
+    // Red V jacket lines
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = Math.max(2, r * 0.11);
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.38, cy - r * 0.1);
+    ctx.lineTo(cx, cy + r * 0.22);
+    ctx.moveTo(cx + r * 0.38, cy - r * 0.1);
+    ctx.lineTo(cx, cy + r * 0.22);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+
+    // N letter on chest
+    ctx.fillStyle = '#fef2f2';
+    ctx.font = `bold ${Math.max(7, Math.round(r * 0.27))}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('N', cx, cy + r * 0.42);
+
+    // Determined flat mouth
+    if (!dead) {
+      ctx.strokeStyle = '#14532d';
+      ctx.lineWidth = Math.max(1.5, r * 0.07);
+      ctx.beginPath();
+      ctx.moveTo(cx - r * 0.17, cy + r * 0.53);
+      ctx.lineTo(cx + r * 0.17, cy + r * 0.53);
+      ctx.stroke();
+    }
+
+    this._pgEyes(ctx, cx, cy, r, dead);
+    this._pgSnout(ctx, cx, cy, r);
+    if (dead) this._pgTongue(ctx, cx, cy, r);
+  }
+
+  _drawCoolPig(ctx, cx, cy, r, bodyColor, dead) {
+    // Headphone band (behind body)
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = Math.max(2, r * 0.1);
+    ctx.beginPath();
+    ctx.arc(cx, cy - r * 0.08, r * 0.88, Math.PI, 0);
+    ctx.stroke();
+
+    this._pgBody(ctx, cx, cy, r, bodyColor);
+
+    // Ear cups
+    ctx.fillStyle = '#6d28d9';
+    ctx.beginPath();
+    ctx.arc(cx - r * 0.88, cy - r * 0.08, r * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + r * 0.88, cy - r * 0.08, r * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+
+    this._pgSnout(ctx, cx, cy, r);
+
+    // Sunglasses (two filled rects + bridge)
+    ctx.fillStyle = '#111827';
+    const sgY = cy - r * 0.14, sgH = r * 0.21, sgW = r * 0.36;
+    ctx.fillRect(cx - r * 0.54, sgY - sgH / 2, sgW, sgH);
+    ctx.fillRect(cx + r * 0.18, sgY - sgH / 2, sgW, sgH);
+    ctx.strokeStyle = '#111827';
+    ctx.lineWidth = Math.max(1, r * 0.06);
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.18, sgY);
+    ctx.lineTo(cx + r * 0.18, sgY);
+    ctx.stroke();
+
+    // Smirk
+    ctx.strokeStyle = '#14532d';
+    ctx.lineWidth = Math.max(1.5, r * 0.07);
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.08, cy + r * 0.5);
+    ctx.quadraticCurveTo(cx + r * 0.15, cy + r * 0.42, cx + r * 0.28, cy + r * 0.48);
+    ctx.stroke();
+
+    if (dead) {
+      this._pgEyes(ctx, cx, cy, r, true);
+      this._pgTongue(ctx, cx, cy, r);
+    }
+  }
+
+  _drawWhistlePig(ctx, cx, cy, r, bodyColor, dead) {
+    this._pgBody(ctx, cx, cy, r, bodyColor);
+
+    // Red coach cap
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.88, Math.PI * 1.1, Math.PI * 1.9);
+    ctx.closePath();
+    ctx.fill();
+    // White brim
+    ctx.fillStyle = '#f9fafb';
+    ctx.fillRect(cx - r * 0.08, cy - r * 0.38, r * 0.72, r * 0.11);
+
+    // Lanyard string
+    ctx.strokeStyle = '#fef3c7';
+    ctx.lineWidth = Math.max(1, r * 0.05);
+    ctx.beginPath();
+    ctx.moveTo(cx - r * 0.08, cy + r * 0.15);
+    ctx.quadraticCurveTo(cx + r * 0.1, cy + r * 0.32, cx + r * 0.26, cy + r * 0.5);
+    ctx.stroke();
+
+    // Whistle body
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(cx + r * 0.26, cy + r * 0.5, r * 0.13, 0, Math.PI * 2);
+    ctx.fill();
+    // Whistle mouthpiece
+    ctx.fillRect(cx + r * 0.37, cy + r * 0.46, r * 0.11, r * 0.06);
+
+    if (!dead) this._pgAngryBrows(ctx, cx, cy, r);
+    this._pgEyes(ctx, cx, cy, r, dead);
+    this._pgSnout(ctx, cx, cy, r);
+
+    // Shouting mouth
+    if (!dead) {
+      ctx.fillStyle = '#7f1d1d';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + r * 0.5, r * 0.15, r * 0.11, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (dead) this._pgTongue(ctx, cx, cy, r);
+  }
+
+  _drawKingPig(ctx, cx, cy, r, bodyColor, dead) {
+    // Purple cape peeking behind (drawn first)
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.arc(cx, cy + r * 0.3, r * 1.12, 0, Math.PI * 2);
+    ctx.fill();
+
+    this._pgBody(ctx, cx, cy, r, bodyColor);
+
+    // Gold crown (3 triangular points) — kept below HP dot zone (cy - r - 10)
+    ctx.fillStyle = '#fbbf24';
+    const cb = cy - r * 0.72;
+    const cw = r * 0.68, ch = r * 0.32;
+    ctx.beginPath();
+    ctx.moveTo(cx - cw * 0.5, cb);
+    ctx.lineTo(cx - cw * 0.5, cb - ch * 0.45);
+    ctx.lineTo(cx - cw * 0.16, cb - ch * 0.45);
+    ctx.lineTo(cx, cb - ch);
+    ctx.lineTo(cx + cw * 0.16, cb - ch * 0.45);
+    ctx.lineTo(cx + cw * 0.5, cb - ch * 0.45);
+    ctx.lineTo(cx + cw * 0.5, cb);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = Math.max(1, r * 0.06);
+    ctx.stroke();
+
+    // Sneering expression (left brow raised, right brow flat-angry)
+    if (!dead) {
+      const ey = cy - r * 0.1;
+      ctx.strokeStyle = '#14532d';
+      ctx.lineWidth = Math.max(1.5, r * 0.08);
+      ctx.beginPath();
+      ctx.moveTo(cx - r * 0.44, ey - r * 0.26);
+      ctx.lineTo(cx - r * 0.14, ey - r * 0.14);
+      ctx.moveTo(cx + r * 0.14, ey - r * 0.28);
+      ctx.lineTo(cx + r * 0.44, ey - r * 0.18);
+      ctx.stroke();
+    }
+
+    this._pgEyes(ctx, cx, cy, r, dead);
+    this._pgSnout(ctx, cx, cy, r);
+    if (dead) this._pgTongue(ctx, cx, cy, r);
   }
 
   // ── Launcher ─────────────────────────────────────────────────────────────────
