@@ -249,6 +249,7 @@ export class GameController {
     this.session.gameState = 'flying';
     this.session.flyFrame = 0;
     this.session.trail = [];
+    this.session._shotHitAlive = false; // track if we hit a still-alive target this shot
     this.ui.setControlsEnabled(false);
 
     this.sound.playLaunch();
@@ -302,6 +303,7 @@ export class GameController {
             if (!prevInTarget.has(t.id)) {
               // Ball just entered this target — register one hit
               this.session.recordHit(t.id);
+              if (this.session.targetHP[t.id] > 0) this.session._shotHitAlive = true;
               this.sound.playHit();
               if (t.pigType === 'whistle' && !t.hasSpawned) {
                 t.hasSpawned = true;
@@ -443,6 +445,25 @@ export class GameController {
 
     // All shots done — evaluate final result
     const allHit = session.allTargetsHit();
+    const hasAliveTargets = session.config.targets.some(t => (session.targetHP[t.id] ?? t.hp ?? 1) > 0);
+
+    // If we hit a multi-HP target (damaged but not killed), let the player fire again.
+    // This only applies to single-shot levels — multi-shot has its own flow.
+    // Don't re-fire on a complete miss (hit nothing at all).
+    if (!allHit && hasAliveTargets && session._shotHitAlive && !session.isMultiShot) {
+      session.gameState = 'idle';
+      session.arcPoints = [];
+      session.trail = [];
+      session.flyFrame = 0;
+      session.bounceFrames = [];
+      session.bouncePoints = [];
+      this.ui.setControlsEnabled(true);
+      this._rebuildArc();
+      this.renderer.draw(session);
+      if (session.hasMovingTargets || session.timerSeconds !== null) this._startLoop();
+      return;
+    }
+
     session.gameState = allHit ? 'hit' : 'miss';
     this.renderer.draw(session);
 
