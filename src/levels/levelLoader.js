@@ -49,8 +49,9 @@ export function globalIndexOf(chapter, levelInChapter) {
 }
 
 export function isChapterLocked(chapterNum, progress) {
-  if (!isChapterProgressionUnlocked(chapterNum, progress, CHAPTERS)) return true;
-  if (PREMIUM_CHAPTERS.includes(chapterNum) && !progress.isPremium) return true;
+  // Demo mode: all chapters unlocked
+  // if (!isChapterProgressionUnlocked(chapterNum, progress, CHAPTERS)) return true;
+  // if (PREMIUM_CHAPTERS.includes(chapterNum) && !progress.isPremium) return true;
   return false;
 }
 
