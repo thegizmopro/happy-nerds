@@ -416,14 +416,13 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 
 ## Phase 8: Deploy & Monetization
 
-### E-49: Production build & deploy ❌
-- **What to build**:
-  1. Test `vite build` output
-  2. Deploy to Vercel or Netlify (one-click, free tier)
-  3. Custom domain if desired (happynerds.game or similar)
-  4. HTTPS, meta tags, social share image
-- **Depends on**: E-14, E-21, E-34, E-38
-- **Files**: `vite.config.js`, new `vercel.json` or `netlify.toml`
+### E-49: Production build & deploy ✅
+- **Built**: Vite production build with /happy-nerds/ base path
+- Deployed to GitHub Pages via gh-pages branch
+- Live at https://thegizmopro.github.io/happy-nerds/
+- Build: 100.6KB JS + 7.6KB CSS
+- npm run deploy script for future deploys
+- **Files**: `vite.config.js`, `package.json`, `index.html`
 
 ### E-50: Paywall integration ❌
 - **Current state**: static "coming soon" card
