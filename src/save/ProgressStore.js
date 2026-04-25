@@ -3,7 +3,7 @@ const KEY = 'happynerds_v1';
 const DEFAULTS = {
   stars: [],          // number[] indexed by global level index (0-74)
   revealsSeen: [],    // string[] of conceptIds already shown
-  unlocked: false,    // premium unlock
+  isPremium: false,   // premium unlock
   currentLevel: 0,   // last level played
   volume: 70,         // master volume 0-100
   muted: false,       // mute toggle
@@ -48,9 +48,14 @@ export function getStars(progress, levelIndex) {
 }
 
 export function isChapterUnlocked(chapterNum, progress) {
-  const { PREMIUM_CHAPTER_START } = { PREMIUM_CHAPTER_START: 4 };
+  const PREMIUM_CHAPTER_START = 4;
   if (chapterNum < PREMIUM_CHAPTER_START) return true;
-  return progress.unlocked;
+  return progress.isPremium;
+}
+
+export function purchasePremium(progress) {
+  progress.isPremium = true;
+  saveProgress(progress);
 }
 
 export function isChapterProgressionUnlocked(chapterNum, progress, chapters) {

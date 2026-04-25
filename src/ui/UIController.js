@@ -1,5 +1,5 @@
-import { CHAPTERS, getChapterForLevel, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
-import { getStars, isChapterProgressionUnlocked } from '../save/ProgressStore.js';
+import { CHAPTERS, getChapterForLevel, totalLevels, isChapterLocked, PREMIUM_CHAPTERS, getLockReason } from '../levels/levelLoader.js';
+import { getStars, isChapterProgressionUnlocked, purchasePremium } from '../save/ProgressStore.js';
 import { formatEquation } from '../core/equation.js';
 import { COEFF_COLORS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
@@ -283,20 +283,28 @@ export class UIController {
     });
   }
 
-  // ─── Paywall ──────────────────────────────────────────────────────────────────
+  // ─── Premium Modal ────────────────────────────────────────────────────────────
 
-  showPaywall(chapterNum) {
+  _showPremiumModal() {
     const el = this._refs.paywall;
     el.innerHTML = `
-      <div id="paywall-card">
-        <div class="paywall-title">Chapter ${chapterNum} — Premium</div>
-        <div class="paywall-body">Chapters 4–8 cover factored form, standard form, multi-shot, and cubic functions.</div>
-        <div class="paywall-price">$4.99 — coming soon</div>
-        <button id="btn-paywall-back">← Back</button>
+      <div class="premium-modal">
+        <div class="premium-modal-title">Unlock Full Curriculum</div>
+        <div class="premium-modal-body">Chapters 1–3 teach the basics. Chapters 4–7 unlock advanced math — factored form, standard form, multi-shot strategy, and cubic functions. Support the nerds and level up!</div>
+        <button class="premium-buy">Unlock — $4.99</button>
+        <button class="premium-dismiss">Maybe Later</button>
       </div>
     `;
     el.classList.remove('hidden');
-    el.querySelector('#btn-paywall-back').addEventListener('click', () => el.classList.add('hidden'));
+    el.querySelector('.premium-buy').addEventListener('click', () => {
+      purchasePremium(this._currentProgress);
+      el.classList.add('hidden');
+      this._renderLevelSelect(this._currentProgress);
+    });
+    el.querySelector('.premium-dismiss').addEventListener('click', () => el.classList.add('hidden'));
+    el.addEventListener('click', e => {
+      if (e.target === el) el.classList.add('hidden');
+    }, { once: true });
   }
 
   // ─── Level Select ─────────────────────────────────────────────────────────────
@@ -308,6 +316,7 @@ export class UIController {
   }
 
   _renderLevelSelect(progress = {}) {
+    this._currentProgress = progress;
     const el = this._refs.levelSelect;
     let offset = 0;
     el.innerHTML = `<div id="ls-inner">
@@ -315,24 +324,35 @@ export class UIController {
       <h2>Level Select</h2>
       ${CHAPTERS.map(ch => {
         const locked = isChapterLocked(ch.num, progress);
-        let lockReason = '';
-        if (locked) {
-          lockReason = isChapterProgressionUnlocked(ch.num, progress, CHAPTERS)
-            ? 'Premium content — unlock to play'
-            : `Complete Chapter ${ch.num - 1} to unlock`;
+        const progressionMet = isChapterProgressionUnlocked(ch.num, progress, CHAPTERS);
+        const isPremiumLocked = locked && progressionMet && PREMIUM_CHAPTERS.includes(ch.num) && !progress.isPremium;
+        const isProgressionLocked = locked && !progressionMet;
+        const lockReason = locked ? getLockReason(ch.num, progress) : '';
+
+        let chHTML;
+        if (isProgressionLocked) {
+          chHTML = `<div class="ls-lock-info">🔒 ${lockReason}</div>`;
+        } else if (isPremiumLocked) {
+          chHTML = `<div class="ls-lock-info premium-lock-info">🔒 Premium — tap to unlock</div>`;
+        } else {
+          chHTML = ch.levels.map((lvl, i) => {
+            const gi = offset + i;
+            const s = getStars(progress, gi) || 0;
+            return `<button class="ls-level-btn" data-idx="${gi}" title="${lvl.title}">
+              <span class="ls-lvl-num">${i + 1}</span>
+              <span class="ls-stars">${starStr(s)}</span>
+            </button>`;
+          }).join('');
         }
-        const chHTML = locked
-          ? `<div class="ls-lock-info">🔒 ${lockReason}</div>`
-          : ch.levels.map((lvl, i) => {
-              const gi = offset + i;
-              const s = getStars(progress, gi) || 0;
-              return `<button class="ls-level-btn" data-idx="${gi}" title="${lvl.title}">
-                <span class="ls-lvl-num">${i + 1}</span>
-                <span class="ls-stars">${starStr(s)}</span>
-              </button>`;
-            }).join('');
         offset += ch.levels.length;
-        return `<div class="ls-chapter${locked ? ' ls-chapter-locked' : ''}" ${locked ? `data-lock-reason="${lockReason}"` : ''}>
+
+        let cls = 'ls-chapter';
+        if (isProgressionLocked) cls += ' ls-chapter-locked';
+        if (isPremiumLocked)     cls += ' ls-chapter-premium-locked';
+
+        return `<div class="${cls}"
+          ${isProgressionLocked ? `data-lock-reason="${lockReason}"` : ''}
+          ${isPremiumLocked ? 'data-premium-locked="1"' : ''}>
           <div class="ls-chapter-title">Ch${ch.num}: ${ch.title}${locked ? ' 🔒' : ''}</div>
           <div class="ls-levels">${chHTML}</div>
         </div>`;
@@ -341,9 +361,10 @@ export class UIController {
 
     el.querySelector('#ls-close').addEventListener('click', () => el.classList.add('hidden'));
     el.querySelectorAll('.ls-chapter-locked').forEach(chDiv => {
-      chDiv.addEventListener('click', () => {
-        this._showToast(chDiv.dataset.lockReason);
-      });
+      chDiv.addEventListener('click', () => this._showToast(chDiv.dataset.lockReason));
+    });
+    el.querySelectorAll('.ls-chapter-premium-locked').forEach(chDiv => {
+      chDiv.addEventListener('click', () => this._showPremiumModal());
     });
     el.querySelectorAll('.ls-level-btn').forEach(btn => {
       btn.addEventListener('click', () => {

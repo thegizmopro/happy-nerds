@@ -121,21 +121,34 @@ button {
 }
 #btn-got-it:hover { background: #6d28d9; }
 
-/* ── Paywall ──────────────────────────────────────────────────── */
+/* ── Premium Modal ────────────────────────────────────────────── */
 #paywall-screen {
   position: fixed; inset: 0; background: rgba(0,0,0,0.85);
   display: flex; align-items: center; justify-content: center;
-  z-index: 100; padding: 16px;
+  z-index: 200; padding: 16px;
 }
-#paywall-card {
+.premium-modal {
   background: #0f172a; border: 2px solid #f59e0b; border-radius: 12px;
   padding: 28px; max-width: 400px; width: 100%; text-align: center;
 }
-.paywall-title { font-size: 1.4rem; font-weight: bold; color: #f59e0b; margin-bottom: 10px; }
-.paywall-body  { color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
-.paywall-price { color: #4ade80; font-size: 1.1rem; font-weight: bold; margin-bottom: 18px; }
-#btn-paywall-back { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; }
-#btn-paywall-back:hover { background: #334155; }
+.premium-modal-title {
+  font-size: 1.4rem; font-weight: bold; color: #f59e0b; margin-bottom: 12px;
+}
+.premium-modal-body {
+  color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;
+}
+button.premium-buy {
+  display: block; width: 100%;
+  background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+  padding: 12px 20px; font-size: 1rem; font-weight: bold;
+  font-family: inherit; cursor: pointer; margin-bottom: 10px;
+}
+button.premium-buy:hover { background: #6d28d9; }
+button.premium-dismiss {
+  background: none; border: none; color: #64748b;
+  font-size: 0.85rem; font-family: inherit; cursor: pointer; padding: 4px;
+}
+button.premium-dismiss:hover { color: #94a3b8; }
 
 /* ── Level Select ─────────────────────────────────────────────── */
 #level-select-screen {
@@ -165,7 +178,10 @@ button {
 .ls-stars   { color: #f59e0b; font-size: 0.7rem; letter-spacing: 0.05em; }
 .ls-chapter-locked { opacity: 0.45; cursor: pointer; }
 .ls-chapter-locked .ls-chapter-title { color: #475569; }
+.ls-chapter-premium-locked { cursor: pointer; }
+.ls-chapter-premium-locked .ls-chapter-title { color: #f59e0b; }
 .ls-lock-info { font-size: 0.8rem; color: #64748b; padding: 4px 0; }
+.premium-lock-info { color: #f59e0b; font-weight: bold; }
 #toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
   background: #1e293b; color: #e2e8f0; padding: 10px 18px;
