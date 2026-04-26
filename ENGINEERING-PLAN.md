@@ -442,6 +442,18 @@ This is the formal programming plan derived from GAME-DESIGN.md, reconciled agai
 - **Scope**: 3-4 hours. New obstacle types (stacked, breakable), gravity fall animation, crush detection.
 - **Status**: Maybe later — get core game working solid first.
 
+### E-52: Sprite-based art upgrade
+- **Current**: Canvas 2D code art — limited, cartoon style hard to achieve, lacks color
+- **Target**: PNG sprite sheets for characters, targets, and backgrounds
+- **Approach**: AI-generate (Midjourney/DALL-E) or draw in Aseprite/Illustrator, then import as PNG sprites
+- **Scope**: Need sprite loader, animation frames (idle/hit/miss), chapter background images, 5 target types, 3 character types
+- **Status**: Next art pass after gameplay is solid
+
+### E-53: Nerd levitation fix
+- **Issue**: When k slider adjusts launch height, nerd floats above ground — needs a platform/stand visual
+- **Options**: Draw a small platform under the nerd, or add a ladder/stool, or restrict k so nerd stays on ground
+- **Status**: Fix when reworking k slider as launch height control
+
 ---
 
 ## Dependency Graph (Critical Path)
