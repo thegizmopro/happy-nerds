@@ -1,0 +1,35 @@
+Yes, there is a clean mathematical way to keep the left side of the arc (the launch point) fixed at the player’s character no matter what the user does with the sliders.
+The parabola is written in vertex form:
+$   y = a(x - h)^2 + k   $
+Assume the player’s character launches from a fixed point $  (x_l, y_l)  $ in the game world (e.g. the slingshot position). Right now the three sliders are completely independent, so changing $  a  $, $  h  $, or $  k  $ moves the entire curve and the launch point “detaches.”
+Simple fix: link $  k  $ to $  a  $ and $  h  $
+Whenever the user moves the a or h slider, instantly recompute $  k  $ so the parabola is forced to pass through $  (x_l, y_l)  $:
+$   k = y_l - a(x_l - h)^2   $
+
+The a slider still controls steepness/width (how “tight” or “wide” the arc is).
+The h slider still controls the horizontal position of the vertex (which changes the launch direction/angle).
+The k value is now automatically updated and displayed (it can be shown as a read-only number or a live “current value” label next to a disabled slider).
+
+Because the equation is always satisfied at $  x = x_l  $, the arc will always start exactly at the player’s character, no matter how wildly the user drags a or h. The target can still be hit by adjusting a and h until the curve lines up with the pig/structure.
+Why this is perfect for learning parabolas
+
+The player still gets full control over two independent parameters (a and h), which is exactly the right number of degrees of freedom for a parabola that must pass through one fixed point.
+They see k change in real time, so they naturally learn the relationship between vertex height, launch point, and the other variables.
+In the UI you can show the live equation:
+$   y = a(x - h)^2 + \bigl[y_l - a(x_l - h)^2\bigr]   $
+(or simplify it to $  y = a(x - h)^2 + k_{\text{auto}}  $) so students literally watch the math happen.
+
+If you really want an independent k slider too
+You can’t have three completely free sliders while keeping the launch point fixed — the math won’t allow it. Two options that still feel good:
+
+Make k control the launch height instead of the absolute vertex height. The player character’s y-position temporarily moves up/down with the k slider (like adjusting how high the slingshot is pulled), then snaps back when the bird is launched. Good for teaching vertical shift.
+Game mode toggle:
+“Free Explore” mode → all three sliders independent (shows what happens when the arc detaches).
+“Launch Mode” → k is linked as above (the real game mode).
+
+
+Quick implementation note
+In whatever engine you’re using (Unity, Godot, p5.js, etc.), just hook the slider onValueChanged events for a and h to this one line:
+pseudocodeCopyk = y_launch - a * (x_launch - h) * (x_launch - h)
+redrawParabola()
+That’s it — the arc will never separate again, and kids will still be able to play with every part of the quadratic while learning exactly how parabolas work.
