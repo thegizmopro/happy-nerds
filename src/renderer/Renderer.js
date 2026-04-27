@@ -203,14 +203,14 @@ export class Renderer {
       const hp = session.targetHP[t.id] ?? 1;
       const dead = hp <= 0;
 
-      // Fade out over 500ms on kill
+      // Fade out over 2000ms on kill
       let opacity = 1;
       if (dead) {
         const kt = session.killTime?.[t.id];
         if (kt) {
           const elapsed = now - kt;
-          if (elapsed >= 500) continue; // fully faded
-          opacity = 1 - elapsed / 500;
+          if (elapsed >= 2000) continue; // fully faded
+          opacity = 1 - elapsed / 2000;
         }
       }
 
@@ -303,7 +303,7 @@ export class Renderer {
     const img = this._sprites?.get(`${charName}_${stateName}`);
     if (!img) return;
 
-    const drawH = 50;
+    const drawH = 90;
     const drawW = drawH * (img.naturalWidth / img.naturalHeight);
     ctx.save();
     ctx.setLineDash([]);
