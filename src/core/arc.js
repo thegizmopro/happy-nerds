@@ -41,12 +41,15 @@ export function findLandingX(form, params, launcher, worldSpan) {
 // Returns arc points clipped at the first obstacle intersection.
 // If no obstacle is hit, returns the original array unchanged.
 // If session is provided, destroyed destructible blocks are skipped.
+// Destructible blocks are NOT clipped — the arc passes through them (damage is applied frame-by-frame).
 export function clipArcAtObstacle(arcPoints, obstacles, session) {
   if (!obstacles?.length) return arcPoints;
   let clipIdx = arcPoints.length; // sentinel: no clip
   for (const obs of obstacles) {
     // Skip destroyed destructible blocks
     if (session && obs.blockType && !session.isObstacleAlive(obs.id)) continue;
+    // Skip alive destructible blocks — arc passes through them (damage applied in animation)
+    if (obs.blockType) continue;
     const idx = findObstacleIntersection(arcPoints, obs);
     if (idx !== -1 && idx < clipIdx) clipIdx = idx;
   }

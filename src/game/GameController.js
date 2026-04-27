@@ -237,38 +237,9 @@ export class GameController {
     const fullArc = buildArcPoints(this.session.currentForm(), params, launcher, span, 300);
     const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles, this.session);
 
-    // Check if the arc hit a destructible block (the clip point is at a destructible block)
-    const lastArcPt = arcPts.length < fullArc.length ? arcPts[arcPts.length - 1] : null;
-    let hitDestructibleId = null;
-    if (lastArcPt) {
-      for (const obs of (cfg.obstacles || [])) {
-        if (!obs.blockType || !this.session.isObstacleAlive(obs.id)) continue;
-        if (lastArcPt.x >= obs.x && lastArcPt.x <= obs.x + obs.width &&
-            lastArcPt.y >= obs.y && lastArcPt.y <= obs.y + obs.height) {
-          hitDestructibleId = obs.id;
-          break;
-        }
-      }
-    }
-
-    // If arc hits a destructible block, damage it immediately and don't bounce
-    if (hitDestructibleId) {
-      const destroyed = this.session.hitObstacle(hitDestructibleId);
-      if (destroyed) {
-        const falling = this.session.getFallingSupports(hitDestructibleId);
-        for (const fb of falling) this.session.startFalling(fb);
-      }
-      this.session.hitObstacleId = hitDestructibleId;
-    }
-
-    // Build bounce segments — skip destructible blocks (they absorb the hit, no bounce)
-    const bounceObstacles = hitDestructibleId
-      ? (cfg.obstacles || []).filter(o => o.id !== hitDestructibleId)
-      : cfg.obstacles;
-    const bounceArcPts = clipArcAtObstacle(fullArc, bounceObstacles, this.session);
-
+    // Build bounce segments (up to 3 bounces off obstacles)
     const { allPts, bounceFrames, bouncePoints, finalHitObstacle } =
-      this._buildBounceArc(hitDestructibleId ? arcPts : bounceArcPts, fullArc, cfg);
+      this._buildBounceArc(arcPts, fullArc, cfg);
 
     this.session.arcPoints = allPts;
     this.session.bounceFrames = bounceFrames;
@@ -364,6 +335,22 @@ export class GameController {
           }
         }
         prevInTarget = inTargetNow;
+
+        // Check if ball hits a destructible block at this frame
+        for (const obs of (cfg.obstacles || [])) {
+          if (!obs.blockType || !this.session.isObstacleAlive(obs.id)) continue;
+          if (ballPt.x >= obs.x && ballPt.x <= obs.x + obs.width &&
+              ballPt.y >= obs.y && ballPt.y <= obs.y + obs.height) {
+            // Ball entered a destructible block — damage it
+            const destroyed = this.session.hitObstacle(obs.id);
+            if (destroyed) {
+              // Trigger cascade
+              const falling = this.session.getFallingSupports(obs.id);
+              for (const fb of falling) this.session.startFalling(fb);
+            }
+            break; // only one block hit per frame
+          }
+        }
       }
 
       prevFrame = newFrame + 1;

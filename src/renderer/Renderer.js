@@ -139,13 +139,11 @@ export class Renderer {
       ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(CANVAS_W, cy); ctx.stroke();
     }
 
-    // Ground line
+    // Ground line only (no dark fill — backgrounds handle it)
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 2;
     ctx.setLineDash([]);
     ctx.beginPath(); ctx.moveTo(0, groundCy); ctx.lineTo(CANVAS_W, groundCy); ctx.stroke();
-    ctx.fillStyle = 'rgba(8,10,16,0.75)';
-    ctx.fillRect(0, groundCy, CANVAS_W, CANVAS_H - groundCy);
   }
 
   // ── Obstacles ───────────────────────────────────────────────────────────────
