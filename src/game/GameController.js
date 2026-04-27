@@ -343,6 +343,7 @@ export class GameController {
               ballPt.y >= obs.y && ballPt.y <= obs.y + obs.height) {
             // Ball entered a destructible block — damage it
             const destroyed = this.session.hitObstacle(obs.id);
+            this.sound.playHit(); // block hit sound
             if (destroyed) {
               // Trigger cascade
               const falling = this.session.getFallingSupports(obs.id);

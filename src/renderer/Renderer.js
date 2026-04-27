@@ -139,10 +139,10 @@ export class Renderer {
       ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(CANVAS_W, cy); ctx.stroke();
     }
 
-    // Ground line only (no dark fill — backgrounds handle it)
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([]);
+    // Ground line (subtle, just for reference)
+    ctx.strokeStyle = 'rgba(100,116,139,0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
     ctx.beginPath(); ctx.moveTo(0, groundCy); ctx.lineTo(CANVAS_W, groundCy); ctx.stroke();
   }
 
