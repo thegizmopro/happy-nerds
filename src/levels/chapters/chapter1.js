@@ -64,7 +64,12 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     // exact a = (2.5-4.5)/(5-1)² = -2.0/16 = -0.125
     targets: [{ id: 'main', x: 5.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
-    obstacles: [], bonusRing: null,
+    obstacles: [
+      { id: 'b1', x: 4.2, y: 0.8, width: 0.5, height: 0.5, blockType: 'wood', hp: 2, supports: ['b3'] },
+      { id: 'b2', x: 5.5, y: 0.8, width: 0.5, height: 0.5, blockType: 'wood', hp: 2, supports: ['b3'] },
+      { id: 'b3', x: 4.2, y: 1.3, width: 1.8, height: 0.3, blockType: 'glass', hp: 1, supports: [] },
+    ],
+    bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
     hint: 'The target is on a shelf. The arc needs to still be high when it reaches x=5.',

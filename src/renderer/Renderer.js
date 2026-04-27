@@ -30,7 +30,7 @@ export class Renderer {
     ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
 
     this._drawBackground(cfg.launcher);
-    this._drawObstacles(cfg.obstacles);
+    this._drawObstacles(cfg.obstacles, session);
     this._drawBonusRing(cfg.bonusRing, session.bonusAchieved);
     this._drawTargets(cfg.targets, session);
 
@@ -150,27 +150,132 @@ export class Renderer {
 
   // ── Obstacles ───────────────────────────────────────────────────────────────
 
-  _drawObstacles(obstacles) {
+  _drawObstacles(obstacles, session) {
     if (!obstacles?.length) return;
     const ctx = this.ctx;
+    const now = Date.now();
     for (const obs of obstacles) {
+      // Skip destroyed blocks that aren't falling
+      if (obs.blockType && session && !session.isObstacleAlive(obs.id)) continue;
+      // Skip blocks currently falling (drawn separately)
+      if (obs.blockType && session?.fallingBlocks?.some(fb => fb.id === obs.id)) continue;
+
       const { cx: x1, cy: y1 } = w2c(obs.x, obs.y + obs.height);
       const pw = obs.width * SCALE;
       const ph = obs.height * SCALE;
-      ctx.fillStyle = '#374151';
-      ctx.fillRect(x1, y1, pw, ph);
-      ctx.strokeStyle = '#6b7280';
+
+      if (obs.blockType) {
+        this._drawBlock(ctx, obs, x1, y1, pw, ph, session);
+      } else {
+        // Original wall style
+        ctx.fillStyle = '#374151';
+        ctx.fillRect(x1, y1, pw, ph);
+        ctx.strokeStyle = '#6b7280';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.strokeRect(x1, y1, pw, ph);
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        for (let row = 0; row < obs.height * 2; row++) {
+          const rowY = y1 + row * (SCALE / 2);
+          const offset = (row % 2) * (SCALE / 2);
+          for (let bx = offset; bx < pw; bx += SCALE) {
+            ctx.strokeRect(x1 + bx, rowY, SCALE, SCALE / 2);
+          }
+        }
+      }
+    }
+
+    // Draw falling blocks
+    if (session?.fallingBlocks?.length) {
+      for (const fb of session.fallingBlocks) {
+        const { cx: fx, cy: fy } = w2c(fb.x, fb.currentY + fb.height);
+      const fw = fb.width * SCALE;
+      const fh = fb.height * SCALE;
+      ctx.globalAlpha = 0.8;
+      this._drawBlockByType(ctx, fb.blockType, fx, fy, fw, fh, 1);
+      ctx.globalAlpha = 1;
+    }
+    }
+  }
+
+  _drawBlock(ctx, obs, x, y, w, h, session) {
+    const maxHP = obs.hp ?? { glass: 1, wood: 2, stone: 3 }[obs.blockType] ?? 3;
+    const currentHP = session?.obstacleHP?.[obs.id] ?? maxHP;
+    const flashTime = session?.obstacleHitFlash?.[obs.id];
+    const flash = flashTime && (Date.now() - flashTime) < 200;
+
+    if (flash) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x, y, w, h);
+      return;
+    }
+
+    const healthRatio = currentHP / maxHP;
+    this._drawBlockByType(ctx, obs.blockType, x, y, w, h, healthRatio);
+
+    // Draw cracks if damaged
+    if (healthRatio < 1) {
+      ctx.strokeStyle = obs.blockType === 'glass' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([]);
+      const cx = x + w / 2, cy = y + h / 2;
+      // Diagonal crack lines
+      ctx.beginPath();
+      ctx.moveTo(cx - w * 0.3, cy - h * 0.2);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + w * 0.2, cy + h * 0.3);
+      ctx.stroke();
+      if (healthRatio < 0.5) {
+        ctx.beginPath();
+        ctx.moveTo(cx + w * 0.3, cy - h * 0.3);
+        ctx.lineTo(cx - w * 0.1, cy + h * 0.1);
+        ctx.lineTo(cx - w * 0.3, cy + h * 0.3);
+        ctx.stroke();
+      }
+    }
+  }
+
+  _drawBlockByType(ctx, blockType, x, y, w, h, healthRatio) {
+    if (blockType === 'glass') {
+      ctx.fillStyle = `rgba(147, 197, 253, ${0.4 + healthRatio * 0.3})`;
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = '#93c5fd';
       ctx.lineWidth = 2;
       ctx.setLineDash([]);
-      ctx.strokeRect(x1, y1, pw, ph);
-      // Brick pattern (simple)
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.strokeRect(x, y, w, h);
+      // Shine line
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.lineWidth = 1;
-      for (let row = 0; row < obs.height * 2; row++) {
-        const rowY = y1 + row * (SCALE / 2);
-        const offset = (row % 2) * (SCALE / 2);
-        for (let bx = offset; bx < pw; bx += SCALE) {
-          ctx.strokeRect(x1 + bx, rowY, SCALE, SCALE / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + 4, y + 4);
+      ctx.lineTo(x + 4, y + h - 4);
+      ctx.stroke();
+    } else if (blockType === 'wood') {
+      ctx.fillStyle = healthRatio > 0.5 ? '#92400e' : '#78350f';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = '#713f12';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.strokeRect(x, y, w, h);
+      // Wood grain lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      for (let gy = y + 8; gy < y + h - 4; gy += 10) {
+        ctx.beginPath(); ctx.moveTo(x + 4, gy); ctx.lineTo(x + w - 4, gy); ctx.stroke();
+      }
+    } else if (blockType === 'stone') {
+      ctx.fillStyle = healthRatio > 0.5 ? '#6b7280' : '#4b5563';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.strokeRect(x, y, w, h);
+      // Stone texture dots
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      for (let dx = 6; dx < w - 4; dx += 12) {
+        for (let dy = 6; dy < h - 4; dy += 10) {
+          ctx.fillRect(x + dx, y + dy, 3, 3);
         }
       }
     }

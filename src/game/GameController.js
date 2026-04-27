@@ -124,7 +124,7 @@ export class GameController {
     const params = this.session.getEffectiveParams();
     const span = WORLD_W - launcher.x;
     const fullArc = buildArcPoints(config.equationForm, params, launcher, span);
-    this.session.arcPoints = clipArcAtObstacle(fullArc, config.obstacles);
+    this.session.arcPoints = clipArcAtObstacle(fullArc, config.obstacles, this.session);
   }
 
   _activeContext() {
@@ -235,7 +235,7 @@ export class GameController {
     const span = WORLD_W - launcher.x;
 
     const fullArc = buildArcPoints(this.session.currentForm(), params, launcher, span, 300);
-    const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles);
+    const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles, this.session);
 
     // Build bounce segments (up to 3 bounces off obstacles)
     const { allPts, bounceFrames, bouncePoints, finalHitObstacle } =
@@ -285,6 +285,26 @@ export class GameController {
     // Track which targets the ball was inside last frame to register one hit per entry
     let prevInTarget = new Set();
     this._animating = true;
+
+    // Detect which destructible block the arc hits (if any)
+    const lastPt = arcPts[arcPts.length - 1];
+    const hitDestructible = lastPt && (cfg.obstacles || []).find(obs =>
+      obs.blockType && this.session.isObstacleAlive(obs.id) &&
+      lastPt.x >= obs.x && lastPt.x <= obs.x + obs.width &&
+      lastPt.y >= obs.y && lastPt.y <= obs.y + obs.height
+    );
+    if (hitDestructible) {
+      const destroyed = this.session.hitObstacle(hitDestructible.id);
+      if (destroyed) {
+        // Blocks above may fall
+        const falling = this.session.getFallingSupports(hitDestructible.id);
+        for (const fb of falling) this.session.startFalling(fb);
+        // Rebuild arc — destroyed block no longer clips
+        const newFullArc = buildArcPoints(this.session.currentForm(), this.session.getEffectiveParams(), cfg.launcher, WORLD_W - cfg.launcher.x, 300);
+        const newArcPts = clipArcAtObstacle(newFullArc, cfg.obstacles, this.session);
+        // TODO: could extend arc past destroyed block, but for now the arc stops at the destruction point
+      }
+    }
 
     const step = (ts) => {
       if (!startTime) startTime = ts;
@@ -346,6 +366,8 @@ export class GameController {
         this._rafId = requestAnimationFrame(step);
       } else {
         this._animating = false;
+        // Run falling block simulation
+        this._simulateFalling();
         this._onLaunchComplete(targetIds);
       }
     };
@@ -525,15 +547,29 @@ export class GameController {
   }
 
   _startKillFadeLoop() {
-    const FADE_MS = 500;
+    const FADE_MS = 2000;
     const session = this.session;
     const start = performance.now();
     const fade = (ts) => {
       if (ts - start >= FADE_MS) return;
+      // Update falling blocks
+      const dt = 0.016; // ~60fps
+      session.updateFalling(dt);
       this.renderer.draw(session);
       requestAnimationFrame(fade);
     };
     requestAnimationFrame(fade);
+  }
+
+  _simulateFalling() {
+    // Run falling blocks until they settle (max 2 seconds)
+    const MAX_TIME = 2.0;
+    const dt = 0.016;
+    let elapsed = 0;
+    while (this.session.hasFallingBlocks() && elapsed < MAX_TIME) {
+      this.session.updateFalling(dt);
+      elapsed += dt;
+    }
   }
 
   // ─── Actions ───────────────────────────────────────────────────────────────
