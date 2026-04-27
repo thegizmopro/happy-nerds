@@ -10,14 +10,13 @@ const stdSliders = {
   h: { min: 1.0,  max: 8.0,  step: 0.1  },
 };
 
-function shot(label, targetIds, defaults) {
+function shot(label, defaults) {
   return {
     label,
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h'],
     sliderConfig: stdSliders,
     defaultParams: { ...defaults, k: 0 },
-    targetIds,
   };
 }
 
@@ -34,8 +33,8 @@ export const CHAPTER_6 = [
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['left'],  { a: -0.20, h: 2.5 }),
-        shot('Shot 2', ['right'], { a: -0.08, h: 5.5 }),
+        shot('Shot 1', { a: -0.20, h: 2.5 }),
+        shot('Shot 2', { a: -0.08, h: 5.5 }),
       ],
     },
     targets: [
@@ -57,11 +56,12 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 2,
+      shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['high'],  { a: -0.12, h: 3.0 }),
-        shot('Shot 2', ['low'],   { a: -0.20, h: 4.0 }),
+        shot('Shot 1', { a: -0.12, h: 3.0 }),
+        shot('Shot 2', { a: -0.14, h: 3.5 }),
+        shot('Shot 3', { a: -0.20, h: 4.0 }),
       ],
     },
     targets: [
@@ -83,11 +83,13 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.18, h: 3.5, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 2,
+      shotCount: 4,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1 (clear)', ['blocker'], { a: -0.25, h: 2.5 }),
-        shot('Shot 2 (target)', ['main'],   { a: -0.10, h: 5.0 }),
+        shot('Shot 1', { a: -0.25, h: 2.5 }),
+        shot('Shot 2', { a: -0.20, h: 3.0 }),
+        shot('Shot 3', { a: -0.10, h: 5.0 }),
+        shot('Shot 4', { a: -0.08, h: 5.5 }),
       ],
     },
     targets: [
@@ -113,9 +115,9 @@ export const CHAPTER_6 = [
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['t1'], { a: -0.35, h: 1.5 }),
-        shot('Shot 2', ['t2'], { a: -0.15, h: 3.5 }),
-        shot('Shot 3', ['t3'], { a: -0.07, h: 6.0 }),
+        shot('Shot 1', { a: -0.35, h: 1.5 }),
+        shot('Shot 2', { a: -0.15, h: 3.5 }),
+        shot('Shot 3', { a: -0.07, h: 6.0 }),
       ],
     },
     targets: [
@@ -138,11 +140,12 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 2,
+      shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['moving'], { a: -0.18, h: 3.5 }),
-        shot('Shot 2', ['static'], { a: -0.10, h: 5.5 }),
+        shot('Shot 1', { a: -0.18, h: 3.5 }),
+        shot('Shot 2', { a: -0.12, h: 5.0 }),
+        shot('Shot 3', { a: -0.10, h: 5.5 }),
       ],
     },
     targets: [
@@ -164,11 +167,14 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.18, h: 3.5, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 2,
+      shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['t1'], { a: -0.22, h: 2.5 }),
-        shot('Shot 2', ['t2'], { a: -0.12, h: 5.5 }),
+        shot('Shot 1', { a: -0.22, h: 2.5 }),
+        shot('Shot 2', { a: -0.20, h: 3.0 }),
+        shot('Shot 3', { a: -0.12, h: 5.5 }),
+        shot('Shot 4', { a: -0.10, h: 5.0 }),
+        shot('Shot 5', { a: -0.08, h: 5.5 }),
       ],
     },
     targets: [
@@ -194,11 +200,14 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 2,
+      shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1 (guard)', ['guard'], { a: -0.30, h: 2.0 }),
-        shot('Shot 2 (king)',  ['king'],  { a: -0.09, h: 5.5 }),
+        shot('Shot 1', { a: -0.30, h: 2.0 }),
+        shot('Shot 2', { a: -0.25, h: 2.5 }),
+        shot('Shot 3', { a: -0.09, h: 5.5 }),
+        shot('Shot 4', { a: -0.08, h: 5.0 }),
+        shot('Shot 5', { a: -0.07, h: 5.5 }),
       ],
     },
     targets: [
@@ -224,8 +233,8 @@ export const CHAPTER_6 = [
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['t1'], { a: -0.20, h: 2.5 }),
-        shot('Shot 2', ['t2'], { a: -0.10, h: 5.0 }),
+        shot('Shot 1', { a: -0.20, h: 2.5 }),
+        shot('Shot 2', { a: -0.10, h: 5.0 }),
       ],
     },
     targets: [
@@ -248,12 +257,14 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.18, h: 3.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 3,
+      shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['t1'], { a: -0.28, h: 1.5 }),
-        shot('Shot 2', ['t2'], { a: -0.14, h: 3.5 }),
-        shot('Shot 3', ['t3'], { a: -0.07, h: 6.5 }),
+        shot('Shot 1', { a: -0.28, h: 1.5 }),
+        shot('Shot 2', { a: -0.20, h: 2.0 }),
+        shot('Shot 3', { a: -0.14, h: 3.5 }),
+        shot('Shot 4', { a: -0.09, h: 6.5 }),
+        shot('Shot 5', { a: -0.07, h: 6.0 }),
       ],
     },
     targets: [
@@ -277,12 +288,15 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 3,
+      shotCount: 6,
       sequenceMode: 'sequential',
       shots: [
-        shot('Shot 1', ['m1'],  { a: -0.30, h: 2.0 }),
-        shot('Shot 2', ['m2'],  { a: -0.16, h: 4.0 }),
-        shot('Shot 3', ['king'],{ a: -0.07, h: 6.0 }),
+        shot('Shot 1', { a: -0.30, h: 2.0 }),
+        shot('Shot 2', { a: -0.16, h: 4.0 }),
+        shot('Shot 3', { a: -0.14, h: 4.5 }),
+        shot('Shot 4', { a: -0.09, h: 6.0 }),
+        shot('Shot 5', { a: -0.07, h: 5.5 }),
+        shot('Shot 6', { a: -0.06, h: 6.0 }),
       ],
     },
     targets: [
@@ -297,7 +311,7 @@ export const CHAPTER_6 = [
     bonusRing: null,
     starThresholds: [6, 14], starMode: 'moves',
     revealAfter: null,
-    hint: 'Whistle Pig → elevated Letterman → King. Three shots, two walls. Calculate carefully.',
+    hint: 'Whistle Pig → elevated Letterman → King. Multiple shots, two walls. Calculate carefully.',
     theme: THEME,
   },
 ];

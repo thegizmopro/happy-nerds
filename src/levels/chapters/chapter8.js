@@ -22,11 +22,12 @@ export const CHAPTER_8 = [
       { id: 't2', x: 8.0, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null },
     ],
     multiShot: {
-      shotCount: 2,
+      shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.25, h:2.5, k:0 }, targetIds: ['t1'] },
-        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.12, h:5.5, k:0 }, targetIds: ['t2'] },
+        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.25, h:2.5, k:0 } },
+        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.12, h:5.5, k:0 } },
+        { label: 'Shot 3', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.15, h:6.0, k:0 } },
       ],
     },
     obstacles: [], bonusRing: null,
@@ -76,9 +77,9 @@ export const CHAPTER_8 = [
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.30, h:2.0, k:0 }, targetIds: ['m1'] },
-        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.15, h:4.0, k:0 }, targetIds: ['m2'] },
-        { label: 'Shot 3', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.07, h:6.5, k:0 }, targetIds: ['m3'] },
+        { label: 'Shot 1', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.30, h:2.0, k:0 } },
+        { label: 'Shot 2', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.15, h:4.0, k:0 } },
+        { label: 'Shot 3', equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.07, h:6.5, k:0 } },
       ],
     },
     targets: [
@@ -111,11 +112,12 @@ export const CHAPTER_8 = [
       { id: 't3', x: 9.0, y: 0.8, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null },
     ],
     multiShot: {
-      shotCount: 2,
+      shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
-        { label: 'Shot 1', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.15, r1:0, r2:7.0 }, targetIds: ['t1','t3'] },
-        { label: 'Shot 2', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.18, h:3.5, k:0 }, targetIds: ['t2'] },
+        { label: 'Shot 1', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.15, r1:0, r2:7.0 } },
+        { label: 'Shot 2', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.18, h:3.5, k:0 } },
+        { label: 'Shot 3', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.12, h:6.0, k:0 } },
       ],
     },
     obstacles: [{ id: 'w', x: 5.0, y: 0.8, width: 0.4, height: 2.5 }],
@@ -139,12 +141,14 @@ export const CHAPTER_8 = [
     launcher: LAUNCHER,
     timer: { seconds: 120 },
     multiShot: {
-      shotCount: 3,
+      shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
-        { label: 'Shot 1', equationForm: 'standard', activeCoefficients: ['a','b','c'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05} }, defaultParams: { a:-0.20, b:1.5, c:0 }, targetIds: ['t1','t2'] },
-        { label: 'Shot 2', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.10, h:5.5, k:0 }, targetIds: ['t3'] },
-        { label: 'Shot 3', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.10, r1:0, r2:9.0 }, targetIds: ['king'] },
+        { label: 'Shot 1', equationForm: 'standard', activeCoefficients: ['a','b','c'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05} }, defaultParams: { a:-0.20, b:1.5, c:0 } },
+        { label: 'Shot 2', equationForm: 'standard', activeCoefficients: ['a','b','c'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05} }, defaultParams: { a:-0.15, b:2.0, c:0 } },
+        { label: 'Shot 3', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.10, h:5.5, k:0 } },
+        { label: 'Shot 4', equationForm: 'vertex',   activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a:-0.12, h:7.0, k:0 } },
+        { label: 'Shot 5', equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a:-0.10, r1:0, r2:9.0 } },
       ],
     },
     targets: [
