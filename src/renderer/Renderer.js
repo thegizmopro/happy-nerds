@@ -154,20 +154,13 @@ export class Renderer {
     if (!obstacles?.length) return;
     const ctx = this.ctx;
     const now = Date.now();
+
     for (const obs of obstacles) {
-      // Skip destroyed blocks that aren't falling
-      if (obs.blockType && session && !session.isObstacleAlive(obs.id)) continue;
-      // Skip blocks currently falling (drawn separately)
-      if (obs.blockType && session?.fallingBlocks?.some(fb => fb.id === obs.id)) continue;
-
-      const { cx: x1, cy: y1 } = w2c(obs.x, obs.y + obs.height);
-      const pw = obs.width * SCALE;
-      const ph = obs.height * SCALE;
-
-      if (obs.blockType) {
-        this._drawBlock(ctx, obs, x1, y1, pw, ph, session);
-      } else {
-        // Original wall style
+      if (!obs.blockType) {
+        // Static wall — always draw
+        const { cx: x1, cy: y1 } = w2c(obs.x, obs.y + obs.height);
+        const pw = obs.width * SCALE;
+        const ph = obs.height * SCALE;
         ctx.fillStyle = '#374151';
         ctx.fillRect(x1, y1, pw, ph);
         ctx.strokeStyle = '#6b7280';
@@ -183,19 +176,46 @@ export class Renderer {
             ctx.strokeRect(x1 + bx, rowY, SCALE, SCALE / 2);
           }
         }
+        continue;
       }
+
+      // Destructible block
+      const isFalling = session?.fallingBlocks?.some(fb => fb.id === obs.id);
+      if (isFalling) continue; // drawn in falling-block pass below
+
+      const destroyedAt = session?.obstacleDestroyed?.[obs.id];
+      if (destroyedAt) {
+        // Brief white flash for 120ms after destruction
+        const elapsed = now - destroyedAt;
+        if (elapsed < 120) {
+          const { cx: x1, cy: y1 } = w2c(obs.x, obs.y + obs.height);
+          const pw = obs.width * SCALE, ph = obs.height * SCALE;
+          ctx.save();
+          ctx.globalAlpha = 1 - elapsed / 120;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(x1, y1, pw, ph);
+          ctx.restore();
+        }
+        continue; // fully gone after flash
+      }
+
+      const { cx: x1, cy: y1 } = w2c(obs.x, obs.y + obs.height);
+      const pw = obs.width * SCALE;
+      const ph = obs.height * SCALE;
+      this._drawBlock(ctx, obs, x1, y1, pw, ph, session);
     }
 
-    // Draw falling blocks
+    // Draw falling blocks at their animated Y position
     if (session?.fallingBlocks?.length) {
       for (const fb of session.fallingBlocks) {
         const { cx: fx, cy: fy } = w2c(fb.x, fb.currentY + fb.height);
-      const fw = fb.width * SCALE;
-      const fh = fb.height * SCALE;
-      ctx.globalAlpha = 0.8;
-      this._drawBlockByType(ctx, fb.blockType, fx, fy, fw, fh, 1);
-      ctx.globalAlpha = 1;
-    }
+        const fw = fb.width * SCALE;
+        const fh = fb.height * SCALE;
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        this._drawBlockByType(ctx, fb.blockType, fx, fy, fw, fh, 1);
+        ctx.restore();
+      }
     }
   }
 

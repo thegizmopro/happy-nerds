@@ -201,144 +201,124 @@ export class LevelSession {
 
   // ─── Destructible Blocks ─────────────────────────────────────────────────
 
+  // Returns true if the obstacle is still physically present (not destroyed).
+  // Non-destructible walls always return true.
   isObstacleAlive(id) {
-    return (this.obstacleHP[id] ?? Infinity) > 0;
+    if (this.obstacleHP[id] === undefined) return true; // wall, not a block
+    return this.obstacleHP[id] > 0 && !this.obstacleDestroyed[id];
   }
 
+  // Apply damage to a destructible block. Returns true if destroyed.
+  // Auto-triggers cascade (supported blocks start falling) on destruction.
   hitObstacle(id, damage = 1) {
-    if (this.obstacleHP[id] === undefined) return false; // not destructible
-    if (this.obstacleHP[id] <= 0) return false; // already dead
-    this.obstacleHP[id] -= damage;
-    if (this.obstacleHP[id] <= 0) {
+    if (this.obstacleHP[id] === undefined) return false; // not a block
+    if (!this.isObstacleAlive(id)) return false;
+    this.obstacleHitFlash[id] = Date.now();
+    this.obstacleHP[id] = Math.max(0, this.obstacleHP[id] - damage);
+    if (this.obstacleHP[id] === 0) {
       this.obstacleDestroyed[id] = Date.now();
-      this.obstacleHP[id] = 0;
-      return true; // destroyed
-    } else {
-      this.obstacleHitFlash[id] = Date.now();
-      return false; // damaged but alive
+      // Cascade: blocks this one was supporting may now fall
+      const toFall = this._getSupportedBlocks(id);
+      for (const obs of toFall) this._startFalling(obs);
+      return true;
     }
+    return false;
   }
 
-  getFallingSupports(destroyedId) {
-    // Find blocks that were supported by the destroyed block
-    const cfg = this.config;
-    const falling = [];
-    for (const obs of (cfg.obstacles || [])) {
-      if (!obs.supports || obs.id === destroyedId) continue;
-      if (!this.isObstacleAlive(obs.id)) continue;
-      if (obs.supports.includes(destroyedId)) {
-        // Check if this block has ANY other alive supports
-        const hasOtherSupport = obs.supports.some(
-          sid => sid !== destroyedId && this.isObstacleAlive(sid)
-        );
-        if (!hasOtherSupport) {
-          falling.push(obs);
-        }
-      }
+  // Find blocks that were supported by destroyedId and now have no other alive support.
+  _getSupportedBlocks(destroyedId) {
+    const destroyedObs = (this.config.obstacles || []).find(o => o.id === destroyedId);
+    if (!destroyedObs?.supports?.length) return [];
+
+    const result = [];
+    for (const supportedId of destroyedObs.supports) {
+      const supportedObs = (this.config.obstacles || []).find(o => o.id === supportedId);
+      if (!supportedObs || !this.isObstacleAlive(supportedId)) continue;
+      // Check if any OTHER alive block also supports this block
+      const hasOtherSupport = (this.config.obstacles || []).some(other => {
+        if (other.id === destroyedId) return false;
+        if (!this.isObstacleAlive(other.id)) return false;
+        return other.supports?.includes(supportedId);
+      });
+      if (!hasOtherSupport) result.push(supportedObs);
     }
-    return falling;
+    return result;
   }
 
-  startFalling(obs, groundY = 0.8) {
-    // Calculate where the block will land
-    let endY = groundY; // default: ground level
-    // Check if there's an alive obstacle below to land on
-    const cfg = this.config;
-    for (const other of (cfg.obstacles || [])) {
-      if (other.id === obs.id || !this.isObstacleAlive(other.id)) continue;
-      // Is this obstacle directly below?
-      const overlapX = obs.x < other.x + other.width && obs.x + obs.width > other.x;
-      if (overlapX && other.y + other.height <= obs.y && other.y + other.height > endY - obs.height) {
-        endY = other.y + other.height; // land on top of this obstacle
-      }
-    }
-
+  _startFalling(obs) {
+    if (!this.isObstacleAlive(obs.id)) return;
+    if (this.fallingBlocks.find(fb => fb.id === obs.id)) return; // already falling
+    // Mark as destroyed so the static drawing skips it
     this.obstacleHP[obs.id] = 0;
     this.obstacleDestroyed[obs.id] = Date.now();
-
+    // Find landing Y: top of nearest alive block directly below, or GROUND_Y
+    const GROUND_Y = 0.6;
+    let landY = GROUND_Y;
+    for (const other of (this.config.obstacles || [])) {
+      if (other.id === obs.id || !this.isObstacleAlive(other.id)) continue;
+      const xOverlap = obs.x < other.x + other.width && obs.x + other.width > other.x;
+      if (!xOverlap) continue;
+      const otherTop = other.y + other.height;
+      if (otherTop <= obs.y && otherTop > landY) landY = otherTop;
+    }
     this.fallingBlocks.push({
       id: obs.id,
       x: obs.x,
-      startY: obs.y,
-      endY: endY,
-      currentY: obs.y,
-      velocity: 0,
       width: obs.width,
       height: obs.height,
       blockType: obs.blockType,
-      damage: obs.hp ?? 2,
-      landed: false,
+      currentY: obs.y, // Y of block's bottom edge — falls DOWN (decreasing)
+      landY,           // target Y when block hits ground or another block
+      vy: 0,           // downward speed in world units/sec (increases over time)
     });
   }
 
+  // Advance falling blocks by dt seconds. Call each animation frame.
   updateFalling(dt) {
-    const GRAVITY = 15; // world units per second squared
-    const toRemove = [];
+    const GRAVITY = 18; // world units per second²
+    const settled = [];
 
     for (const fb of this.fallingBlocks) {
-      if (fb.landed) continue;
-      fb.velocity += GRAVITY * dt;
-      fb.currentY += fb.velocity * dt;
-      if (fb.currentY >= fb.endY) {
-        fb.currentY = fb.endY;
-        fb.landed = true;
-        fb.velocity = 0;
-        // Deal damage on landing
-        this._fallingBlockLand(fb);
+      fb.vy += GRAVITY * dt;          // speed increases as block accelerates
+      fb.currentY -= fb.vy * dt;      // Y decreases — block falls downward
+      if (fb.currentY <= fb.landY) {
+        fb.currentY = fb.landY;
+        settled.push(fb);
       }
     }
 
-    // Remove landed blocks after a short time
-    this.fallingBlocks = this.fallingBlocks.filter(fb => !fb.landed);
+    for (const fb of settled) {
+      this._onBlockLand(fb);
+      this.fallingBlocks = this.fallingBlocks.filter(b => b.id !== fb.id);
+    }
   }
 
-  _fallingBlockLand(fb) {
+  _onBlockLand(fb) {
     const cfg = this.config;
-    // Check if any target is at the landing spot
+    // Damage any target whose hitbox overlaps the block's landing position
     for (const t of cfg.targets) {
       if (this.targetsHit.has(t.id)) continue;
       const wt = this.getTargetWorld(t);
-      // Simple overlap check: block overlaps target circle
-      const blockLeft = fb.x;
-      const blockRight = fb.x + fb.width;
-      const blockBottom = fb.currentY;
-      const blockTop = fb.currentY + fb.height;
-      const closestX = Math.max(blockLeft, Math.min(wt.x, blockRight));
-      const closestY = Math.max(blockBottom, Math.min(wt.y, blockTop));
+      const closestX = Math.max(fb.x, Math.min(wt.x, fb.x + fb.width));
+      const closestY = Math.max(fb.landY, Math.min(wt.y, fb.landY + fb.height));
       const dist = Math.sqrt((wt.x - closestX) ** 2 + (wt.y - closestY) ** 2);
-      if (dist <= wt.radius) {
-        // Crush the target!
-        this.recordHit(t.id);
-      }
+      if (dist <= wt.radius) this.recordHit(t.id);
     }
-
-    // Check if any destructible obstacle is at the landing spot
+    // Damage any destructible obstacle at the landing position (cascade)
     for (const obs of (cfg.obstacles || [])) {
       if (obs.id === fb.id || !this.isObstacleAlive(obs.id)) continue;
-      const overlapX = fb.x < obs.x + obs.width && fb.x + fb.width > obs.x;
-      const landingOnTop = Math.abs(fb.currentY - (obs.y + obs.height)) < 0.1 && overlapX;
-      if (landingOnTop) {
-        // Falling block damages this obstacle
-        const destroyed = this.hitObstacle(obs.id, fb.damage);
-        if (destroyed) {
-          // Cascade: blocks supported by this one may also fall
-          const cascading = this.getFallingSupports(obs.id);
-          for (const co of cascading) {
-            this.startFalling(co);
-          }
-        }
+      const xOverlap = fb.x < obs.x + obs.width && fb.x + fb.width > obs.x;
+      if (xOverlap && Math.abs(fb.landY - (obs.y + obs.height)) < 0.05) {
+        this.hitObstacle(obs.id, 1); // cascade: hitObstacle will trigger further falls
       }
     }
   }
 
   hasFallingBlocks() {
-    return this.fallingBlocks.some(fb => !fb.landed);
+    return this.fallingBlocks.length > 0;
   }
 
   getAliveObstacles() {
-    return (this.config.obstacles || []).filter(obs => {
-      if (obs.blockType) return this.isObstacleAlive(obs.id);
-      return true; // non-destructible obstacles always alive
-    });
+    return (this.config.obstacles || []).filter(obs => this.isObstacleAlive(obs.id));
   }
 }

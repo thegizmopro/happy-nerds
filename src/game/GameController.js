@@ -237,9 +237,38 @@ export class GameController {
     const fullArc = buildArcPoints(this.session.currentForm(), params, launcher, span, 300);
     const arcPts = clipArcAtObstacle(fullArc, cfg.obstacles, this.session);
 
-    // Build bounce segments (up to 3 bounces off obstacles)
+    // Check if the arc hit a destructible block (the clip point is at a destructible block)
+    const lastArcPt = arcPts.length < fullArc.length ? arcPts[arcPts.length - 1] : null;
+    let hitDestructibleId = null;
+    if (lastArcPt) {
+      for (const obs of (cfg.obstacles || [])) {
+        if (!obs.blockType || !this.session.isObstacleAlive(obs.id)) continue;
+        if (lastArcPt.x >= obs.x && lastArcPt.x <= obs.x + obs.width &&
+            lastArcPt.y >= obs.y && lastArcPt.y <= obs.y + obs.height) {
+          hitDestructibleId = obs.id;
+          break;
+        }
+      }
+    }
+
+    // If arc hits a destructible block, damage it immediately and don't bounce
+    if (hitDestructibleId) {
+      const destroyed = this.session.hitObstacle(hitDestructibleId);
+      if (destroyed) {
+        const falling = this.session.getFallingSupports(hitDestructibleId);
+        for (const fb of falling) this.session.startFalling(fb);
+      }
+      this.session.hitObstacleId = hitDestructibleId;
+    }
+
+    // Build bounce segments — skip destructible blocks (they absorb the hit, no bounce)
+    const bounceObstacles = hitDestructibleId
+      ? (cfg.obstacles || []).filter(o => o.id !== hitDestructibleId)
+      : cfg.obstacles;
+    const bounceArcPts = clipArcAtObstacle(fullArc, bounceObstacles, this.session);
+
     const { allPts, bounceFrames, bouncePoints, finalHitObstacle } =
-      this._buildBounceArc(arcPts, fullArc, cfg);
+      this._buildBounceArc(hitDestructibleId ? arcPts : bounceArcPts, fullArc, cfg);
 
     this.session.arcPoints = allPts;
     this.session.bounceFrames = bounceFrames;
@@ -285,26 +314,6 @@ export class GameController {
     // Track which targets the ball was inside last frame to register one hit per entry
     let prevInTarget = new Set();
     this._animating = true;
-
-    // Detect which destructible block the arc hits (if any)
-    const lastPt = arcPts[arcPts.length - 1];
-    const hitDestructible = lastPt && (cfg.obstacles || []).find(obs =>
-      obs.blockType && this.session.isObstacleAlive(obs.id) &&
-      lastPt.x >= obs.x && lastPt.x <= obs.x + obs.width &&
-      lastPt.y >= obs.y && lastPt.y <= obs.y + obs.height
-    );
-    if (hitDestructible) {
-      const destroyed = this.session.hitObstacle(hitDestructible.id);
-      if (destroyed) {
-        // Blocks above may fall
-        const falling = this.session.getFallingSupports(hitDestructible.id);
-        for (const fb of falling) this.session.startFalling(fb);
-        // Rebuild arc — destroyed block no longer clips
-        const newFullArc = buildArcPoints(this.session.currentForm(), this.session.getEffectiveParams(), cfg.launcher, WORLD_W - cfg.launcher.x, 300);
-        const newArcPts = clipArcAtObstacle(newFullArc, cfg.obstacles, this.session);
-        // TODO: could extend arc past destroyed block, but for now the arc stops at the destruction point
-      }
-    }
 
     const step = (ts) => {
       if (!startTime) startTime = ts;
@@ -366,9 +375,25 @@ export class GameController {
         this._rafId = requestAnimationFrame(step);
       } else {
         this._animating = false;
-        // Run falling block simulation
-        this._simulateFalling();
-        this._onLaunchComplete(targetIds);
+        this._animateFalling(() => this._onLaunchComplete(targetIds));
+      }
+    };
+    this._rafId = requestAnimationFrame(step);
+  }
+
+  // Animate falling blocks frame-by-frame then call callback when all settled.
+  _animateFalling(callback) {
+    if (!this.session.hasFallingBlocks()) { callback(); return; }
+    let lastTs = null;
+    const step = (ts) => {
+      const dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.05) : 0;
+      lastTs = ts;
+      this.session.updateFalling(dt);
+      this.renderer.draw(this.session);
+      if (this.session.hasFallingBlocks()) {
+        this._rafId = requestAnimationFrame(step);
+      } else {
+        callback();
       }
     };
     this._rafId = requestAnimationFrame(step);
@@ -392,10 +417,12 @@ export class GameController {
       const prevPt = lastSegPts[lastIdx - 1];
       const prevPt2 = lastSegPts[lastIdx - 2];
 
-      const hitObs = (cfg.obstacles || []).find(obs =>
-        collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
-        collPt.y >= obs.y && collPt.y <= obs.y + obs.height
-      );
+      // Only bounce off non-block obstacles (walls). Blocks absorb/stop the arc.
+      const hitObs = (cfg.obstacles || []).find(obs => {
+        if (obs.blockType) return false;
+        return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
+               collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
+      });
       if (!hitObs) break;
 
       const { reflectX, reflectY } = detectBounceSurface(prevPt, hitObs);
@@ -438,6 +465,7 @@ export class GameController {
       if (x > WORLD_W + 1 || x < -1 || y < -3) break;
 
       for (const obs of (obstacles || [])) {
+        if (obs.blockType) continue; // blocks don't cause bounces
         if (x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
           hitObstacle = obs;
           break;
@@ -559,17 +587,6 @@ export class GameController {
       requestAnimationFrame(fade);
     };
     requestAnimationFrame(fade);
-  }
-
-  _simulateFalling() {
-    // Run falling blocks until they settle (max 2 seconds)
-    const MAX_TIME = 2.0;
-    const dt = 0.016;
-    let elapsed = 0;
-    while (this.session.hasFallingBlocks() && elapsed < MAX_TIME) {
-      this.session.updateFalling(dt);
-      elapsed += dt;
-    }
   }
 
   // ─── Actions ───────────────────────────────────────────────────────────────

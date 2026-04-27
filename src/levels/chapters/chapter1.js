@@ -103,11 +103,17 @@ export const CHAPTER_1 = [
     // Wall at world x=[3.8,4.2] y=[0.6,3.0]. Arc at local x=2.8: -0.1083*7.84+4.5=3.65>3.0 ✓
     // Default a=-0.22 at local x=2.8: -0.22*7.84+4.5=2.78<3.0 hits wall ✓
     targets: [{ id: 'main', x: 7.0, y: 0.6, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
-    obstacles: [{ id: 'wall1', x: 3.8, y: 0.6, width: 0.4, height: 2.4 }],
+    obstacles: [
+      { id: 'wall1', x: 3.8, y: 0.6, width: 0.4, height: 2.4 },
+      // Glass block shatters as the arc descends; the wood block above falls as rubble
+      // Solution arc (a≈-0.108) passes through x=6.2-6.7 at y≈1.6, within glass y=[1.2,1.8] ✓
+      { id: 'glass_l6', x: 6.2, y: 1.2, width: 0.5, height: 0.6, blockType: 'glass', hp: 1, supports: ['wood_l6'] },
+      { id: 'wood_l6',  x: 6.2, y: 1.8, width: 0.5, height: 0.5, blockType: 'wood',  hp: 2, supports: [] },
+    ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'There\'s a wall! A wide arc (less negative a) will clear it. Too narrow and you\'ll hit the wall.',
+    hint: 'There\'s a wall! A wide arc clears it. Watch the glass block shatter as the arc descends.',
     theme: THEME,
   },
   {
@@ -126,11 +132,15 @@ export const CHAPTER_1 = [
     obstacles: [
       { id: 'wall1', x: 3.0, y: 0.6, width: 0.4, height: 3.2 },
       { id: 'wall2', x: 5.8, y: 0.6, width: 0.4, height: 1.6 },
+      // Glass+stone tower between the two walls — solution arc (a≈-0.069) passes through at y≈3.5
+      // at localX=3.5 (worldX=4.5): worldY=4.5-0.069*12.25≈3.65, within glass y=[3.2,3.7] ✓
+      { id: 'glass_l7', x: 4.5, y: 3.2, width: 0.4, height: 0.5, blockType: 'glass', hp: 1, supports: ['stone_l7'] },
+      { id: 'stone_l7', x: 4.5, y: 3.7, width: 0.4, height: 0.4, blockType: 'stone', hp: 3, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Two walls at different heights. One value of a clears both — find it.',
+    hint: 'Two walls at different heights. One value of a clears both. Glass shatters on the way through!',
     theme: THEME,
   },
   {
