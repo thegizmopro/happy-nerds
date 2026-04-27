@@ -271,7 +271,7 @@ export class Renderer {
     const img = this._sprites?.get(`${name}_${dead ? 'dead' : 'alive'}`);
     if (!img) return;
 
-    const drawH = r * 2;
+    const drawH = r * 2.8;
     const drawW = drawH * (img.naturalWidth / img.naturalHeight);
 
     ctx.save();
@@ -303,7 +303,7 @@ export class Renderer {
     const img = this._sprites?.get(`${charName}_${stateName}`);
     if (!img) return;
 
-    const drawH = 90;
+    const drawH = 120;
     const drawW = drawH * (img.naturalWidth / img.naturalHeight);
     ctx.save();
     ctx.setLineDash([]);
