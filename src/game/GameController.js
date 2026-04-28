@@ -244,7 +244,7 @@ export class GameController {
     this.session.arcPoints = allPts;
     this.session.bounceFrames = bounceFrames;
     this.session.bouncePoints = bouncePoints;
-    this.session.hitObstacle = finalHitObstacle;
+    this.session.ballHitWall = finalHitObstacle;
 
     // Bonus ring — achievable pre- or post-bounce
     if (cfg.bonusRing && arcHitsTarget(allPts, cfg.bonusRing)) {
@@ -282,8 +282,9 @@ export class GameController {
     const cfg = this.session.config;
     let startTime = null;
     let prevFrame = 0;
-    // Track which targets the ball was inside last frame to register one hit per entry
+    // Track which targets/blocks the ball was inside last frame to register one hit per entry
     let prevInTarget = new Set();
+    let prevInBlock = new Set();
     this._animating = true;
 
     const step = (ts) => {
@@ -336,22 +337,22 @@ export class GameController {
         }
         prevInTarget = inTargetNow;
 
-        // Check if ball hits a destructible block at this frame
+        // Check if ball enters a destructible block at this frame (one hit per entry)
+        const inBlockNow = new Set();
         for (const obs of (cfg.obstacles || [])) {
           if (!obs.blockType || !this.session.isObstacleAlive(obs.id)) continue;
           if (ballPt.x >= obs.x && ballPt.x <= obs.x + obs.width &&
               ballPt.y >= obs.y && ballPt.y <= obs.y + obs.height) {
-            // Ball entered a destructible block — damage it
-            const destroyed = this.session.hitObstacle(obs.id);
-            this.sound.playHit(); // block hit sound
-            if (destroyed) {
-              // Trigger cascade
-              const falling = this.session.getFallingSupports(obs.id);
-              for (const fb of falling) this.session.startFalling(fb);
+            inBlockNow.add(obs.id);
+            if (!prevInBlock.has(obs.id)) {
+              // Ball just entered this block — one hit; cascade handled inside hitObstacle
+              this.session.hitObstacle(obs.id);
+              this.sound.playHit();
             }
-            break; // only one block hit per frame
+            break; // only one block checked per frame
           }
         }
+        prevInBlock = inBlockNow;
       }
 
       prevFrame = newFrame + 1;
@@ -518,11 +519,11 @@ export class GameController {
     // Drive kill-fade redraws (500ms) so fading pigs animate smoothly
     this._startKillFadeLoop();
 
-    if (!allHit && session.hitObstacle) this.sound.playObstacleSplat();
+    if (!allHit && session.ballHitWall) this.sound.playObstacleSplat();
     if (!allHit) this.sound.playMiss();
 
     if (!allHit) {
-      if (session.hitObstacle) {
+      if (session.ballHitWall) {
         this.renderer.showVoiceBubble(randomFrom(BLOCK_LINES));
       } else {
         this.renderer.showVoiceBubble(randomFrom(MISS_LINES));
