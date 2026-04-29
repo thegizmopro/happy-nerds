@@ -8,6 +8,15 @@
 
 ## Implementation Status
 
+### ⚠️ MANDATORY: Build After Every Level Change
+The game runs from `dist/` (built bundle), NOT from `src/`. After editing ANY level file:
+```
+npm run build
+git add -A && git commit -m "..." && git push
+```
+If you skip `npm run build`, changes will NOT appear on the deployed site.
+Game is deployed at: https://thegizmopro.github.io/happy-nerds/
+
 ### What's Done ✅
 - All 75 levels have block structures (commits `4b6d20d`→`6deba9c`)
 - 25 unwinnable levels fixed (commit `3762705`, pushed)
