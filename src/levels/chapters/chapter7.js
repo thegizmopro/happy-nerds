@@ -80,8 +80,7 @@ export const CHAPTER_7 = [
     defaultParams: { a: -0.04, h: 5.0, k: 0 },
     launcher: LAUNCHER,
     targets: [
-      { id: 't1', x: 4.6,  y: 1.5, radius: 0.40, pigType: 'helmet',    hp: 1, moving: null, restingOn: 'ch7_3sl' },
-      { id: 't2', x: 7.75, y: 2.3, radius: 0.40, pigType: 'letterman', hp: 2, moving: null, restingOn: 'ch7_3sr' },
+      { id: 't2', x: 7.75, y: 2.3, radius: 0.40, pigType: 'letterman', hp: 1, moving: null, restingOn: 'ch7_3sr' },
     ],
     obstacles: [
       { id: 'ch7_3pll', x: 4.1, y: 0.6, width: 0.3, height: 0.6, blockType: 'glass', hp: 1, supports: ['ch7_3sl'] },
@@ -142,7 +141,7 @@ export const CHAPTER_7 = [
     },
     defaultParams: { a: -1.0, h: 5.0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.0, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
+    targets: [{ id: 'pig', x: 7.0, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
       { id: 'box7_5l', x: 6.3, y: 0.6, width: 0.35, height: 2.5, blockType: 'stone', hp: 3, supports: [] },
       { id: 'box7_5r', x: 8.1, y: 0.6, width: 0.35, height: 2.5, blockType: 'stone', hp: 3, supports: [] },
@@ -174,7 +173,7 @@ export const CHAPTER_7 = [
       k: 0,
     },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.5, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
+    targets: [{ id: 'pig', x: 7.5, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
       { id: 'pw_wall',    x: 4.0,  y: 0.6, width: 0.4, height: 1.8 },
       { id: 'pw_col_l',   x: 6.5,  y: 0.6, width: 0.3, height: 1.2, blockType: 'wood', hp: 2, supports: ['pw_beam'] },
@@ -203,8 +202,7 @@ export const CHAPTER_7 = [
     defaultParams: { a: 0.03, h: 5.5, k: 0 },
     launcher: LAUNCHER,
     targets: [
-      { id: 't1', x: 4.6,  y: 1.5, radius: 0.40, pigType: 'helmet',    hp: 1, moving: null, restingOn: 'sh7_7l' },
-      { id: 't2', x: 7.75, y: 3.3, radius: 0.40, pigType: 'letterman', hp: 2, moving: null, restingOn: 'sh7_7r' },
+      { id: 't2', x: 7.75, y: 3.3, radius: 0.40, pigType: 'letterman', hp: 1, moving: null, restingOn: 'sh7_7r' },
     ],
     obstacles: [
       { id: 'sh7_7ll', x: 4.1,  y: 0.6, width: 0.3,  height: 0.65, blockType: 'glass', hp: 1, supports: ['sh7_7l'] },
@@ -235,7 +233,7 @@ export const CHAPTER_7 = [
     },
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'sw1',      x: 3.5,  y: 0.6, width: 0.4, height: 3.5 },
       { id: 'sw2',      x: 6.0,  y: 1.0, width: 0.4, height: 2.5 },
@@ -264,7 +262,7 @@ export const CHAPTER_7 = [
     },
     defaultParams: { a: 1.2, h: 4.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.0, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.0, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'ovh7_9l', x: 5.5, y: 2.5, width: 1.2, height: 0.3, blockType: 'glass', hp: 1, supports: [] },
       { id: 'ovh7_9r', x: 7.2, y: 3.2, width: 1.2, height: 0.3, blockType: 'glass', hp: 1, supports: [] },
@@ -291,7 +289,7 @@ export const CHAPTER_7 = [
     },
     defaultParams: { a: 0.04, h: 5.0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 8.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 8.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'sw7_10a',  x: 3.5,  y: 0.6, width: 0.4, height: 2.5 },
       { id: 'sw7_10b',  x: 6.0,  y: 1.5, width: 0.4, height: 2.0 },

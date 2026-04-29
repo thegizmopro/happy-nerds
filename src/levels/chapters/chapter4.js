@@ -173,7 +173,6 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [
       { id: 't1', x: 4.9,  y: 2.0, radius: 0.40, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf_l' },
-      { id: 't2', x: 7.75, y: 1.7, radius: 0.40, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf_r' },
     ],
     obstacles: [
       { id: 'pl_ll', x: 4.2,  y: 0.6, width: 0.3, height: 0.7, blockType: 'wood',  hp: 2, supports: ['shelf_l'] },
@@ -209,7 +208,7 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.10, r1: 0, r2: 8.0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.275, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
+    targets: [{ id: 'pig', x: 7.275, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
       { id: 'wall_l',  x: 6.0,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['roof'] },
       { id: 'wall_r',  x: 8.2,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['roof'] },
@@ -241,7 +240,7 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.14, r1: 0, r2: 7.0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.15, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.15, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'outer_l', x: 5.5,  y: 0.6, width: 0.4, height: 2.8, blockType: 'stone', hp: 3, supports: [] },
       { id: 'inner_l', x: 6.1,  y: 0.6, width: 0.35, height: 2.4, blockType: 'wood',  hp: 2, supports: ['ceiling'] },

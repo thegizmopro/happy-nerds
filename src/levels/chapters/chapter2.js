@@ -52,7 +52,7 @@ export const CHAPTER_2 = [
     },
     defaultParams: { a: -0.10, h: 5.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.075, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null, restingOn: 'glass_beam' }],
+    targets: [{ id: 'pig', x: 6.075, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'wood_col_l',  x: 5.2,  y: 0.8, width: 0.35, height: 1.0,  blockType: 'wood',  hp: 2, supports: [] },
       { id: 'wood_col_r',  x: 6.95, y: 0.8, width: 0.35, height: 1.0,  blockType: 'wood',  hp: 2, supports: [] },
@@ -143,7 +143,7 @@ export const CHAPTER_2 = [
     },
     defaultParams: { a: -0.08, h: 3.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.55, y: 3.5, radius: 0.45, pigType: 'letterman', hp: 2, moving: null, restingOn: 'glass_beam' }],
+    targets: [{ id: 'pig', x: 6.55, y: 3.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'stone_col_l', x: 5.9,  y: 0.8,  width: 0.3, height: 0.7,  blockType: 'stone', hp: 3, supports: [] },
       { id: 'stone_col_r', x: 6.9,  y: 0.8,  width: 0.3, height: 0.7,  blockType: 'stone', hp: 3, supports: [] },
@@ -234,9 +234,9 @@ export const CHAPTER_2 = [
       h: { min: 1.0, max: 8.0, step: 0.1 },
       k: { min: -5.0, max: 5.0, step: 0.05 },
     },
-    defaultParams: { a: -0.20, h: 4.0, k: 0 },
+    defaultParams: { a: -0.043, h: 6.0, k: 1.55 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 8.45, y: 2.25, radius: 0.45, pigType: 'letterman', hp: 2, moving: null, restingOn: 'glass_beam' }],
+    targets: [{ id: 'pig', x: 8.45, y: 2.25, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'wall1',      x: 3.5, y: 0.8,  width: 0.4,  height: 1.8 },
       { id: 'plat',       x: 5.5, y: 3.5,  width: 2.5,  height: 0.3 },

@@ -1,7 +1,7 @@
-// Chapter 3: SIGN & SHAPE — y = a(x−h)² + k
-// Full vertex form. k is AUTO-DERIVED (k = −a·h²), so arc always starts at launcher.
-// Player controls: a (sign matters — negative = arch, positive = bowl) and h.
-// worldY = 0.8 + a*(localX−h)² − a·h²
+// Chapter 3: SIGN & SHAPE - y = a(x-h)2 + k
+// Full vertex form. k is AUTO-DERIVED (k = -a·h2), so arc always starts at launcher.
+// Player controls: a (sign matters - negative = arch, positive = bowl) and h.
+// worldY = 0.8 + a*(localX-h)2 - a·h2
 
 const LAUNCHER = { x: 1, y: 0.8 };
 const THEME = 'mountain';
@@ -64,7 +64,7 @@ export const CHAPTER_3 = [
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Thread the arc through the gap — not too steep, not too shallow. Smash the glass beam to drop the pig.',
+    hint: 'Thread the arc through the gap - not too steep, not too shallow. Smash the glass beam to drop the pig.',
     theme: THEME,
   },
 
@@ -140,7 +140,7 @@ export const CHAPTER_3 = [
     },
     defaultParams: { a: -0.25, h: 3.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.45, y: 2.85, radius: 0.40, pigType: 'letterman', hp: 2, moving: null, restingOn: 'glass_beam' }],
+    targets: [{ id: 'pig', x: 6.45, y: 2.85, radius: 0.40, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'stone_col_l', x: 5.8,  y: 0.8,  width: 0.3, height: 0.7,  blockType: 'stone', hp: 3, supports: [] },
       { id: 'stone_col_r', x: 6.8,  y: 0.8,  width: 0.3, height: 0.7,  blockType: 'stone', hp: 3, supports: [] },
@@ -189,7 +189,7 @@ export const CHAPTER_3 = [
   },
 
   // ── 3-7 ──────────────────────────────────────────────────────────────────
-  // Two pigs — arc must pass through both in one shot.
+  // Two pigs - arc must pass through both in one shot.
   // t1 inside glass arch at (5.6, 2.0). t2 inside wood arch at (8.1, 0.8).
   // One-arc solution: a≈-0.104, h≈3.55 hits t1 at y=2.0 and t2 at y=0.8.
   {
@@ -205,7 +205,6 @@ export const CHAPTER_3 = [
     launcher: LAUNCHER,
     targets: [
       { id: 't1', x: 5.6,  y: 2.0,  radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
-      { id: 't2', x: 8.1,  y: 0.8,  radius: 0.42, pigType: 'helmet', hp: 1, moving: null },
     ],
     obstacles: [
       { id: 'g_col_l',  x: 4.9,  y: 0.8, width: 0.3,  height: 1.45, blockType: 'glass', hp: 1, supports: [] },
@@ -218,7 +217,7 @@ export const CHAPTER_3 = [
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Hit both pigs with ONE arc. Find the a and h that puts the parabola through both.',
+    hint: 'Arc through the glass structure to hit the helmet pig on top.',
     theme: THEME,
   },
 
@@ -238,7 +237,6 @@ export const CHAPTER_3 = [
     launcher: LAUNCHER,
     targets: [
       { id: 'whistle', x: 6.5, y: 0.8, radius: 0.45, pigType: 'whistle', hp: 1, moving: null },
-      { id: 'helmet',  x: 8.5, y: 0.8, radius: 0.42, pigType: 'helmet',  hp: 1, moving: null },
     ],
     obstacles: [
       { id: 'g_col_l',  x: 5.8,  y: 0.8, width: 0.3,  height: 1.0,  blockType: 'glass', hp: 1, supports: [] },
@@ -251,7 +249,7 @@ export const CHAPTER_3 = [
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Hit the Whistle Pig first — it triggers the Helmet Pig. Two arches, two shots.',
+    hint: 'Hit the Whistle Pig to trigger its special ability.',
     theme: THEME,
   },
 
@@ -302,7 +300,7 @@ export const CHAPTER_3 = [
     },
     defaultParams: { a: -0.14, h: 4.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.325, y: 3.05, radius: 0.55, pigType: 'king', hp: 3, moving: null, restingOn: 'glass_beam' }],
+    targets: [{ id: 'king', x: 7.325, y: 3.05, radius: 0.55, pigType: 'king', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'wall',        x: 3.5,  y: 0.8,  width: 0.4,  height: 2.0 },
       { id: 'stone_col_l', x: 6.3,  y: 0.8,  width: 0.35, height: 0.8,  blockType: 'stone', hp: 3, supports: [] },
@@ -315,7 +313,7 @@ export const CHAPTER_3 = [
     bonusRing: { x: 5.0, y: 4.2, radius: 0.3 },
     starThresholds: [4, 8], starMode: 'bonus',
     revealAfter: null,
-    hint: 'King Pig takes 3 hits. Break the glass beam to drop him first, then finish on the ground.',
+    hint: 'King Pig takes 2 hits. Break the glass beam to drop him, then adjust your arc to finish him.',
     theme: THEME,
   },
 ];

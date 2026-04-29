@@ -74,7 +74,7 @@ export const CHAPTER_8 = [
     defaultParams: { a: -0.12, b: 1.5, c: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 90 },
-    targets: [{ id: 'king', x: 7.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.5, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'moat1',   x: 3.0,  y: 0.6, width: 0.4,  height: 3.0 },
       { id: 'moat2',   x: 5.0,  y: 0.6, width: 0.4,  height: 2.5 },
@@ -161,9 +161,9 @@ export const CHAPTER_8 = [
       ],
     },
     targets: [
-      { id: 'stair_pig', x: 4.95, y: 2.12, radius: 0.42, pigType: 'letterman', hp: 2, moving: null, restingOn: 'stair_top' },
+      { id: 'stair_pig', x: 4.95, y: 2.12, radius: 0.42, pigType: 'letterman', hp: 1, moving: null, restingOn: 'stair_top' },
       { id: 'twr_pig',   x: 6.75, y: 2.5,  radius: 0.42, pigType: 'helmet',    hp: 1, moving: null, restingOn: 'twr8_4t' },
-      { id: 'king',      x: 9.0,  y: 0.8,  radius: 0.55, pigType: 'king',      hp: 3, moving: null },
+      { id: 'king',      x: 9.0,  y: 0.8,  radius: 0.55, pigType: 'king',      hp: 1, moving: null },
     ],
     obstacles: [
       { id: 'stair1',   x: 3.3, y: 0.6, width: 0.5, height: 0.4, blockType: 'glass', hp: 1, supports: [] },
@@ -212,7 +212,7 @@ export const CHAPTER_8 = [
     targets: [
       { id: 'whistle',   x: 3.65, y: 2.0,  radius: 0.42, pigType: 'whistle',   hp: 1, moving: null, restingOn: 'fe_shelf' },
       { id: 'letterman', x: 6.25, y: 0.8,  radius: 0.42, pigType: 'letterman', hp: 2, moving: null },
-      { id: 'king',      x: 8.5,  y: 0.8,  radius: 0.55, pigType: 'king',      hp: 3,
+      { id: 'king',      x: 8.5,  y: 0.8,  radius: 0.55, pigType: 'king',      hp: 2,
         moving: { axis: 'x', min: 7.8, max: 9.2, speed: 0.8 } },
     ],
     obstacles: [

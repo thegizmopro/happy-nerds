@@ -1,5 +1,5 @@
 # Happy Nerds — Level Redesign Plan
-## Goal: Angry Birds-style Block Structures Across 76 Levels (Ch1–7: 10 each, Ch8: 6 boss levels)
+## Goal: Angry Birds-style Block Structures Across 75 Levels (Ch1–7: 10 each, Ch8: 5 boss levels)
 
 ---
 
@@ -250,7 +250,7 @@ These are the building blocks of level design. Each chapter introduces new arche
 **Launcher**: (1, 0.8).  
 **Insight**: Time pressure + complex structures. Player must think fast.  
 **Structure progression**: All archetypes combined. Maximum density of blocks and targets.  
-**Note**: 6 levels only — 10 timed boss levels would slog. Total across all chapters = 76.
+**Note**: 5 levels only — keeps boss stage tight. Total across all chapters = 75.
 
 | Level | Time | Shots | Structure Goal | Notes |
 |-------|------|-------|---------------|-------|
@@ -258,8 +258,40 @@ These are the building blocks of level design. Each chapter introduces new arche
 | 8-2 | 90s | 1 | The Fortress: stone walls + wood inner walls + glass roof + king | F (maximum), single equation |
 | 8-3 | 90s | 3 | 3 moving pigs each in a small glass cage | C × 3 + moving |
 | 8-4 | 90s | 3 | Mixed structures at every height — stairs + castle + tower | H + F + B |
-| 8-5 | 100s | 4 | Moving king pig behind a collapsing stone castle | F (stone heavy) + moving king |
-| 8-6 | 120s | 6 | Final exam: every archetype in one level, king pig at the center | All archetypes, grand finale |
+| 8-5 | 120s | 5 | Moving king pig behind a collapsing stone castle + guard + whistle pig | F (stone heavy) + mixed targets |
+
+---
+
+## Implementation Status
+
+**Phase**: Block structures coded and winnability fixed. Needs playtest pass.  
+**Last updated**: 2026-04-29
+
+### What's Done
+- All 75 levels redesigned with block structures (commits `4b6d20d`→`6deba9c`)
+- 25 unwinnable levels identified and fixed (shot counts / target HP adjusted)
+- Validator passes: `node scripts/validate-levels.mjs` ✓ All clean
+- Winnability scan: all 75 levels pass `shots >= totalHP`
+- Ch2-L8 arc reach bug fixed (defaultParams corrected)
+- Double-comma syntax errors from automated edits cleaned up
+
+### Remaining Issues
+- **Structures may feel repetitive** — many chapters use similar shelf/pillar patterns. Consider varying layouts in a follow-up pass.
+- **Playtest needed** — the 3-point acceptance checklist (Section 2.10) has not been run on any level yet.
+- **Validator doesn't check winnability** — Section 10 should add: `shots >= sum of all target HP` for each level.
+- **King pigs reduced to hp:1 in many levels** — this makes boss fights less interesting. Consider adding multiShot (2-3 shots) instead of reducing HP.
+
+### Winnability Fixes Applied (2026-04-29)
+
+| Chapter | Levels Fixed | Fix Applied |
+|---------|-------------|-------------|
+| Ch2 | L5, L8 | HP 2→1; L8 also got defaultParams arc fix |
+| Ch3 | L5, L7, L8, L10 | HP reduced; L7/L8 removed second target |
+| Ch4 | L6, L7, L8 | HP reduced; L6 removed second target |
+| Ch5 | L1, L3, L5, L9, L10 | HP reduced; L9 removed second target |
+| Ch6 | L9 | Added 6th shot to multiShot (5→6) |
+| Ch7 | L3, L5, L6, L7, L8, L9, L10 | HP reduced; L3/L7 removed first target |
+| Ch8 | L2, L4, L5 | HP reduced to match shot counts |
 
 ---
 
@@ -368,6 +400,7 @@ Add a script at `scripts/validate-levels.js` that imports all chapter files and 
 4. **Pig above its block**: If a pig is intended to sit on a block, `pig.y >= block.y + block.height + pig.radius - 0.05` (small tolerance)
 5. **Blocks within world bounds**: `block.x >= 0`, `block.x + block.width <= 10`, `block.y >= 0.6`
 6. **No overlapping blocks**: No two blocks in the same level share significant area
+7. **Winnability**: `shots >= sum of all target HP` for every level (each shot does at most 1 damage to 1 target)
 
 Run with: `node scripts/validate-levels.js`
 

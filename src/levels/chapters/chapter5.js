@@ -25,7 +25,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.10, b: 1.0, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
+    targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
       { id: 'wall_l',  x: 6.0,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['ceiling'] },
       { id: 'wall_r',  x: 8.4,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['ceiling'] },
@@ -82,7 +82,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.12, b: 1.5, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.0, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
+    targets: [{ id: 'pig', x: 7.0, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
       { id: 'pyr_base',  x: 5.8,  y: 0.6, width: 2.2,  height: 0.5,  blockType: 'stone', hp: 3, supports: ['pyr_mid'] },
       { id: 'pyr_mid',   x: 6.15, y: 1.1, width: 1.5,  height: 0.4,  blockType: 'wood',  hp: 2, supports: ['pyr_top'] },
@@ -143,7 +143,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.08, b: 2.5, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.6, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.6, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'outer_l_s', x: 3.5,  y: 0.6, width: 0.4, height: 3.0 },
       { id: 'outer_r_s', x: 5.5,  y: 0.6, width: 0.4, height: 3.0 },
@@ -281,7 +281,6 @@ export const CHAPTER_5 = [
     launcher: LAUNCHER,
     targets: [
       { id: 't1', x: 4.6,  y: 0.8,  radius: 0.40, pigType: 'helmet', hp: 1, moving: null },
-      { id: 't2', x: 7.75, y: 2.55, radius: 0.40, pigType: 'helmet', hp: 1, moving: null, restingOn: 'twr_top' },
     ],
     obstacles: [
       { id: 'box_l',   x: 4.0,  y: 0.6, width: 0.35, height: 1.4, blockType: 'glass', hp: 1, supports: ['box_top'] },
@@ -313,7 +312,7 @@ export const CHAPTER_5 = [
     },
     defaultParams: { a: -0.10, b: 1.8, c: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.7, y: 0.8, radius: 0.55, pigType: 'king', hp: 3, moving: null }],
+    targets: [{ id: 'king', x: 7.7, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'moat_l',  x: 3.5,  y: 0.6, width: 0.4,  height: 2.5 },
       { id: 'moat_r',  x: 5.5,  y: 0.6, width: 0.4,  height: 2.5 },

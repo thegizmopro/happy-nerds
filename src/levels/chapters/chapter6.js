@@ -339,7 +339,7 @@ export const CHAPTER_6 = [
     defaultParams: { a: -0.18, h: 3.0, k: 0 },
     launcher: LAUNCHER,
     multiShot: {
-      shotCount: 5,
+      shotCount: 6,
       sequenceMode: 'sequential',
       shots: [
         shot('Shot 1 — Low shelf',  { a: -0.28, h: 1.5 }),
@@ -347,6 +347,7 @@ export const CHAPTER_6 = [
         shot('Shot 3 — Mid shelf',  { a: -0.15, h: 3.5 }),
         shot('Shot 4 — High shelf', { a: -0.09, h: 5.5 }),
         shot('Shot 5 — High shelf', { a: -0.08, h: 6.0 }),
+        shot('Shot 6 — Finisher',   { a: -0.07, h: 6.5 }),
       ],
     },
     targets: [
