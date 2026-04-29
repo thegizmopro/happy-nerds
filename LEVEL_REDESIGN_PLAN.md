@@ -16,6 +16,23 @@
 - Ch2-L8 arc reach bug fixed (defaultParams corrected)
 - Double-comma syntax errors cleaned up
 
+### Critical Bug: 28 Levels Have No Cascade Wiring 🔴
+**Blocks exist visually but `supports: []` is empty — destroying a pillar does nothing to the beam above it.**
+No falling animation, no cascade, no physics. Blocks just disappear when hit.
+
+**Affected levels** (all blocks have empty `supports: []`):
+- Ch1: L6
+- Ch2: L1-L10 (entire chapter)
+- Ch3: L1-L10 (entire chapter)
+- Ch4: L1, L4, L10
+- Ch6: L3
+- Ch7: L5, L9
+- Ch8: L3
+
+**Root cause:** Claude Code generated block positions but left `supports` arrays empty. Blocks sit in the right visual positions but the engine doesn't know they're physically connected.
+
+**Fix required:** Wire `supports` arrays for every beam/roof block to reference the pillars/columns holding it up. This is the first thing to fix before any redesign.
+
 ### What's Needed 🔴
 The current levels are **structurally boring**:
 - **60 of 75 levels have 1 target and 1 shot** — no decisions, no tension
