@@ -661,6 +661,7 @@ These were emergency fixes. Phase 2 will supersede most of them with proper mult
 
 ## 17. Open Questions
 
+- [ ] Add GitHub Actions workflow to auto-build dist/ on push to main (so we don't have to commit dist to git)
 - [ ] Should stone blocks ever be indestructible in early levels (teach that not everything breaks)?
 - [ ] Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
 - [ ] Crack preview: Ch1 all levels, Ch2 L1-L3 only, Ch3+ none? (Previously resolved — confirm still desired)
