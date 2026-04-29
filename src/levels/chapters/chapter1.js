@@ -34,7 +34,7 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     // Exact a = (2.2 - 4.5) / (6.2 - 1)² = -2.3 / 27.04 ≈ -0.085
     // Default a=-0.20 hits left pillar, drops before reaching pig
-    targets: [{ id: 'pig', x: 6.2, y: 2.20, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 6.2, y: 2.20, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
       { id: 'p_l',  x: 5.2, y: 0.6, width: 0.4, height: 0.9,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
       { id: 'p_r',  x: 6.8, y: 0.6, width: 0.4, height: 0.9,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
@@ -56,7 +56,7 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     // Exact a = (2.3 - 4.5) / (7.8 - 1)² = -2.2 / 46.24 ≈ -0.048
     // Default a=-0.06: arc hits glass shelf (y≈1.73 at x=7.8) but misses pig above it
-    targets: [{ id: 'pig', x: 7.8, y: 2.30, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 7.8, y: 2.30, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
       { id: 'p_l',  x: 7.0, y: 0.6, width: 0.4, height: 1.0,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
       { id: 'p_r',  x: 8.2, y: 0.6, width: 0.4, height: 1.0,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
@@ -78,7 +78,7 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     // Exact a = (2.45 - 4.5) / (5.75 - 1)² = -2.05 / 22.56 ≈ -0.091
     // Default a=-0.12: arc hits glass (y≈1.79), pig at y=2.45 survives
-    targets: [{ id: 'pig', x: 5.75, y: 2.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 5.75, y: 2.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'glass' }],
     obstacles: [
       { id: 'stone', x: 5.5, y: 0.6, width: 0.5, height: 0.5, blockType: 'stone', hp: 3, supports: ['wood'] },
       { id: 'wood',  x: 5.5, y: 1.1, width: 0.5, height: 0.5, blockType: 'wood',  hp: 2, supports: ['glass'] },
@@ -92,106 +92,123 @@ export const CHAPTER_1 = [
   },
   {
     id: 'ch1-l5', chapter: 1, levelInChapter: 5,
-    title: 'Penthouse',
+    title: 'The Penthouse',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
     sliderConfig: { a: { min: -0.20, max: -0.02, step: 0.002 } },
-    defaultParams: { a: -0.08, h: 0, k: 0 },
+    defaultParams: { a: -0.06, h: 0, k: 0 },
     launcher: LAUNCHER,
-    // exact a = (3.0-4.5)/(7-1)² = -1.5/36 = -0.0417
-    targets: [{ id: 'main', x: 7.0, y: 3.0, radius: 0.45, pigType: 'letterman', hp: 2, moving: null }],
-    obstacles: [], bonusRing: { x: 5.0, y: 4.0, radius: 0.3 },
-    starThresholds: [2, 5], starMode: 'bonus',
+    // Exact a = (3.10 - 4.5) / (6.8 - 1)² = -1.4 / 33.64 ≈ -0.042
+    // Default a=-0.06: hits glass shelf (y≈2.48 at x=6.8), pig at y=3.10 survives
+    targets: [{ id: 'pig', x: 6.8, y: 3.10, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    obstacles: [
+      { id: 'col_l', x: 5.8, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
+      { id: 'col_r', x: 7.4, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
+      { id: 'shelf', x: 5.8, y: 2.4, width: 2.0, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+    ],
+    bonusRing: null,
+    starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'High shelf, far away. Very gentle arc needed — a close to zero.',
+    hint: 'The pig is way up high. Only a very gentle arc can reach it — keep a close to zero.',
     theme: THEME,
   },
   {
     id: 'ch1-l6', chapter: 1, levelInChapter: 6,
-    title: 'The Wall',
+    title: 'Behind the Wall',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
     sliderConfig: { a: { min: -0.50, max: -0.03, step: 0.005 } },
     defaultParams: { a: -0.22, h: 0, k: 0 },
     launcher: LAUNCHER,
-    // exact a = (0.6-4.5)/(7-1)² = -3.9/36 = -0.1083
-    // Wall at world x=[3.8,4.2] y=[0.6,3.0]. Arc at local x=2.8: -0.1083*7.84+4.5=3.65>3.0 ✓
-    // Default a=-0.22 at local x=2.8: -0.22*7.84+4.5=2.78<3.0 hits wall ✓
-    targets: [{ id: 'main', x: 7.0, y: 0.6, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    // Exact a = (0.6 - 4.5) / (6.8 - 1)² = -3.9 / 33.64 ≈ -0.116
+    // Default a=-0.22: arc y≈2.78 at x=3.8, wall top=2.8 — just clips the wall
+    // Solution arc clears wall (y=3.43), clips left wood wall, hits pig
+    targets: [{ id: 'pig', x: 6.8, y: 0.6, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
-      { id: 'wall1', x: 3.8, y: 0.6, width: 0.4, height: 2.4 },
-      // Glass block shatters as the arc descends; the wood block above falls as rubble
-      // Solution arc (a≈-0.108) passes through x=6.2-6.7 at y≈1.6, within glass y=[1.2,1.8] ✓
-      { id: 'glass_l6', x: 6.2, y: 1.2, width: 0.5, height: 0.6, blockType: 'glass', hp: 1, supports: ['wood_l6'] },
-      { id: 'wood_l6',  x: 6.2, y: 1.8, width: 0.5, height: 0.5, blockType: 'wood',  hp: 2, supports: [] },
+      { id: 'wall',    x: 3.8, y: 0.6, width: 0.4, height: 2.2 },
+      { id: 'wood_l',  x: 5.8, y: 0.6, width: 0.4, height: 1.0, blockType: 'wood', hp: 2, supports: [] },
+      { id: 'wood_r',  x: 7.4, y: 0.6, width: 0.4, height: 1.0, blockType: 'wood', hp: 2, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'There\'s a wall! A wide arc clears it. Watch the glass block shatter as the arc descends.',
+    hint: 'A wall blocks the path — flatten the arc to clear it. The pig is tucked between two wood walls.',
     theme: THEME,
   },
   {
     id: 'ch1-l7', chapter: 1, levelInChapter: 7,
-    title: 'Double Trouble',
+    title: 'Double Tower',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
     sliderConfig: { a: { min: -0.30, max: -0.03, step: 0.003 } },
-    defaultParams: { a: -0.15, h: 0, k: 0 },
+    defaultParams: { a: -0.10, h: 0, k: 0 },
     launcher: LAUNCHER,
-    // exact a = (0.6-4.5)/(8.5-1)² = -3.9/56.25 = -0.0693
-    // Wall1 x=[3.0,3.4] top=3.8: at local x=2.2: -0.0693*4.84+4.5=4.165>3.8 ✓
-    // Wall2 x=[5.8,6.2] top=2.2: at local x=5.0: -0.0693*25+4.5=2.768>2.2 ✓
-    // Default a=-0.15 at local x=5.0: -0.15*25+4.5=0.75<2.2 hits wall2 ✓
-    targets: [{ id: 'main', x: 8.5, y: 0.6, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    // Pig slides along shelf at y=2.40. Two glass towers both support the shelf.
+    // Direct hit required — find a that reaches y=2.40, then time the shot.
+    // Reachable: a in [-0.153, -0.065] covers pig x range 4.7–6.7 at y=2.40
+    targets: [{
+      id: 'pig', x: 5.7, y: 2.40, radius: 0.45, pigType: 'helmet', hp: 1,
+      moving: { axis: 'x', min: 4.7, max: 6.7, speed: 0.9 },
+    }],
     obstacles: [
-      { id: 'wall1', x: 3.0, y: 0.6, width: 0.4, height: 3.2 },
-      { id: 'wall2', x: 5.8, y: 0.6, width: 0.4, height: 1.6 },
-      // Glass+stone tower between the two walls — solution arc (a≈-0.069) passes through at y≈3.5
-      // at localX=3.5 (worldX=4.5): worldY=4.5-0.069*12.25≈3.65, within glass y=[3.2,3.7] ✓
-      { id: 'glass_l7', x: 4.5, y: 3.2, width: 0.4, height: 0.5, blockType: 'glass', hp: 1, supports: ['stone_l7'] },
-      { id: 'stone_l7', x: 4.5, y: 3.7, width: 0.4, height: 0.4, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'tow_l', x: 4.2, y: 0.6, width: 0.4, height: 1.1, blockType: 'glass', hp: 1, supports: ['shelf'] },
+      { id: 'tow_r', x: 6.6, y: 0.6, width: 0.4, height: 1.1, blockType: 'glass', hp: 1, supports: ['shelf'] },
+      { id: 'shelf', x: 4.2, y: 1.7, width: 2.8, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 5], starMode: 'moves',
+    starThresholds: [1, 3], starMode: 'moves',
     revealAfter: null,
-    hint: 'Two walls at different heights. One value of a clears both. Glass shatters on the way through!',
+    hint: 'The pig slides along a glass shelf. Lock in the arc height, then time the shot.',
     theme: THEME,
   },
   {
     id: 'ch1-l8', chapter: 1, levelInChapter: 8,
-    title: 'Moving Target',
+    title: 'Moving Shelf',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
     sliderConfig: { a: { min: -0.50, max: -0.03, step: 0.005 } },
-    defaultParams: { a: -0.15, h: 0, k: 0 },
+    defaultParams: { a: -0.10, h: 0, k: 0 },
     launcher: LAUNCHER,
+    // Pig slides on glass shelf at y=2.20. Lock arc height to shelf level, then time shot.
+    // Reachable: a in [-0.106, -0.070] covers pig x range 5.65–6.75 at y=2.20
     targets: [{
-      id: 'cool', x: 7.0, y: 0.6, radius: 0.45, pigType: 'cool', hp: 1,
-      moving: { axis: 'x', min: 5.0, max: 8.5, speed: 1.2 },
+      id: 'pig', x: 6.2, y: 2.20, radius: 0.45, pigType: 'cool', hp: 1,
+      moving: { axis: 'x', min: 5.65, max: 6.75, speed: 1.3 },
     }],
-    obstacles: [], bonusRing: null,
+    obstacles: [
+      { id: 'p_l',  x: 5.2, y: 0.6, width: 0.4, height: 0.9,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
+      { id: 'p_r',  x: 6.8, y: 0.6, width: 0.4, height: 0.9,  blockType: 'wood',  hp: 2, supports: ['shelf'] },
+      { id: 'shelf',x: 5.2, y: 1.5, width: 2.0, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+    ],
+    bonusRing: null,
     starThresholds: [1, 3], starMode: 'moves',
     revealAfter: null,
-    hint: 'The Cool Pig slides around. Set your arc, then time the launch.',
+    hint: 'The pig slides on the shelf. Dial in the right arc height, then wait for the moment.',
     theme: THEME,
   },
   {
     id: 'ch1-l9', chapter: 1, levelInChapter: 9,
-    title: 'Speed Run',
+    title: 'Speed Tower',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
     sliderConfig: { a: { min: -0.50, max: -0.03, step: 0.005 } },
     defaultParams: { a: -0.12, h: 0, k: 0 },
     launcher: LAUNCHER,
+    // Two stacked glass blocks form a wall. Fast pig runs behind it at ground level.
+    // Steep arc breaks through wall + hits pig. Flat arc clears wall, hits pig further right.
+    // Reachable: pig y=0.6, x=5.8–8.5 → a range -0.169 to -0.069
     targets: [{
-      id: 'cool2', x: 6.5, y: 0.6, radius: 0.40, pigType: 'cool', hp: 1,
-      moving: { axis: 'x', min: 4.0, max: 8.5, speed: 2.4 },
+      id: 'pig', x: 7.0, y: 0.6, radius: 0.40, pigType: 'cool', hp: 1,
+      moving: { axis: 'x', min: 5.8, max: 8.5, speed: 2.5 },
     }],
-    obstacles: [], bonusRing: { x: 4.5, y: 2.5, radius: 0.3 },
+    obstacles: [
+      { id: 'wall_b', x: 5.2, y: 0.6, width: 0.4, height: 0.7, blockType: 'glass', hp: 1, supports: ['wall_t'] },
+      { id: 'wall_t', x: 5.2, y: 1.3, width: 0.4, height: 0.7, blockType: 'glass', hp: 1, supports: [] },
+    ],
+    bonusRing: { x: 4.5, y: 2.5, radius: 0.3 },
     starThresholds: [1, 2], starMode: 'bonus',
     revealAfter: null,
-    hint: 'Faster pig! Lock your a first, then wait for the right moment.',
+    hint: 'Fast pig! A steep arc breaks the glass wall and hits it close. A flat arc clears the wall and hits it far.',
     theme: THEME,
   },
   {
@@ -202,17 +219,20 @@ export const CHAPTER_1 = [
     sliderConfig: { a: { min: -0.30, max: -0.03, step: 0.003 } },
     defaultParams: { a: -0.20, h: 0, k: 0 },
     launcher: LAUNCHER,
-    // wall at x=[3.8,4.2] top=2.8; moving target around x=7, y=0.6
-    // exact a to clear wall AND hit x=7: -0.1083 (same as L6)
-    targets: [{
-      id: 'cool3', x: 7.0, y: 0.6, radius: 0.42, pigType: 'cool', hp: 1,
-      moving: { axis: 'x', min: 6.0, max: 9.0, speed: 1.8 },
-    }],
-    obstacles: [{ id: 'wall', x: 3.8, y: 0.6, width: 0.4, height: 2.2 }],
+    // Exact a = (2.45 - 4.5) / (6.6 - 1)² = -2.05 / 31.36 ≈ -0.065
+    // Default a=-0.20: arc y=3.7 at x=3.0 — clips wall top (3.8). Must flatten.
+    // Wrong hits: a=-0.10 hits wood_mid, a=-0.085 hits glass_top. Only a≈-0.065 reaches pig.
+    targets: [{ id: 'pig', x: 6.6, y: 2.45, radius: 0.45, pigType: 'king', hp: 1, moving: null, restingOn: 'glass_top' }],
+    obstacles: [
+      { id: 'wall',       x: 3.0,  y: 0.6, width: 0.4, height: 3.2 },
+      { id: 'stone_base', x: 6.0,  y: 0.6, width: 1.2, height: 0.5, blockType: 'stone', hp: 3, supports: ['wood_mid'] },
+      { id: 'wood_mid',   x: 6.2,  y: 1.1, width: 0.8, height: 0.5, blockType: 'wood',  hp: 2, supports: ['glass_top'] },
+      { id: 'glass_top',  x: 6.35, y: 1.6, width: 0.5, height: 0.4, blockType: 'glass', hp: 1, supports: [] },
+    ],
     bonusRing: null,
-    starThresholds: [1, 3], starMode: 'moves',
+    starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Wall AND moving target. Set a to clear the wall, then time it.',
+    hint: 'Clear the wall first. Then find the arc that reaches the king at the pyramid\'s peak.',
     theme: THEME,
   },
 ];

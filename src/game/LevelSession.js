@@ -62,6 +62,7 @@ export class LevelSession {
     this.obstacleDestroyed = {};  // id → timestamp of destruction
     this.obstacleHitFlash = {};  // id → timestamp of last hit
     this.fallingBlocks = [];     // { id, x, startY, endY, currentY, velocity, width, height, blockType, damage }
+    this.fallingTargets = [];    // { id, currentY, landY, vy } — pigs that lost their resting block
     for (const obs of (levelConfig.obstacles || [])) {
       if (obs.blockType) {
         this.obstacleHP[obs.id] = obs.hp ?? { glass: 1, wood: 2, stone: 3 }[obs.blockType] ?? 3;
@@ -117,6 +118,8 @@ export class LevelSession {
   }
 
   getTargetWorld(targetConfig) {
+    const ft = this.fallingTargets.find(f => f.id === targetConfig.id);
+    if (ft) return { ...targetConfig, y: ft.currentY };
     const mt = this.movingTargets[targetConfig.id];
     if (mt) return { ...targetConfig, x: mt.worldX, y: mt.worldY };
     return targetConfig;
@@ -220,6 +223,8 @@ export class LevelSession {
       // Cascade: blocks this one was supporting may now fall
       const toFall = this._getSupportedBlocks(id);
       for (const obs of toFall) this._startFalling(obs);
+      // Pigs resting on this block now fall
+      this._startFallingTargets(id);
       return true;
     }
     return false;
@@ -271,6 +276,18 @@ export class LevelSession {
       landY,           // target Y when block hits ground or another block
       vy: 0,           // downward speed in world units/sec (increases over time)
     });
+    // Pigs resting on this block also fall
+    this._startFallingTargets(obs.id);
+  }
+
+  _startFallingTargets(blockId) {
+    const GROUND_Y = 0.8; // pig center y at ground level (matches launcher.y and ground pig positions)
+    for (const t of (this.config.targets ?? [])) {
+      if (t.restingOn !== blockId) continue;
+      if (this.targetsHit.has(t.id)) continue;
+      if (this.fallingTargets.find(f => f.id === t.id)) continue;
+      this.fallingTargets.push({ id: t.id, currentY: t.y, landY: GROUND_Y, vy: 0 });
+    }
   }
 
   // Advance falling blocks by dt seconds. Call each animation frame.
@@ -291,6 +308,19 @@ export class LevelSession {
       this._onBlockLand(fb);
       this.fallingBlocks = this.fallingBlocks.filter(b => b.id !== fb.id);
     }
+
+    // Advance falling pigs
+    for (const ft of this.fallingTargets) {
+      ft.vy += GRAVITY * dt;
+      ft.currentY -= ft.vy * dt;
+      if (ft.currentY <= ft.landY) ft.currentY = ft.landY;
+    }
+    const landedTargets = this.fallingTargets.filter(ft => ft.currentY <= ft.landY);
+    for (const ft of landedTargets) {
+      const t = this.config.targets.find(t => t.id === ft.id);
+      if (t) t.y = ft.landY; // persist landed position for next shot
+    }
+    this.fallingTargets = this.fallingTargets.filter(ft => ft.currentY > ft.landY);
   }
 
   _onBlockLand(fb) {
@@ -315,7 +345,7 @@ export class LevelSession {
   }
 
   hasFallingBlocks() {
-    return this.fallingBlocks.length > 0;
+    return this.fallingBlocks.length > 0 || this.fallingTargets.length > 0;
   }
 
   getAliveObstacles() {
