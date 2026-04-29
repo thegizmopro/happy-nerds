@@ -75,8 +75,12 @@ function checkReachability(level) {
 
     let reachable = false;
     outer: for (const params of combos) {
+      // Apply auto-derived k for vertex/stretch when k is not an active slider
+      const p = (form === 'vertex' || form === 'stretch') && !(activeCoefficients ?? []).includes('k')
+        ? { ...params, k: -(params.a ?? 0) * ((params.h ?? 0) ** 2) }
+        : params;
       for (const wx of worldXs) {
-        const localY = evalFormLocal(wx - launcher.x, form, params);
+        const localY = evalFormLocal(wx - launcher.x, form, p);
         if (localY === null) continue;
         if (Math.abs(launcher.y + localY - t.y) <= t.radius + 0.05) {
           reachable = true;
