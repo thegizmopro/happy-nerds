@@ -1,291 +1,625 @@
-# Happy Nerds — Level Redesign Plan
+# Happy Nerds — Level Redesign Plan (Master)
 ## Goal: Angry Birds-style Block Structures Across 75 Levels (Ch1–7: 10 each, Ch8: 5 boss levels)
 
----
-
-## 1. Problem Statement
-
-The current game is deterministic and low-surprise. The player sees the arc preview, adjusts `a`, fires, and the outcome is known before the ball lands. Levels without block structures offer no secondary challenge — only "did I pick the right coefficient?"
-
-Angry Birds works because:
-- The pig sits inside or on top of a structure
-- Hitting the structure differently produces wildly different outcomes
-- Cascading collapses make each shot feel physical and alive
-- The player must reason about *where* to hit, not just *whether* they'll hit
-
-The arc preview is fine to keep. The surprise comes from the structure physics — whether a tower tips, a shelf collapses on the pig, or a missed hit leaves the pig alive but the structure wrecked.
-
----
-
-## 2. Design Principles
-
-### 2.1 Every Level Gets a Structure
-All 80 levels should have at least one block structure. Simple structures (single shelf) in early levels; complex multi-layer fortresses by late chapters. "No obstacles" is only acceptable for the very first tutorial level of each chapter.
-
-### 2.2 Pig Always Sits On, In, or Behind a Structure
-Never a pig floating in open air. Pigs should be:
-- **On top** of a block (shelf/platform)
-- **Behind** a wall of blocks (shoot through glass to reach it)
-- **Inside** a structure (enclosed on 2-3 sides)
-- **Underneath** a block that can fall on it
-
-### 2.3 The "Wrong Hit" Must Have Consequences
-The structure should be designed so that hitting the wrong part damages blocks but leaves the pig alive — forcing the player to retry and think about angle. A full miss should visibly wreck something. A perfect hit triggers a satisfying cascade.
-
-### 2.4 Structures Match Equation Complexity
-Simple equations (single coefficient, stretch form) → simple structures (1-2 blocks, obvious cascade).  
-Complex equations (multi-coefficient, standard form) → complex structures (4-6 blocks, non-obvious cascade).
-
-### 2.5 Block Material Tells a Story
-- **Glass**: fragile, shatters on first hit. Used for shelves holding pigs, thin walls.
-- **Wood**: two hits. Used for middle tiers, horizontal planks between pillars.
-- **Stone**: three hits. Used for bases, protected fortresses, boss-level cores.
-
-The player reads the structure and estimates how many hits are needed before a cascade can happen.
-
-### 2.6 Cascade Must Be Visible and Satisfying
-A destroyed block should cause something to move. Every structure should have at least one `supports` chain so that destroying a key block triggers a falling animation — not just a block disappearing.
-
-### 2.7 Pig Placement Formula
-The pig's `y` coordinate is its **center**. Block `y` is its **bottom edge**. To place a pig sitting on top of a block:
-```
-pig.y = block.y + block.height + pig_radius
-```
-Standard pig radius is 0.45. So a glass shelf at `y: 1.3, height: 0.3` puts the pig center at `y = 1.3 + 0.3 + 0.45 = 2.05`. Always calculate this — never eyeball it.
-
-### 2.8 Arc Pass-Through Rule
-The ball arc is **pre-calculated once** at launch. It passes through all destructible blocks on its trajectory — the engine applies damage frame-by-frame but does not reroute the arc around destroyed blocks. This means:
-- Blocks stacked vertically in front of each other on the arc path will ALL be hit in sequence.
-- You cannot use one block to "stop" the ball from reaching a block behind it.
-- Design structures so the interesting cascade happens **perpendicular to the arc** (blocks fall sideways or downward), not inline with it.
-- Use this intentionally: a shot that destroys a glass shelf AND the wood pillar below in one pass is satisfying.
-
-### 2.9 Supports Wiring Checklist
-The cascade system requires **explicit wiring**. The engine does NOT infer supports geometrically. For every block that physically holds up another block:
-
-1. The **lower** block's `supports` array must list the **upper** block's ID.
-2. If two pillars jointly support a shelf, BOTH pillar `supports` arrays must list the shelf ID.
-3. If the shelf only falls when BOTH pillars are gone, this is correct — it checks for any remaining supporter.
-4. Missing a `supports` link = no cascade. The upper block floats in mid-air after the lower block is destroyed.
-
-Example:
-```js
-{ id: 'pillar_l', ..., supports: ['shelf'] },
-{ id: 'pillar_r', ..., supports: ['shelf'] },
-{ id: 'shelf', ..., supports: [] },
-```
-
-### 2.10 Level Acceptance Checklist (Playtest Protocol)
-A level is done when all three pass:
-1. **Solvable**: There exists at least one arc (within the chapter's slider range) that destroys or knocks out the pig.
-2. **Punishing on miss**: At least one visually distinct "wrong" arc hits the structure but leaves the pig alive.
-3. **Cascade fires**: Destroying the intended block visibly triggers a falling animation on at least one other block.
-
----
-
-## 3. Structure Archetypes
-
-These are the building blocks of level design. Each chapter introduces new archetypes on top of previous ones.
-
-| # | Archetype | Description | Blocks | Cascade? |
-|---|-----------|-------------|--------|----------|
-| A | Simple Shelf | Glass plank with pig on top, supported by 2 wood pillars | 3 | Yes — hit one pillar, shelf falls |
-| B | Single Tower | Stone base, wood mid, glass top, pig on top | 3-4 | Yes — destroy base, all fall |
-| C | Fortress Wall | 3-4 blocks side by side, pig behind/inside | 3-4 | Partial — must clear full wall |
-| D | Hanging Platform | Glass block supported by two pillars (pig on glass) | 3 | Yes — glass shatters, pig drops |
-| E | Double Tower | Two towers, pig on a shared glass shelf between them | 5 | Yes — destroy either tower |
-| F | Castle | Stone outer walls, wood inner walls, glass roof, pig inside | 6-8 | Yes — complex cascade |
-| G | Pyramid | Stone base wide, wood mid, glass top, pig atop | 4-5 | Yes — topple from base |
-| H | Staircase | Blocks at ascending heights, pig at top | 3-4 | Partial — domino potential |
-| I | Buried Pig | Pig under 2-3 stacked blocks | 3-4 | Yes — blocks must be destroyed |
-| J | Moat + Tower | Static wall beside destructible tower, pig behind tower | 4-5 | Yes — must navigate wall then tower |
-
----
-
-## 4. Chapter-by-Chapter Redesign
-
-### Chapter 1: Stretch Form (y = ax²)
-**Launcher**: (1, 4.5) elevated. Arc descends.  
-**Single coefficient**: `a` only.  
-**Structure progression**: Introduce A (shelf) → B (tower) → add walls.  
-**Block teaching goal**: Players are seeing glass, wood, and stone for the first time. Early levels (L2–L4) should use only one block type per level and make the cascade obvious — a single glass shelf shattering under the pig, not a 4-block puzzle. Complexity ramps across L5–L10 only after the player has seen each material break at least once.
-
-| Level | Title (keep or rename) | Structure Goal | Archetype | Notes |
-|-------|------------------------|---------------|-----------|-------|
-| 1-1 | First Shot | No structure — arc only. Tutorial. | — | Keep as-is |
-| 1-2 | Shelf Shot | Pig on glass shelf (2 wood pillars + glass). Hit glass → pig drops | A | Simplest cascade, obvious |
-| 1-3 | Wide Shelf | Same as 1-2 but target is farther, shelf is higher | A | Wider arc needed |
-| 1-4 | Leaning Tower | 3-block tower (stone/wood/glass), pig on top | B | Hit wood base → cascade |
-| 1-5 | The Penthouse | Pig on glass shelf atop two stone pillars, high up | A (elevated) | Arc must reach height |
-| 1-6 | Behind the Wall | Static wall + pig inside simple 2-block wood enclosure | C | Clear wall then enclosure |
-| 1-7 | Double Tower | Two wood towers sharing a glass shelf. Pig on shelf | E | Destroying either tower enough |
-| 1-8 | Moving Shelf | Pig on shelf (A), target moves slightly side to side | A + moving | First moving target + structure |
-| 1-9 | Speed Tower | Fast moving pig behind glass wall | C + moving | Structure gives "cover" |
-| 1-10 | The Gauntlet | Static wall + pyramid structure behind it | J + G | Hardest Ch1 level |
-
----
-
-### Chapter 2: Vertex Form (y = a(x−h)² + k)
-**Launcher**: (1, 0.8) ground level.  
-**Two/three coefficients**: `a`, `h` (required), `k` auto-derived in some levels.  
-**Structure progression**: Introduce D (hanging) and F (castle basics).  
-**Block teaching goal**: Players now know all three block types from Ch1 but are still getting used to mixed structures. Ch2 L1–L3 should still feel readable — one dominant block type per structure, with the second type used sparingly as accent. Full multi-material structures (glass + wood + stone in one build) start at L5.
-
-| Level | Structure Goal | Archetype |
-|-------|---------------|-----------|
-| 2-1 | Tutorial intro: pig behind single glass block | C (1 block) |
-| 2-2 | Pig on hanging glass platform (D) | D |
-| 2-3 | Two-level tower: wood base + glass shelf, bonus ring above | B partial |
-| 2-4 | Short castle: 2 stone sides, wood top, pig inside | F partial |
-| 2-5 | Tall tower: stone/wood/wood/glass, pig at top (high k needed) | B tall |
-| 2-6 | Pig behind glass wall (1 block thick). Bonus ring in open | C thin |
-| 2-7 | Wall + tower: static wall + D archetype behind it | J + D |
-| 2-8 | Double platform: 2 pigs each on separate shelves | A × 2 |
-| 2-9 | Suspended pig: hanging glass with pig, must time arc under ceiling obstacle | D + ceiling |
-| 2-10 | Moving pig in castle courtyard (F), static walls on sides | F + moving |
-
----
-
-### Chapter 3: Sign & Shape (a can be positive)
-**Launcher**: (1, 0.8).  
-**Insight**: Positive `a` creates upward arcs — can hit the underside of elevated platforms.  
-**Structure progression**: Introduce I (buried pig) and G (pyramid). Upward arcs unlock hitting ceilings of structures.
-
-| Level | Structure Goal | Archetype |
-|-------|---------------|-----------|
-| 3-1 | Intro to positive a: pig on elevated platform, must arc up to reach | A elevated |
-| 3-2 | Pig buried under glass + wood blocks | I |
-| 3-3 | Wide pyramid, pig at top | G |
-| 3-4 | Pig in a trench: walls on sides, glass ceiling above pig | F partial |
-| 3-5 | Tall stone column with pig on top | B tall stone |
-| 3-6 | Three structures in a row at different heights | A × 3 |
-| 3-7 | Two pigs: one on shelf, one in open (test arc shape) | A + open |
-| 3-8 | Whistle pig in tower — spawns second pig when hit, second in another structure | B + B |
-| 3-9 | Moving pig patrolling behind glass wall | C + moving |
-| 3-10 | King pig in pyramid fortress | G + F (king) |
-
----
-
-### Chapter 4: Factored Form (y = a(x−r₁)(x−r₂))
-**Launcher**: (1, 0.8).  
-**Insight**: Roots control landing spot — precision of second root determines where arc ends.  
-**Structure progression**: Introduce H (staircase), J (moat + tower). Precision of landing matters more.
-
-| Level | Structure Goal | Archetype |
-|-------|---------------|-----------|
-| 4-1 | r₂ controls landing — pig on ground near glass block | C (1 block) |
-| 4-2 | Pig on low shelf — must pick r₂ to pass through gap in structure | A gap |
-| 4-3 | Pig on high shelf — requires r₁ precision to arc up before landing | A elevated |
-| 4-4 | Staircase of blocks, pig at top | H |
-| 4-5 | Moat wall + tower | J |
-| 4-6 | Two pigs: r₁ hits one structure, r₂ hits another | A + A two-pig |
-| 4-7 | Pig elevated inside a castle with small window | F (window) |
-| 4-8 | King pig inside double-layered fortress | F thick |
-| 4-9 | Bonus ring above structure, pig inside structure | G + bonus |
-| 4-10 | Moving pig behind staircase structure | H + moving |
-
----
-
-### Chapter 5: Standard Form (y = ax² + bx + c)
-**Launcher**: (1, 0.8).  
-**Insight**: Three coefficients give full control. Structures can be larger, more complex, more precise targeting needed.  
-**Structure progression**: Introduce full F (castle), complex cascades, multi-layer.
-
-| Level | Structure Goal | Archetype |
-|-------|---------------|-----------|
-| 5-1 | Full castle, pig inside, glass window to shoot through | F |
-| 5-2 | c locked at 0: pig on simple shelf (constrains launch height) | A |
-| 5-3 | Two-layer pyramid, pig behind inner stone wall | G + C |
-| 5-4 | Pig on shelf, bonus ring on other side of static wall | A + J |
-| 5-5 | King pig in stone fortress, protected by two static walls | F + static walls |
-| 5-6 | Inverted structure: pig under overhanging blocks | I complex |
-| 5-7 | Moving pig in open courtyard between two block towers | E + moving |
-| 5-8 | Three-structure obstacle course, 1 pig at end | B + C + A |
-| 5-9 | Two pigs: one in glass box, one on a tower | F partial + B |
-| 5-10 | King in fortress, stone base with glass ceiling, bonus ring | F (grand) |
-
----
-
-### Chapter 6: Multi-Shot
-**Launcher**: (1, 0.8).  
-**Insight**: Each shot can weaken a structure before the killing shot. Early shots knock off glass; later shots hit exposed wood/stone/pig.  
-**Structure progression**: Structures require multiple hits in sequence. First shot weakens, second kills.
-
-| Level | Structure Goal | Notes |
-|-------|---------------|-------|
-| 6-1 | Shot 1: pig on shelf A. Shot 2: pig on tower B | Simple introduction to sequential |
-| 6-2 | 3 shots: stone castle (shot 1 hits glass roof, shot 2 hits wood, shot 3 hits pig) | Staged destruction |
-| 6-3 | 4 shots: clear a path (shot 1-2 destroy wall blocks, shot 3-4 hit pigs) | Path-clearing |
-| 6-4 | 3 shots: 3 separate towers, one pig each | Independent structures |
-| 6-5 | 3 shots: moving pig behind wall (shot 1 breaks wall, shot 2 times moving pig) | Timing + structure |
-| 6-6 | 5 shots: two sides of a divided castle, king pig in center | Complex F |
-| 6-7 | 5 shots: guard pig in tower (kill guard first), king pig in fortress | Sequence matters |
-| 6-8 | 2 shots: each must collapse a structure, bonus ring between | A + A + bonus |
-| 6-9 | 5 shots: relay of structures at varying heights | H × multiple |
-| 6-10 | 6 shots: grand finale — full castle with whistle pig, guard pigs, king | F (max) |
-
----
-
-### Chapter 7: Beyond Quadratics (Cubic, Absolute Value, Piecewise)
-**Launcher**: (1, 0.8).  
-**Insight**: Unusual arc shapes (S-curve, V-shape) can reach positions quadratics cannot. Structures designed to exploit these unique paths.  
-**Structure progression**: Structures placed where only the special arc shape can reach inside them.
-
-| Level | Form | Structure Goal | Notes |
-|-------|------|---------------|-------|
-| 7-1 | Cubic | Pig on high shelf, only S-curve arc can reach under overhanging wall | A under ceiling |
-| 7-2 | Cubic | Pig behind wall that forces arc to dip then rise (cubic path essential) | J (dip) |
-| 7-3 | Cubic | Two pigs at different levels connected by a chain structure | B double |
-| 7-4 | Absolute | V-arc through narrow horizontal gap between stacked blocks | C (gap) |
-| 7-5 | Absolute | Pig enclosed in box with top opening only — V-arc drops in | F (top opening) |
-| 7-6 | Piecewise | Pig behind partial structure, arc must come from specific angle | C (angle) |
-| 7-7 | Cubic | Two pigs on separate structures, S-curve hits both | A + A |
-| 7-8 | Vertex | Complex multi-block fortress — test all learned forms | F complex |
-| 7-9 | Absolute | King pig under glass overhangs — V-arc must go OVER the glass | I (inverted) |
-| 7-10 | Cubic | Grand finale: castle with multiple block types, bonus ring | F (grand) |
-
----
-
-### Chapter 8: Boss Levels (Timed)
-**Launcher**: (1, 0.8).  
-**Insight**: Time pressure + complex structures. Player must think fast.  
-**Structure progression**: All archetypes combined. Maximum density of blocks and targets.  
-**Note**: 5 levels only — keeps boss stage tight. Total across all chapters = 75.
-
-| Level | Time | Shots | Structure Goal | Notes |
-|-------|------|-------|---------------|-------|
-| 8-1 | 60s | 3 | Two shelves (A × 2), decide which to hit first | Speed decision, simplest boss |
-| 8-2 | 90s | 1 | The Fortress: stone walls + wood inner walls + glass roof + king | F (maximum), single equation |
-| 8-3 | 90s | 3 | 3 moving pigs each in a small glass cage | C × 3 + moving |
-| 8-4 | 90s | 3 | Mixed structures at every height — stairs + castle + tower | H + F + B |
-| 8-5 | 120s | 5 | Moving king pig behind a collapsing stone castle + guard + whistle pig | F (stone heavy) + mixed targets |
+**Last updated**: 2026-04-29  
+**Status**: Phase 1 (winnability) complete. Phase 2 (complex structures) pending.
 
 ---
 
 ## Implementation Status
 
-**Phase**: Block structures coded and winnability fixed. Needs playtest pass.  
-**Last updated**: 2026-04-29
-
-### What's Done
-- All 75 levels redesigned with block structures (commits `4b6d20d`→`6deba9c`)
-- 25 unwinnable levels identified and fixed (shot counts / target HP adjusted)
+### What's Done ✅
+- All 75 levels have block structures (commits `4b6d20d`→`6deba9c`)
+- 25 unwinnable levels fixed (commit `3762705`, pushed)
 - Validator passes: `node scripts/validate-levels.mjs` ✓ All clean
 - Winnability scan: all 75 levels pass `shots >= totalHP`
 - Ch2-L8 arc reach bug fixed (defaultParams corrected)
-- Double-comma syntax errors from automated edits cleaned up
+- Double-comma syntax errors cleaned up
 
-### Remaining Issues
-- **Structures may feel repetitive** — many chapters use similar shelf/pillar patterns. Consider varying layouts in a follow-up pass.
-- **Playtest needed** — the 3-point acceptance checklist (Section 2.10) has not been run on any level yet.
-- **Validator doesn't check winnability** — Section 10 should add: `shots >= sum of all target HP` for each level.
-- **King pigs reduced to hp:1 in many levels** — this makes boss fights less interesting. Consider adding multiShot (2-3 shots) instead of reducing HP.
+### What's Needed 🔴
+The current levels are **structurally boring**:
+- **60 of 75 levels have 1 target and 1 shot** — no decisions, no tension
+- **Most structures are "2 pillars + 1 beam" shelf** — the same pattern repeated
+- **No multi-story towers** — Angry Turds L3 already has 2-story, L5 has 3-story
+- **Pigs never inside structures** — always sitting on top, never enclosed
+- **No cascade chains** — blocks don't chain-fall because supports aren't wired deep
+- **No scoring system** — nothing to optimize, no reason to replay
 
-### Winnability Fixes Applied (2026-04-29)
+### Phase 2 TODO (This Plan)
+1. [ ] Restructure all 75 levels with complex multi-story structures
+2. [ ] Add multi-target + multi-shot to Ch3 onward
+3. [ ] Add point-based scoring system (engine change)
+4. [ ] Add winnability check to validator script
+5. [ ] Playtest pass (3-point checklist per level)
+
+---
+
+## Table of Contents
+
+1. [Problem Statement & Design Principles](#1-problem-statement--design-principles)
+2. [Engine Capabilities Audit](#2-engine-capabilities-audit)
+3. [Angry Turds Reference Analysis](#3-angry-turds-reference-analysis)
+4. [Structure Templates](#4-structure-templates)
+5. [Level Complexity Rules](#5-level-complexity-rules)
+6. [Chapter-by-Chapter Redesign](#6-chapter-by-chapter-redesign)
+7. [Scoring System (Engine Addition)](#7-scoring-system-engine-addition)
+8. [Block Coordinate & Size Guidelines](#8-block-coordinate--size-guidelines)
+9. [Support Chain Wiring Rules](#9-support-chain-wiring-rules)
+10. [Winnability & Shot Economy](#10-winnability--shot-economy)
+11. [Difficulty Progression](#11-difficulty-progression)
+12. [Files to Modify](#12-files-to-modify)
+13. [Implementation Order](#13-implementation-order)
+14. [Validator Spec](#14-validator-spec)
+15. [Winnability Fixes Applied (Phase 1)](#15-winnability-fixes-applied-phase-1)
+16. [Not In Scope](#16-not-in-scope)
+17. [Open Questions](#17-open-questions)
+
+---
+
+## 1. Problem Statement & Design Principles
+
+### Why Current Levels Fail
+The game is deterministic and low-surprise. The player sees the arc preview, adjusts `a`, fires, and the outcome is known before the ball lands. 60 of 75 levels have exactly 1 target and 1 shot — no decisions to make.
+
+Angry Birds (and Angry Turds) work because:
+1. **Multi-layer towers** — stone base, wood middle, glass top, pig at the apex
+2. **Pigs inside structures** — must breach walls to reach them
+3. **Cascade physics** — one block falls, hits another, domino effect
+4. **Multiple pigs** — some easy, some protected, creates priority decisions
+5. **Limited shots** — running out of tries creates tension
+6. **Scoring** — points for destruction, bonus for unused shots, star ratings
+
+### Design Principles
+
+**2.1 Every Level Gets a Structure (except Ch1-L1 tutorial)**  
+Simple structures (single shelf) in early levels; complex multi-layer fortresses by late chapters.
+
+**2.2 Pig Always Sits On, In, or Behind a Structure**  
+Never a pig floating in open air. Pigs should be:
+- **On top** of a block (shelf/platform) — use `restingOn: 'block_id'`
+- **Behind** a wall of blocks (shoot through glass to reach it)
+- **Inside** a structure (enclosed on 2-3 sides)
+- **Underneath** a block that can fall on it
+
+**2.3 The "Wrong Hit" Must Have Consequences**  
+Hitting the wrong part damages blocks but leaves the pig alive. A full miss visibly wrecks something. A perfect hit triggers a satisfying cascade.
+
+**2.4 Structures Match Equation Complexity**  
+Simple equations → simple structures. Complex equations → complex structures.
+
+**2.5 Block Material Tells a Story**  
+- **Glass**: 1 hit, shatters. Shelves, thin walls.
+- **Wood**: 2 hits. Middle tiers, planks between pillars.
+- **Stone**: 3 hits. Bases, fortresses, boss-level cores.
+
+**2.6 Cascade Must Be Visible and Satisfying**  
+Every structure needs at least one `supports` chain. Destroying a key block triggers falling animation.
+
+**2.7 Pig Placement Formula**  
+```
+pig.y = block.y + block.height + pig_radius
+```
+Standard pig radius = 0.45. Always calculate, never eyeball.
+
+**2.8 Arc Pass-Through Rule**  
+The ball arc is pre-calculated once at launch. It passes through ALL destructible blocks on its trajectory. Cannot use one block to "shield" a block behind it. Design cascades perpendicular to the arc path.
+
+**2.9 Supports Wiring Required**  
+The engine does NOT infer supports geometrically. Explicit `supports` arrays required for every physical relationship.
+
+**2.10 Level Acceptance Checklist (Playtest Protocol)**  
+A level is done when:
+1. **Solvable**: An arc within slider range can destroy the pig
+2. **Punishing on miss**: A "wrong" arc hits structure but leaves pig alive
+3. **Cascade fires**: Destroying the intended block triggers falling animation
+
+---
+
+## 2. Engine Capabilities Audit
+
+Everything needed for complex structures already exists. No engine changes required for Phase 2 level work.
+
+| Feature | Supported? | Where |
+|---------|-----------|-------|
+| Multi-hit blocks (glass 1 / wood 2 / stone 3) | ✅ | `obstacleHP`, `hitObstacle()` |
+| Cascade (block falls when support destroyed) | ✅ | `supports` wiring, `_startFalling()` |
+| Falling blocks damage targets | ✅ | `_onBlockLand()` checks pig overlap |
+| Falling blocks damage other blocks | ✅ | `_onBlockLand()` cascade damage |
+| Targets resting on blocks (fall when block dies) | ✅ | `restingOn`, `_startFallingTargets()` |
+| Multi-HP targets (dodge after hit) | ✅ | `recordHit()`, `_dodgeTarget()` |
+| Moving targets | ✅ | `MovingTarget`, `moving: { axis, range, speed }` |
+| Multi-shot (sequential shots) | ✅ | `multiShot`, `advanceShot()` |
+| Timer pressure | ✅ | `timer: { seconds }` |
+| Bonus rings | ✅ | `bonusRing: { x, y, radius }` |
+| Star ratings | ✅ | `starThresholds`, `starMode: 'moves'/'bonus'` |
+| Bounce off indestructible walls | ✅ | `detectBounceSurface()`, bounce frames |
+| Whistle pig (spawns second pig on death) | ✅ | `pigType: 'whistle'` |
+| King pig (higher HP) | ✅ | `pigType: 'king'`, `hp: N` |
+
+**What's missing (needs engine work):**
+- Point-based scoring (destruction points, accuracy bonus)
+- "Shots remaining" display for multi-shot levels
+- Combo/chain detection for cascade kills
+- Score persistence / leaderboard
+
+---
+
+## 3. Angry Turds Reference Analysis
+
+**Source**: `github.com/theCAMML/angry-turds` (single `index.html` file)
+
+### Key Differences from Happy Nerds
+Angry Turds has **real momentum-transfer physics** — blocks are `Body` objects with velocity, gravity, rotation, and bouncing. When a turd hits a block, it transfers momentum. Blocks that were resting "wake up" and start falling. Falling blocks crush pigs below.
+
+**Our engine does NOT have momentum transfer.** Our collision is binary: arc point enters block rectangle → block takes 1 damage. Blocks only fall straight down when `supports` link is severed.
+
+### Structure Patterns to Copy
+Despite the physics difference, the structural layouts are directly applicable:
+
+| Pattern | Angry Turds Level | Block Count | Pigs | How to Adapt |
+|---------|------------------|-------------|------|-------------|
+| **2-story tower** (stone pillars → beam → wood pillars → beam → pig) | L3, L5, L8 | 6-7 | 1-2 | Stack with `supports` chains. Destroy base → entire tower cascades. |
+| **3-story tower** (stone→wood→glass layers) | L5 | 7 | 1 | 9 blocks total. 3 `supports` chain levels. |
+| **Bridge** (3 stone pillars, long wood beams, pigs ON beams) | L6 | 8 | 3 | Pigs use `restingOn: beam_id`. Wide structures. |
+| **Fortress** (4 stone walls, beams, wood 2nd floor, pigs inside) | L7 | 12+ | 4 | Multiple `supports` chains. Pigs inside on floor beams. |
+| **Twin towers** (2 independent stacked towers) | L8 | 10+ | 2 | Separate `supports` chains per tower. |
+| **Bunker** (stone roof, glass interior columns, pigs sandwiched) | L9 | 10+ | 2 | Pig between floor and ceiling blocks. |
+| **Gauntlet** (4 structures in a line: glass→stone→wood→glass) | L10 | 16-24 | 5 | Multiple independent structures at different x positions. |
+
+### Scale Comparison
+Angry Turds L10 has **16-24 structures** per level. Happy Nerds currently has **3-9**. Target:
+- Ch1: 3-6 blocks (tutorial, keep simple)
+- Ch2-Ch3: 5-9 blocks (introduce stacking)
+- Ch4-Ch5: 8-14 blocks (multi-story, multi-structure)
+- Ch6: 10-18 blocks (multi-shot justifies complex layouts)
+- Ch7-Ch8: 12-24 blocks (maximum complexity)
+
+---
+
+## 4. Structure Templates
+
+These replace the current "2 pillars + 1 beam" pattern with actual variety.
+
+### Template 1: Multi-Story Tower (2-3 stories)
+```
+        [pig]              ← pig on top beam
+    ┌───glass───┐          ← glass beam (1hp)
+    │           │          ← glass pillars (1hp each)
+    ├────wood───┤          ← wood beam (2hp)
+    │           │          ← wood pillars (2hp each)
+    ├───stone───┤          ← stone beam (3hp)
+    │           │          ← stone pillars (3hp each)
+    ╘═══════════╛          ← ground
+```
+**Blocks**: 9 (3 beams + 6 pillars)  
+**Supports chain**: stone_pillars → stone_beam → wood_pillars → wood_beam → glass_pillars → glass_beam  
+**Cascade**: Destroy stone pillar → stone beam falls → wood pillars lose support → fall → glass falls → pig drops  
+**Variants**: 2-story (6 blocks), 3-story (9 blocks), asymmetric (different widths per story)
+
+### Template 2: Enclosed Fortress (pig inside)
+```
+    ┌───glass───┐          ← glass roof (1hp)
+    │           │
+ stone  [pig]  stone       ← stone walls (3hp each), pig restingOn floor
+    │           │
+    └───wood────┘          ← wood floor (2hp), supported by stone base pillars
+    ┌─stone─┐ ┌─stone─┐   ← stone base pillars
+```
+**Blocks**: 6-7  
+**Key**: Pig has `restingOn: 'floor'`. Floor has `supports: ['base_l', 'base_r']`. Destroy base pillars → floor falls → pig falls to ground.  
+**Shot options**: Arc through glass roof, or destroy base to drop pig, or arc through gap between walls.
+
+### Template 3: Pig Sandwich (pig between floor and ceiling)
+```
+    ┌───stone───┐          ← stone ceiling (3hp)
+    │   [pig]   │          ← pig restingOn glass_floor
+    ├───glass───┤          ← glass floor (1hp, fragile!)
+    │           │          ← support pillars
+    ╘═══════════╛
+```
+**Blocks**: 5-6  
+**Strategy**: Hit glass floor → pig falls to ground → easier second shot. Or arc through side gap.
+
+### Template 4: Domino Chain
+```
+    ┌┐  ┌┐  ┌┐  ┌┐
+    ││  ││  ││  ││       ← thin pillars (different materials)
+    ││  ││  ││  [pig]    ← pig behind last tower
+    ╘╧  ╘╧  ╘╧  ╘╧
+```
+**Blocks**: 8-12 (4 mini-towers, each 2-3 blocks)  
+**Supports wiring**: Each tower's beam supports the next tower's base pillar. Hit first tower → chain reaction → last tower falls on pig.
+
+### Template 5: Multi-Pig Compound (separate structures)
+```
+    ┌─glass─┐  ┌─wood──┐  ┌stone──┐
+    │ [pig1]│  │[pig2] │  │[pig3] │
+    └───────┘  └───────┘  └───────┘
+```
+**Blocks**: 6-9 (2-3 per structure)  
+**Strategy**: Easy glass pig first (1 shot), then wood pig (1-2 shots), then stone pig (2-3 shots). Player must prioritize.
+
+### Template 6: Stacked Cages (2 pigs, one above the other)
+```
+    ┌──glass──┐           ← top cage
+    │ [pig_t] │           ← top pig restingOn mid_floor
+    ├──wood───┤           ← middle floor (separates cages)
+    │ [pig_b] │           ← bottom pig restingOn base
+    └──stone──┘           ← base
+```
+**Blocks**: 7-8  
+**Strategy**: Top pig easy (glass). Bottom pig harder. Destroy mid_floor → top pig falls into bottom cage area.  
+**Cascade potential**: Destroy base → everything falls, both pigs land on ground.
+
+### Template 7: Bridge (wide, multi-pig)
+```
+    ┌─beam1─┐ ┌─beam2─┐  ← long wood beams spanning pillars
+    [pig1]  [pig2]  [pig3] ← pigs restingOn beams
+    ┌pillar┐ ┌pillar┐ ┌pillar┐ ← stone pillars
+```
+**Blocks**: 6-8  
+**Key**: Long beams supported by multiple pillars. Destroy one pillar → that section of beam falls → pigs drop.
+
+### Template 8: Castle (multi-room)
+```
+    ┌─glass─┬─glass─┐     ← glass roof
+    │ [pig1]│ [pig2]│     ← pigs in separate rooms
+    ├─stone─┼─stone─┤     ← stone dividing wall + outer walls
+    └───────┴───────┘     ← wood floor
+    ┌pill┐ ┌pill┐ ┌pill┐  ← floor support pillars
+```
+**Blocks**: 10-14  
+**Key**: Dividing wall creates two rooms. Each room is independent. Player can go for either pig first.
+
+---
+
+## 5. Level Complexity Rules
+
+These rules prevent the "every level looks the same" problem.
+
+### Anti-Repetition Rules
+1. **No two consecutive levels with the same template** — alternate tower/fortress/compound
+2. **No more than 2 levels per chapter with "2 pillars + 1 beam" simple shelf** pattern
+3. **Block count must increase across chapters** (see Section 11)
+4. **Every chapter's L10 must use ≥3 structure templates in one level** (compound layout)
+5. **At least 2 levels per chapter (L6+) with 3+ targets**
+6. **Pig placement variety per chapter**: at least 1 ground pig, 1 elevated pig, 1 enclosed pig
+
+### Multi-Target + Multi-Shot Rules
+For every chapter:
+- **L1–L3**: 1 target, 1 shot, simple structures (tutorial)
+- **L4–L6**: 1–2 targets, 1 shot (must cascade-hit second, or arc hits both)
+- **L7–L9**: 2–3 targets, multiShot 2–3 shots
+- **L10 (boss)**: 3–4 targets, multiShot 3–5 shots, compound structure
+
+### Targets Inside Structures
+At least 1 target per level from L4 onward should have `restingOn` pointing to a destructible block. Destroying that block drops the pig to ground level.
+
+---
+
+## 6. Chapter-by-Chapter Redesign
+
+### Chapter 1: Stretch Form (y = ax²)
+**Launcher**: (1, 4.5) elevated. Arc descends.  
+**Single coefficient**: `a` only.  
+**Teaching goal**: Introduce blocks, materials, and cascade one at a time.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 1-1 | 1 | 1 | None (tutorial) | 0 | Arc only, no structure |
+| 1-2 | 1 | 1 | Simple Shelf (A) | 3 | First cascade — glass shelf drops pig |
+| 1-3 | 1 | 1 | Shelf (farther) | 3 | Wider arc needed |
+| 1-4 | 1 | 1 | 2-Story Tower | 6 | Stone base + glass top, pig at apex |
+| 1-5 | 1 | 1 | Elevated Shelf | 4 | Pig high up, arc must reach height |
+| 1-6 | 1 | 1 | Fortress Wall (C) | 4 | Pig behind wall |
+| 1-7 | 1 | 1 | Twin Towers (E) | 7 | Shared shelf between two towers |
+| 1-8 | 1 | 1 | Shelf + Moving | 3 | First moving target + structure |
+| 1-9 | 1 | 1 | Wall + Moving | 4 | Moving pig behind glass wall |
+| 1-10 | 2 | 2 (multi) | Compound (A+B) | 8 | Two structures, 2 shots, first "real" level |
+
+### Chapter 2: Vertex Form (y = a(x−h)² + k)
+**Launcher**: (1, 0.8) ground level.  
+**Coefficients**: `a`, `h` (required), `k` auto-derived.  
+**Teaching goal**: Mixed materials, hanging platforms, tall towers.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 2-1 | 1 | 1 | Wall (C) | 2 | Single glass block intro |
+| 2-2 | 1 | 1 | Hanging Platform (D) | 3 | Pig on glass, pillars below |
+| 2-3 | 1 | 1 | 2-Story Tower | 6 | Wood base + glass top |
+| 2-4 | 1 | 1 | Partial Castle (F) | 5 | 2 stone walls, wood top, pig inside |
+| 2-5 | 1 | 1 | 3-Story Tower | 9 | Stone/wood/glass layers, tall, needs high k |
+| 2-6 | 1 | 1 | Thin Wall (C) | 3 | Glass wall + bonus ring |
+| 2-7 | 1 | 1 | Moat + Tower (J) | 5 | Static wall + hanging platform behind |
+| 2-8 | 2 | 1 | Double Shelf (A×2) | 6 | 2 pigs, 2 shelves, arc must hit both or cascade kills one |
+| 2-9 | 1 | 1 | Hanging + Ceiling | 4 | Glass platform, arc must go under ceiling |
+| 2-10 | 2 | 2 (multi) | Castle + Moving (F) | 8 | Moving pig in castle, 2 shots |
+
+### Chapter 3: Sign & Shape (a can be positive)
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Upward arcs, buried pigs, pyramids, multiple targets.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 3-1 | 1 | 1 | Elevated Shelf | 4 | Must arc UP to reach |
+| 3-2 | 1 | 1 | Buried Pig (I) | 4 | Pig under glass + wood blocks |
+| 3-3 | 1 | 1 | Pyramid (G) | 5 | Wide stone base, pig at top |
+| 3-4 | 1 | 1 | Trench Fortress | 5 | Walls on sides, glass ceiling above pig |
+| 3-5 | 1 | 1 | Tall Stone Tower | 7 | 2-story stone, pig at top |
+| 3-6 | 2 | 1 | Triple Shelf (A×3) | 9 | 3 structures at different heights, 2 pigs |
+| 3-7 | 2 | 1 | Shelf + Open | 5 | One pig on shelf, one in open (arc shape test) |
+| 3-8 | 2 | 2 (multi) | Tower + Tower | 10 | Whistle pig in tower → spawns pig in second tower |
+| 3-9 | 1 | 1 | Wall + Moving | 4 | Moving pig behind glass wall |
+| 3-10 | 2 | 2 (multi) | Pyramid Fortress | 10 | King pig (hp:2) in pyramid + guard pig |
+
+### Chapter 4: Factored Form (y = a(x−r₁)(x−r₂))
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Roots control landing precision. Multi-structure, multi-pig.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 4-1 | 1 | 1 | Wall (C) | 2 | r₂ controls landing behind glass |
+| 4-2 | 1 | 1 | Shelf through Gap (A) | 4 | Must pick r₂ to arc through gap |
+| 4-3 | 1 | 1 | Elevated Shelf | 5 | r₁ precision to arc up before landing |
+| 4-4 | 2 | 1 | Staircase (H) | 6 | Blocks ascending, pig at top + bonus ring |
+| 4-5 | 1 | 1 | Moat + Tower (J) | 6 | Static wall + fortress behind |
+| 4-6 | 2 | 1 | Twin Shelf (A+A) | 6 | r₁ hits one structure, r₂ hits another |
+| 4-7 | 2 | 2 (multi) | Castle Window (F) | 8 | Pig inside fortress with small window + pig on roof |
+| 4-8 | 1 | 1 | Double Fortress | 10 | King (hp:2) inside double-layered fortress |
+| 4-9 | 2 | 2 (multi) | Tower + Bonus (G) | 8 | Pig in tower + bonus ring over separate structure |
+| 4-10 | 3 | 3 (multi) | Compound | 14 | Moving pig behind staircase + 2 pigs in separate structures |
+
+### Chapter 5: Standard Form (y = ax² + bx + c)
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Full coefficient control = maximum structural complexity.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 5-1 | 1 | 1 | Full Castle (F) | 8 | Pig inside, glass window to shoot through |
+| 5-2 | 2 | 1 | Shelf + Open | 4 | c=0 constrains height, 2 pigs |
+| 5-3 | 1 | 1 | Two-Layer Pyramid | 8 | Pig behind inner stone wall |
+| 5-4 | 2 | 2 (multi) | Shelf + Moat (A+J) | 7 | Pig on shelf + bonus ring behind wall |
+| 5-5 | 2 | 2 (multi) | King Fortress + Walls | 10 | King (hp:2) in stone fortress + guard pig |
+| 5-6 | 2 | 1 | Inverted Structure (I) | 8 | Pig under overhanging blocks, cascade releases them |
+| 5-7 | 2 | 2 (multi) | Twin Towers + Moving | 10 | Moving pig between two block towers |
+| 5-8 | 3 | 3 (multi) | Obstacle Course | 12 | Three structures in a row, 1 pig each |
+| 5-9 | 3 | 3 (multi) | Glass Box + Tower | 10 | Pig in glass box + pig on tower + guard pig |
+| 5-10 | 3 | 4 (multi) | Grand Fortress | 14 | King (hp:3) in stone fortress + 2 guards + bonus ring |
+
+### Chapter 6: Multi-Shot
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Sequential destruction. Early shots weaken, later shots kill.
+
+| Level | Targets | Shots | Template | Blocks | Notes |
+|-------|---------|-------|----------|--------|-------|
+| 6-1 | 2 | 2 | Shelf + Tower | 8 | Shot 1: shelf pig. Shot 2: tower pig |
+| 6-2 | 1 | 3 | 3-Story Castle | 12 | Shot 1: glass roof, Shot 2: wood walls, Shot 3: king pig (hp:2) |
+| 6-3 | 2 | 4 | Fortress + Guards | 14 | Clear wall blocks (shots 1-2), hit pigs (shots 3-4) |
+| 6-4 | 3 | 3 | Triple Tower | 12 | 3 separate towers, one pig each |
+| 6-5 | 2 | 3 | Wall + Moving Pig | 8 | Shot 1: break wall. Shots 2-3: time moving pig |
+| 6-6 | 3 | 5 | Divided Castle | 16 | Two rooms, king pig in center + 2 guards |
+| 6-7 | 2 | 5 | Guard + King | 14 | Guard in tower (kill first), king (hp:3) in fortress |
+| 6-8 | 2 | 2 | Double Collapse + Bonus | 10 | Each shot must collapse a structure, bonus ring between |
+| 6-9 | 3 | 5 | Relay Towers | 16 | Structures at varying heights, whistle pig + guard + king |
+| 6-10 | 4 | 6 | Grand Finale Castle | 20+ | Full castle: whistle pig, 2 guards, king (hp:3), bonus ring |
+
+### Chapter 7: Beyond Quadratics (Cubic, Absolute Value, Piecewise)
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Unusual arc shapes reach positions quadratics can't.
+
+| Level | Targets | Shots | Form | Template | Blocks | Notes |
+|-------|---------|-------|------|----------|--------|-------|
+| 7-1 | 1 | 1 | Cubic | Shelf under Ceiling | 6 | S-curve arc reaches under overhang |
+| 7-2 | 2 | 1 | Cubic | Moat + Dip (J) | 8 | Arc dips then rises — hits pig behind wall |
+| 7-3 | 2 | 2 (multi) | Cubic | Double Tower | 10 | Two pigs at different levels, S-curve hits both |
+| 7-4 | 1 | 1 | Absolute | Gap Shot (C) | 6 | V-arc through narrow horizontal gap |
+| 7-5 | 2 | 2 (multi) | Absolute | Top-Entry Box (F) | 10 | Pig enclosed, V-arc drops in through top opening |
+| 7-6 | 2 | 2 (multi) | Piecewise | Angle Shot (C) | 8 | Pig behind partial structure, arc from specific angle |
+| 7-7 | 3 | 3 (multi) | Cubic | Twin Towers | 12 | S-curve hits both towers, 3 pigs total |
+| 7-8 | 2 | 2 (multi) | Vertex | Complex Fortress | 14 | Multi-block fortress, king (hp:2) + guard |
+| 7-9 | 2 | 2 (multi) | Absolute | Inverted Bunker | 12 | King (hp:2) under glass overhangs, V-arc goes OVER glass |
+| 7-10 | 3 | 3 (multi) | Cubic | Grand Castle | 18 | Castle with multiple block types, king (hp:3) + guard + whistle |
+
+### Chapter 8: Boss Levels (Timed)
+**Launcher**: (1, 0.8).  
+**Teaching goal**: Time pressure + maximum complexity.
+
+| Level | Time | Targets | Shots | Template | Blocks | Notes |
+|-------|------|---------|-------|----------|--------|-------|
+| 8-1 | 60s | 2 | 3 | Twin Shelf (A×2) | 8 | Speed decision — which to hit first |
+| 8-2 | 90s | 1 | 1 | Maximum Fortress | 14 | Stone walls + wood inner + glass roof + king (hp:1) |
+| 8-3 | 90s | 3 | 3 | Triple Cage | 12 | 3 moving pigs each in glass cage |
+| 8-4 | 90s | 3 | 3 | Mixed Compound | 16 | Stairs + castle + tower, guard + 2 pigs |
+| 8-5 | 120s | 4 | 5 | Ultimate Castle | 20+ | Moving king (hp:2) + guard + whistle + bonus ring |
+
+---
+
+## 7. Scoring System (Engine Addition)
+
+### Formula
+```
+basePoints     = 1000 per target killed
+blockBonus     = 50 × glass blocks + 100 × wood blocks + 200 × stone blocks
+shotBonus      = 500 × unused shots
+ringBonus      = 300 if bonus ring collected
+cascadeBonus   = 200 per cascade kill (falling block kills pig)
+```
+
+### Star Thresholds (point-based)
+- ⭐ = completed (any score)
+- ⭐⭐ = 60% of max possible points
+- ⭐⭐⭐ = 90% of max possible points
+
+### Implementation
+- Add `scoringMode: 'points'` to level config
+- Add `calcPoints()` to `src/core/scoring.js`
+- Track `blocksDestroyed`, `unusedShots`, `cascadeKills` in `LevelSession`
+- Display running score in UI
+- Persist high scores per level
+
+---
+
+## 8. Block Coordinate & Size Guidelines
+
+**World space**: 0–10 wide, 0–6 tall. Ground at y=0.6.  
+**Standard block sizes** (w × h in world units):
+
+| Role | Width | Height | Notes |
+|------|-------|--------|-------|
+| Thin pillar | 0.3-0.4 | 0.5-1.2 | Tower legs, wall segments |
+| Wide pillar | 0.5-0.6 | 0.8-1.2 | Sturdier base |
+| Shelf (short) | 1.0-1.3 | 0.2-0.25 | Rests on 2 pillars |
+| Shelf (wide) | 1.5-2.0 | 0.2-0.25 | Spans wider gap |
+| Floor block | 0.5 | 0.5 | Square brick |
+| Wall segment | 0.3-0.4 | 0.5-0.8 | Vertical wall bricks |
+| Ceiling slab | 1.5 | 0.3 | Overhanging top |
+
+**Placement**: Leave ≥0.5 world units between structure and world edges. Pig center should be 0.3-0.5 above block top (slight overlap looks "resting").
+
+---
+
+## 9. Support Chain Wiring Rules
+
+The `supports` array means "when I am destroyed, these blocks may fall."
+
+### Multi-Story Tower
+```js
+stone_pillar_l: supports: ['stone_beam']
+stone_pillar_r: supports: ['stone_beam']
+stone_beam:     supports: ['wood_pillar_l', 'wood_pillar_r']
+wood_pillar_l:  supports: ['wood_beam']
+wood_pillar_r:  supports: ['wood_beam']
+wood_beam:      supports: ['glass_pillar_l', 'glass_pillar_r']
+glass_pillar_l: supports: ['glass_beam']
+glass_pillar_r: supports: ['glass_beam']
+glass_beam:     supports: []  // topmost — nothing above
+```
+Destroy stone pillar → stone beam falls → lands on wood pillars (damages them) → if wood dies → wood beam falls → etc.
+
+### Enclosed Fortress
+```js
+base_l:     supports: ['floor']
+base_r:     supports: ['floor']
+floor:      supports: []  // floor has pig restingOn it
+wall_l:     supports: ['ceiling']
+wall_r:     supports: ['ceiling']
+ceiling:    supports: []  // ceiling can fall if walls die
+```
+Destroy base → floor falls → pig drops. Destroy wall → ceiling falls → lands on pig (cascade kill).
+
+---
+
+## 10. Winnability & Shot Economy
+
+### Rule
+A level is winnable if: `shots >= totalTargetHP`
+
+BUT cascade kills (falling blocks crushing pigs) mean `shots < totalHP` can still be winnable. Design intent:
+
+| Tightness | Formula | Feel |
+|-----------|---------|------|
+| Comfortable | shots = totalHP + 1 | Learn the level |
+| Tight | shots = totalHP | Must be efficient |
+| Expert | shots = totalHP - 1 | Requires cascade kill to win |
+
+For Phase 2: default to `shots = totalHP` (tight). Use `shots = totalHP - 1` only for late-chapter levels where cascade path is guaranteed.
+
+---
+
+## 11. Difficulty Progression
+
+| Stage | Chapters | Targets/Level | Blocks/Level | Shots | Cascade Depth |
+|-------|----------|---------------|-------------|-------|---------------|
+| Tutorial | Ch1 L1-L3 | 1 | 0-3 | 1 | 0 |
+| Introduction | Ch1 L4-L7, Ch2 L1-L4 | 1 | 3-6 | 1 | 1 |
+| Intermediate | Ch2 L5+, Ch3, Ch4 | 1-2 | 5-10 | 1-2 | 1-2 |
+| Advanced | Ch5, Ch6 | 2-3 | 8-14 | 2-5 | 2-3 |
+| Expert | Ch7, Ch8 | 2-4 | 12-20+ | 2-5 | 2-4 |
+
+---
+
+## 12. Files to Modify
+
+| File | Change | Phase |
+|------|--------|-------|
+| `src/levels/chapters/chapter1.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter2.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter3.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter4.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter5.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter6.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter7.js` | Restructure all 10 levels | 2 |
+| `src/levels/chapters/chapter8.js` | Restructure all 5 levels | 2 |
+| `src/core/scoring.js` | Add `calcPoints()` | 2 |
+| `src/game/LevelSession.js` | Track cascadeKills, blocksDestroyed | 2 |
+| `src/ui/*` | Score display, shots remaining | 2 |
+| `scripts/validate-levels.mjs` | Add winnability check | 2 |
+
+---
+
+## 13. Implementation Order
+
+**Phase 2A — Restructure Ch4–Ch8** (these benefit most from complexity)
+1. Ch4 (factored form — precision landing → multi-structure)
+2. Ch5 (standard form — full control → complex fortresses)
+3. Ch6 (multi-shot — sequential destruction → staged layouts)
+4. Ch7 (beyond quadratics — unique arcs → unique structure placement)
+5. Ch8 (boss — timed, maximum density)
+
+**Phase 2B — Restructure Ch1–Ch3** (restraint — keep tutorial feel)
+6. Ch1 (stretch form — introduce blocks one at a time)
+7. Ch2 (vertex form — introduce mixed materials, towers)
+8. Ch3 (sign & shape — upward arcs, buried pigs, multi-target)
+
+**Phase 2C — Scoring System**
+9. Add `calcPoints()` to scoring.js
+10. Track cascadeKills, blocksDestroyed in LevelSession
+11. Add score display to UI
+12. Persist high scores
+
+**Phase 2D — Validator Enhancement**
+13. Add winnability check to `scripts/validate-levels.mjs`
+14. Add `restingOn` reference validation
+15. Add block overlap detection
+
+**Phase 2E — Playtest**
+16. Run 3-point checklist on every level
+17. Fix any solvability issues
+18. Fine-tune difficulty
+
+**Per-chapter workflow:**
+1. Read current level data
+2. Design new structures per the template rules above
+3. Write level data with proper `supports` chains
+4. `node scripts/validate-levels.mjs` — fix errors
+5. Winnability scan — `shots >= totalHP`
+6. Playtest (3-point checklist from Section 2.10)
+7. Move to next chapter
+
+---
+
+## 14. Validator Spec
+
+`scripts/validate-levels.mjs` should check:
+
+1. **ID uniqueness**: No two obstacles or targets share an ID within a level
+2. **Supports references exist**: Every ID in any `supports` array is a real obstacle ID
+3. **Pig above ground**: `pig.y >= 0.6 + pig.radius`
+4. **Pig above its block**: If `restingOn` is set, `pig.y >= block.y + block.height + pig.radius - 0.05`
+5. **Blocks within world bounds**: `block.x >= 0`, `block.x + block.width <= 10`, `block.y >= 0.6`
+6. **No overlapping blocks**: No two blocks share significant area
+7. **Winnability**: `shots >= sum of all target HP` for every level
+8. **Supports chains**: Every destructible block with blocks above it must have `supports` wiring
+
+Run with: `node scripts/validate-levels.mjs`
+
+---
+
+## 15. Winnability Fixes Applied (Phase 1)
 
 | Chapter | Levels Fixed | Fix Applied |
 |---------|-------------|-------------|
-| Ch2 | L5, L8 | HP 2→1; L8 also got defaultParams arc fix |
+| Ch2 | L5, L8 | HP 2→1; L8 defaultParams arc fix |
 | Ch3 | L5, L7, L8, L10 | HP reduced; L7/L8 removed second target |
 | Ch4 | L6, L7, L8 | HP reduced; L6 removed second target |
 | Ch5 | L1, L3, L5, L9, L10 | HP reduced; L9 removed second target |
@@ -293,164 +627,26 @@ These are the building blocks of level design. Each chapter introduces new arche
 | Ch7 | L3, L5, L6, L7, L8, L9, L10 | HP reduced; L3/L7 removed first target |
 | Ch8 | L2, L4, L5 | HP reduced to match shot counts |
 
----
-
-## 5. Block Coordinate & Size Guidelines
-
-**World space**: 0–10 wide, 0–6 tall. Ground at y=0.6.  
-**Standard block sizes** (w × h in world units):
-
-| Role | Width | Height | Notes |
-|------|-------|--------|-------|
-| Thin pillar | 0.4 | 0.8–1.2 | Tower legs, wall segments |
-| Wide pillar | 0.6 | 0.8–1.2 | Sturdier base |
-| Shelf (short) | 1.3 | 0.25 | Rests on 2 pillars |
-| Shelf (wide) | 2.0 | 0.25 | Spans wider gap |
-| Floor block | 0.5 | 0.5 | Square brick |
-| Wall segment | 0.4 | 0.6 | Vertical wall bricks |
-| Ceiling slab | 1.5 | 0.3 | Overhanging top |
-
-**Structure placement rule**: Leave at least 0.5 world units between any structure and the world edges. Pig target center should be 0.3–0.5 above the top of any block it sits on (so it overlaps slightly, looks "resting on" the block).
+These were emergency fixes. Phase 2 will supersede most of them with proper multi-shot + multi-target designs.
 
 ---
 
-## 6. Support Chain Rules
+## 16. Not In Scope
 
-The `supports` array on each block means "when I am destroyed, these blocks may fall."
-
-**Tower (bottom-to-top)**:
-```
-stone_base: supports: ['wood_mid']
-wood_mid:   supports: ['glass_top']
-glass_top:  supports: []
-```
-Destroy base → mid falls → top falls → pig (sitting on top) is now on the ground.
-
-**Shelf on pillars**:
-```
-pillar_left:  supports: ['shelf']
-pillar_right: supports: ['shelf']
-shelf:        supports: []
-```
-Both pillars must be destroyed for shelf to fall. Destroy one → shelf stays but structure is weakened. This creates a "partial progress" state.
-
-**Cascade fortress**:
-```
-outer_glass: supports: ['wood_inner']
-wood_inner:  supports: ['stone_core']
-stone_core:  supports: []
-```
-Destroy glass → wood falls → landing on stone causes damage to stone.
+- **Engine physics changes** — no momentum transfer, no block rotation
+- **New block types** — only glass/wood/stone
+- **Block art/sprites** — procedural drawing stays
+- **Level select UI** — grid layout stays
+- **Dynamic block spawning** — blocks are static at level load
+- **Arc redirection** — ball path doesn't change after hitting a block
 
 ---
 
-## 7. Difficulty Progression Framework
+## 17. Open Questions
 
-| Stage | Chapters | Structure Complexity | Blocks per Level | Cascade Depth |
-|-------|----------|---------------------|-----------------|---------------|
-| Tutorial | Ch1 L1–L3 | 0–1 block | 0–3 | 0 |
-| Introduction | Ch1 L4–L7, Ch2 L1–L4 | 2–3 blocks | 3–4 | 1 level |
-| Intermediate | Ch2 L5+, Ch3, Ch4 | 3–5 blocks | 4–6 | 1–2 levels |
-| Advanced | Ch5, Ch6 | 4–7 blocks | 5–8 | 2–3 levels |
-| Expert | Ch7, Ch8 | 6–10 blocks | 6–10 | 2–4 levels |
-
----
-
-## 8. Files to Modify
-
-| File | Change |
-|------|--------|
-| `src/levels/chapters/chapter1.js` | Full level redesign |
-| `src/levels/chapters/chapter2.js` | Full level redesign |
-| `src/levels/chapters/chapter3.js` | Full level redesign |
-| `src/levels/chapters/chapter4.js` | Full level redesign |
-| `src/levels/chapters/chapter5.js` | Full level redesign |
-| `src/levels/chapters/chapter6.js` | Full level redesign |
-| `src/levels/chapters/chapter7.js` | Full level redesign |
-| `src/levels/chapters/chapter8.js` | Full level redesign |
-
-**No engine changes required.** The block system, cascade physics, renderer, and arc-through-block behavior already exist and work. This is purely a data/level-design change.
-
----
-
-## 9. Implementation Order
-
-**Step 0 — Write the validator first** (Section 10). ✅ DONE — `scripts/validate-levels.mjs` passes cleanly on all 75 existing levels.
-
-Then, one chapter at a time:
-
-1. Write level data for the chapter
-2. `node scripts/validate-levels.js` — fix any errors before play-testing
-3. Play-test using the 3-point acceptance checklist (Section 2.10)
-4. Move to the next chapter only when all levels pass
-
-**Order**: Ch1 → Ch2 → Ch3 → Ch4 → Ch5 → Ch6 → Ch7 → Ch8  
-Ch6 (multi-shot) depends on block feel being dialled in from Ch1–5 — do not skip ahead.  
-Ch8 (timed) last — boss levels reuse proven archetypes from all prior chapters.
-
----
-
-## 10. Dev-Time Validator
-
-Add a script at `scripts/validate-levels.js` that imports all chapter files and checks:
-
-1. **ID uniqueness**: No two obstacles or targets share an ID within a level
-2. **Supports references exist**: Every ID in any `supports` array is a real obstacle ID in the same level
-3. **Pig above ground**: `pig.y >= 0.6 + pig.radius` (pig center is above ground)
-4. **Pig above its block**: If a pig is intended to sit on a block, `pig.y >= block.y + block.height + pig.radius - 0.05` (small tolerance)
-5. **Blocks within world bounds**: `block.x >= 0`, `block.x + block.width <= 10`, `block.y >= 0.6`
-6. **No overlapping blocks**: No two blocks in the same level share significant area
-7. **Winnability**: `shots >= sum of all target HP` for every level (each shot does at most 1 damage to 1 target)
-
-Run with: `node scripts/validate-levels.js`
-
----
-
-## 11. What Already Exists (No Engine Changes Needed)
-
-| Feature | Where | Status |
-|---------|-------|--------|
-| Block HP system (glass/wood/stone) | `LevelSession.js` | Complete |
-| Cascade via `supports` array | `LevelSession._getSupportedBlocks` | Complete |
-| Falling animation with gravity | `LevelSession.updateFalling` | Complete |
-| Block rendering (3 types + cracks + flash) | `Renderer._drawBlockByType` | Complete |
-| Arc passes through blocks (no clip) | `arc.js clipArcAtObstacle` | Complete |
-| Frame-by-frame block damage | `GameController._animateLaunch` | Fixed (this session) |
-| Falling block lands on targets | `LevelSession._onBlockLand` | Complete |
-| Falling block damages other blocks | `LevelSession._onBlockLand` | Complete |
-
----
-
-## 12. NOT In Scope
-
-- **Engine changes**: No modifications to arc math, bounce physics, or rendering code
-- **New block types**: Only glass/wood/stone — no new materials
-- **Block art/sprites**: Current procedural drawing stays as-is
-- **Level select UI changes**: Grid layout stays the same
-- **Dynamic block spawning**: Blocks are static at level load; no mid-level block placement
-- **Block-on-block stacking physics**: Blocks only fall to ground or to the top of another fixed block — they don't stack dynamically on each other after landing
-- **Arc redirection**: The ball's path does not change after hitting/destroying a block
-
----
-
-## 13. Open Questions
-
-- Should pigs be placed slightly *inside* block bounding boxes (so they appear "protected") or always above them? (Recommendation: always above, using the section 2.7 formula)
-- Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
-- **Crack preview on arc (RESOLVED)**: Show a crack indicator on blocks the preview arc passes through. Ch1: all levels (tutorial crutch). Ch2: levels 1-3 only, gone by level 4. Ch3+: no crack preview. The player learns to read the arc themselves early on.
-
----
-
-## GSTACK REVIEW REPORT
-
-| Review | Trigger | Why | Runs | Status | Findings |
-|--------|---------|-----|------|--------|----------|
-| CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
-| Codex Review | `/codex review` | Independent 2nd opinion | 0 | — | — |
-| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | CLEAR (PLAN) | 6 issues, 0 critical gaps |
-| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
-| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
-
-**UNRESOLVED:** 0  
-**VERDICT:** ENG CLEARED — ready to implement. Build the validator first (Section 10), then Ch1.
-- Should stone blocks ever be used as indestructible obstacles in early levels to teach the player that not everything breaks?
+- [ ] Should stone blocks ever be indestructible in early levels (teach that not everything breaks)?
+- [ ] Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
+- [ ] Crack preview: Ch1 all levels, Ch2 L1-L3 only, Ch3+ none? (Previously resolved — confirm still desired)
+- [ ] Should multi-shot levels show "shots remaining" counter?
+- [ ] Should cascade kills be highlighted visually (different explosion particle)?
+- [ ] Score persistence: localStorage only, or backend?
