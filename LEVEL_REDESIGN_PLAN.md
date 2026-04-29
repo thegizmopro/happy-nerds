@@ -1,5 +1,5 @@
 # Happy Nerds — Level Redesign Plan
-## Goal: Angry Birds-style Block Structures Across All 80 Levels (75 confirmed + 5 Ch8 to add)
+## Goal: Angry Birds-style Block Structures Across 76 Levels (Ch1–7: 10 each, Ch8: 6 boss levels)
 
 ---
 
@@ -107,7 +107,8 @@ These are the building blocks of level design. Each chapter introduces new arche
 ### Chapter 1: Stretch Form (y = ax²)
 **Launcher**: (1, 4.5) elevated. Arc descends.  
 **Single coefficient**: `a` only.  
-**Structure progression**: Introduce A (shelf) → B (tower) → add walls.
+**Structure progression**: Introduce A (shelf) → B (tower) → add walls.  
+**Block teaching goal**: Players are seeing glass, wood, and stone for the first time. Early levels (L2–L4) should use only one block type per level and make the cascade obvious — a single glass shelf shattering under the pig, not a 4-block puzzle. Complexity ramps across L5–L10 only after the player has seen each material break at least once.
 
 | Level | Title (keep or rename) | Structure Goal | Archetype | Notes |
 |-------|------------------------|---------------|-----------|-------|
@@ -127,7 +128,8 @@ These are the building blocks of level design. Each chapter introduces new arche
 ### Chapter 2: Vertex Form (y = a(x−h)² + k)
 **Launcher**: (1, 0.8) ground level.  
 **Two/three coefficients**: `a`, `h` (required), `k` auto-derived in some levels.  
-**Structure progression**: Introduce D (hanging) and F (castle basics).
+**Structure progression**: Introduce D (hanging) and F (castle basics).  
+**Block teaching goal**: Players now know all three block types from Ch1 but are still getting used to mixed structures. Ch2 L1–L3 should still feel readable — one dominant block type per structure, with the second type used sparingly as accent. Full multi-material structures (glass + wood + stone in one build) start at L5.
 
 | Level | Structure Goal | Archetype |
 |-------|---------------|-----------|
@@ -248,7 +250,7 @@ These are the building blocks of level design. Each chapter introduces new arche
 **Launcher**: (1, 0.8).  
 **Insight**: Time pressure + complex structures. Player must think fast.  
 **Structure progression**: All archetypes combined. Maximum density of blocks and targets.  
-**Note**: Expanded to 10 levels to match all other chapters (total = 80).
+**Note**: 6 levels only — 10 timed boss levels would slog. Total across all chapters = 76.
 
 | Level | Time | Shots | Structure Goal | Notes |
 |-------|------|-------|---------------|-------|
@@ -256,12 +258,8 @@ These are the building blocks of level design. Each chapter introduces new arche
 | 8-2 | 90s | 1 | The Fortress: stone walls + wood inner walls + glass roof + king | F (maximum), single equation |
 | 8-3 | 90s | 3 | 3 moving pigs each in a small glass cage | C × 3 + moving |
 | 8-4 | 90s | 3 | Mixed structures at every height — stairs + castle + tower | H + F + B |
-| 8-5 | 90s | 4 | Two-pig level: whistle pig in tower, king in castle | B + F, sequence matters |
-| 8-6 | 90s | 3 | Pyramid fortress with bonus ring inside the structure | G + bonus ring inside |
-| 8-7 | 100s | 4 | Double moat: two static walls, destructible towers behind each | J × 2 |
-| 8-8 | 100s | 5 | Moving king pig behind a collapsing stone castle | F (stone heavy) + moving king |
-| 8-9 | 110s | 5 | Full gauntlet: wall + shelf + tower + castle in sequence | All single archetypes in a row |
-| 8-10 | 120s | 6 | Final exam: every archetype in one level, king pig at the center | All archetypes, grand finale |
+| 8-5 | 100s | 4 | Moving king pig behind a collapsing stone castle | F (stone heavy) + moving king |
+| 8-6 | 120s | 6 | Final exam: every archetype in one level, king pig at the center | All archetypes, grand finale |
 
 ---
 
@@ -345,11 +343,18 @@ Destroy glass → wood falls → landing on stone causes damage to stone.
 
 ## 9. Implementation Order
 
-1. Chapter 1 first — simplest equations, easiest to validate structures visually
-2. Run validator after each chapter before play-testing
-3. Play-test each chapter before moving to the next; use the 3-point acceptance checklist (section 2.10)
-4. Chapter 6 (multi-shot) depends on block interactions being well-tuned — do it after Ch5
-5. Chapter 8 (timed) last — boss levels should use proven structure archetypes
+**Step 0 — Write the validator first** (Section 10). ✅ DONE — `scripts/validate-levels.mjs` passes cleanly on all 75 existing levels.
+
+Then, one chapter at a time:
+
+1. Write level data for the chapter
+2. `node scripts/validate-levels.js` — fix any errors before play-testing
+3. Play-test using the 3-point acceptance checklist (Section 2.10)
+4. Move to the next chapter only when all levels pass
+
+**Order**: Ch1 → Ch2 → Ch3 → Ch4 → Ch5 → Ch6 → Ch7 → Ch8  
+Ch6 (multi-shot) depends on block feel being dialled in from Ch1–5 — do not skip ahead.  
+Ch8 (timed) last — boss levels reuse proven archetypes from all prior chapters.
 
 ---
 
@@ -399,7 +404,7 @@ Run with: `node scripts/validate-levels.js`
 
 - Should pigs be placed slightly *inside* block bounding boxes (so they appear "protected") or always above them? (Recommendation: always above, using the section 2.7 formula)
 - Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
-- Do we want blocks in the preview arc to show a "crack" indicator when the arc passes through them, signaling to the player that the block will be hit?
+- **Crack preview on arc (RESOLVED)**: Show a crack indicator on blocks the preview arc passes through. Ch1: all levels (tutorial crutch). Ch2: levels 1-3 only, gone by level 4. Ch3+: no crack preview. The player learns to read the arc themselves early on.
 
 ---
 
@@ -414,5 +419,5 @@ Run with: `node scripts/validate-levels.js`
 | DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
 
 **UNRESOLVED:** 0  
-**VERDICT:** ENG CLEARED — ready to implement.
+**VERDICT:** ENG CLEARED — ready to implement. Build the validator first (Section 10), then Ch1.
 - Should stone blocks ever be used as indestructible obstacles in early levels to teach the player that not everything breaks?
