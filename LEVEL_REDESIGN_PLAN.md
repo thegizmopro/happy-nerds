@@ -650,3 +650,22 @@ These were emergency fixes. Phase 2 will supersede most of them with proper mult
 - [ ] Should multi-shot levels show "shots remaining" counter?
 - [ ] Should cascade kills be highlighted visually (different explosion particle)?
 - [ ] Score persistence: localStorage only, or backend?
+
+---
+
+## 18. Budget & Delegation Rules
+
+**Coding tasks should be outsourced to Claude Code when possible.** Kenzo does not want to spend per-token for coding work. The plan is designed so that any agent can pick up a chapter and implement it.
+
+### Delegation Protocol
+1. **Primary**: Delegate to Claude Code (`claude --model sonnet`) for all level restructuring work
+2. **Fallback**: If Claude gets rate limited, **pause** and notify Kenzo — do not burn tokens doing the work manually
+3. **Z.ai rate limit**: If the current model gets rate limited, **pause** and notify Kenzo — do not substitute with paid models
+4. **Manual edits**: Only for small fixes (syntax errors, single-line HP changes), not for restructuring chapters
+
+### Notification Triggers
+- Claude Code rate limited → notify Kenzo, wait for reset (5:30 PM America/Los_Angeles)
+- Z.ai/model rate limited → notify Kenzo immediately, ask how to proceed
+- Unexpected token spend → flag it
+- Chapter complete → show results, move to next
+- Plan needs clarification → ask before spending tokens
