@@ -15,6 +15,23 @@
 - Winnability scan: all 75 levels pass `shots >= totalHP`
 - Ch2-L8 arc reach bug fixed (defaultParams corrected)
 - Double-comma syntax errors cleaned up
+- GitHub Actions auto-deploy configured (`.github/workflows/deploy.yml`)
+
+### Critical Bug: Ball Passes Through Targets 🔴
+In many upper levels (6-7, 8-1 confirmed), the ball arc visually passes through the target but doesn't register a hit. Target survives. This makes levels unwinnable regardless of shot count.
+
+**Possible causes:**
+- Arc point resolution too low at target position (points too sparse)
+- Target radius too small relative to arc step size
+- Arc ends before reaching target x-position
+- Collision check timing issue
+
+**Affected levels:** 6-7, 8-1, and potentially others in Ch6-Ch8
+
+### Terminology Rule 📛
+**NEVER call targets "pigs".** They are "targets" or by their actual names: jock, varsity, coach, skater, bully. This is not an Angry Birds reskin — it's Happy Nerds.
+
+Applies to: all level data comments, variable names where reasonable, documentation, plan text.
 
 ### Critical Bug: 28 Levels Have No Cascade Wiring 🔴
 **Blocks exist visually but `supports: []` is empty — destroying a pillar does nothing to the beam above it.**
