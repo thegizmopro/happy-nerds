@@ -256,7 +256,10 @@ export class GameController {
 
     // Which targets belong to this shot (multi-shot support)
     const targetIds = this.session.isMultiShot
-      ? new Set(cfg.multiShot.shots[this.session.activeShotIndex].targetIds)
+      ? (() => {
+          const ids = cfg.multiShot.shots[this.session.activeShotIndex].targetIds;
+          return ids?.length ? new Set(ids) : null;
+        })()
       : null;
 
     this.session.gameState = 'flying';
