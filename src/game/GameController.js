@@ -103,8 +103,11 @@ export class GameController {
 
     // In vertex form, auto-derive k so the arc stays pinned to the launcher
     // Arc at localX=0: y = a(0-h)² + k. For y=0: k = -a*h²
+    // BUT: if k is explicitly in activeCoefficients, let the player control it
     const form = this.session.currentForm();
-    if ((form === 'vertex' || form === 'cubic' || form === 'abs') && coeff !== 'k') {
+    const activeCoeffs = this.session.currentActiveCoeffs();
+    const kIsManual = activeCoeffs && activeCoeffs.includes('k');
+    if ((form === 'vertex' || form === 'cubic' || form === 'abs') && coeff !== 'k' && !kIsManual) {
       const a = this.session.params.a;
       const h = this.session.params.h ?? 0;
       this.session.params.k = -a * h * h;
