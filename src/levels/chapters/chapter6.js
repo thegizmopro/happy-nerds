@@ -335,7 +335,7 @@ export const CHAPTER_6 = [
     title: 'Relay Race',
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
-    sliderConfig: stdSliders,
+    sliderConfig: { ...stdSliders, k: { min: -2, max: 6, step: 0.1 } },
     defaultParams: { a: -0.18, h: 3.0, k: 1.62 },
     launcher: LAUNCHER,
     multiShot: {

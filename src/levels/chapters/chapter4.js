@@ -1,19 +1,34 @@
 // Chapter 4: ROOTS — y = a(x−r₁)(x−r₂)
-// Factored form. r₁ and r₂ are where the arc crosses y=0 (ground level of launcher).
-// Arc starts at local x=0 (launcher). Player controls a, r1, r2.
-// With r1=0 locked: y_local = a*x*(x-r2). Arc starts at 0 ✓.
+// Factored form. r₁ and r₂ are where the arc crosses y=launcherY.
+// Kill vectors: (1) direct hit, (2) destroy supports → target falls, (3) block crushes target.
+// Stone = indestructible barrier. Concrete = 2-hit. Glass = pass-through.
 
 const LAUNCHER = { x: 1, y: 0.8 };
 const THEME = 'mountain';
 
+function fshot(label, a, r1, r2, k = 0) {
+  return {
+    label,
+    equationForm: 'factored',
+    activeCoefficients: ['a', 'r1', 'r2', 'k'],
+    sliderConfig: {
+      a:  { min: -0.45, max: -0.02, step: 0.01 },
+      r1: { min: -1.0,  max: 2.0,   step: 0.1 },
+      r2: { min: 2.0,   max: 9.0,   step: 0.1 },
+      k:  { min: -2,    max: 6,      step: 0.1 },
+    },
+    defaultParams: { a, r1, r2, k },
+  };
+}
+
 export const CHAPTER_4 = [
   // ── 4-1 ──────────────────────────────────────────────────────────────────
-  // r2 controls landing — pig on ground behind single glass block.
-  // Glass block at x=6.8 (0.4 wide). Pig at x=7.8.
-  // Hit glass OR arc clears it; r2≈7.8 to land on pig.
+  // Stone gate + glass panel. Target behind glass.
+  // Stone wall is indestructible — arc must clear it or go through the glass lane.
+  // Kill vectors: (1) arc over stone + through glass → hits target, (2) direct high arc
   {
     id: 'ch4-l1', chapter: 4, levelInChapter: 1,
-    title: 'Ground Zero',
+    title: 'Stone Gate',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r2', 'k'],
     sliderConfig: {
@@ -21,27 +36,27 @@ export const CHAPTER_4 = [
       r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.15, r1: 0, r2: 7.0, k: 0 },
+    defaultParams: { a: -0.15, r1: 0, r2: 6.8, k: 0 },
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 7.8, y: 0.8, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
-      { id: 'glass_wall', x: 6.8, y: 0.6, width: 0.4, height: 0.9, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'stone_gate', x: 5.0, y: 0.6, width: 0.4, height: 1.8, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'glass_lane', x: 6.8, y: 0.6, width: 0.35, height: 1.6, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: 'factored_form',
-    hint: 'r₂ is where the arc lands. Set it past the glass to reach the pig.',
+    hint: 'Stone wall is indestructible — arc over it. Glass wall shatters and the ball continues through to the target.',
     theme: THEME,
   },
 
   // ── 4-2 ──────────────────────────────────────────────────────────────────
-  // Pig on low glass shelf (Archetype A). Two wood pillars + glass shelf.
-  // Pillar L: x=5.5, y=0.6, h=0.7. Pillar R: x=7.0, y=0.6, h=0.7.
-  // Shelf: x=5.5, y=1.3, w=1.9, h=0.25. Pig y = 1.3+0.25+0.45 = 2.0.
-  // r2≈5.0 to arc hits left pillar (x≈5.7); shelf falls on pig.
+  // 2-story tower (concrete base → wood mid → glass top). Target on top.
+  // Stone blocker wall at x=4.5 forces arc to go high.
+  // Kill vectors: (1) direct arc at target, (2) hit concrete base → cascade all 3 layers → target falls 2+ units
   {
     id: 'ch4-l2', chapter: 4, levelInChapter: 2,
-    title: 'Shelf Shot',
+    title: 'The Tower',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r2', 'k'],
     sliderConfig: {
@@ -49,121 +64,141 @@ export const CHAPTER_4 = [
       r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 0, r2: 5.0, k: 0 },
+    defaultParams: { a: -0.12, r1: 0, r2: 6.25, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.3, y: 2.0, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf' }],
+    targets: [{ id: 'pig', x: 7.05, y: 2.75, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'twr_glass' }],
     obstacles: [
-      { id: 'pillar_l', x: 5.5,  y: 0.6, width: 0.35, height: 0.7, blockType: 'wood',  hp: 2, supports: ['shelf'] },
-      { id: 'pillar_r', x: 7.0,  y: 0.6, width: 0.35, height: 0.7, blockType: 'wood',  hp: 2, supports: ['shelf'] },
-      { id: 'shelf',    x: 5.5,  y: 1.3, width: 1.9,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'stone_block', x: 4.5,  y: 0.6, width: 0.4,  height: 1.5, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'twr_base',   x: 6.8,  y: 0.6, width: 0.5,  height: 0.8, blockType: 'concrete', hp: 2, supports: ['twr_wood'] },
+      { id: 'twr_wood',   x: 6.8,  y: 1.4, width: 0.5,  height: 0.6, blockType: 'wood',     hp: 2, supports: ['twr_glass'] },
+      { id: 'twr_glass',  x: 6.8,  y: 2.0, width: 0.5,  height: 0.3, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
     revealAfter: null,
-    hint: 'Hit a pillar — the shelf falls and takes the pig with it.',
+    hint: 'Hit the concrete base — the whole tower cascades down and the target falls over 2 units.',
     theme: THEME,
   },
 
   // ── 4-3 ──────────────────────────────────────────────────────────────────
-  // Pig on elevated glass shelf atop two stone pillars (Archetype A elevated).
-  // Stone pillar L: x=6.0, y=0.6, h=1.6. Stone pillar R: x=7.5, y=0.6, h=1.6.
-  // Shelf: x=6.0, y=2.2, w=1.9, h=0.25. Pig y = 2.2+0.25+0.45 = 2.9.
-  // Arc on the way up (r2>6.0): hits shelf at x≈6.5, pig drops.
+  // Enclosed chamber: stone left wall (∞), concrete right wall (2-hit), glass ceiling.
+  // Target inside at ground level.
+  // Kill vectors: (1) arc through glass ceiling → target, (2) destroy concrete right wall → ceiling falls → crushes target
   {
     id: 'ch4-l3', chapter: 4, levelInChapter: 3,
-    title: 'High Shelf',
+    title: 'Enclosed Chamber',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
-      r2: { min: 4.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.10, r1: 0, r2: 8.0, k: 0 },
+    defaultParams: { a: -0.10, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.9, y: 2.9, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'shelf' }],
+    targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
-      { id: 'stone_l', x: 6.0, y: 0.6, width: 0.35, height: 1.6, blockType: 'concrete', hp: 2, supports: ['shelf'] },
-      { id: 'stone_r', x: 7.5, y: 0.6, width: 0.35, height: 1.6, blockType: 'concrete', hp: 2, supports: ['shelf'] },
-      { id: 'shelf',   x: 6.0, y: 2.2, width: 1.9,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'stone_left',    x: 6.0, y: 0.6, width: 0.4,  height: 2.6, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'concrete_right',x: 8.4, y: 0.6, width: 0.4,  height: 2.6, blockType: 'concrete', hp: 2, supports: ['ceiling'] },
+      { id: 'ceiling',       x: 6.0, y: 3.2, width: 2.8,  height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
-    bonusRing: { x: 4.0, y: 3.5, radius: 0.3 },
+    bonusRing: { x: 4.5, y: 3.8, radius: 0.28 },
     starThresholds: [2, 5], starMode: 'bonus',
     revealAfter: null,
-    hint: 'Target is high up. The arc passes through the shelf on the way up — r₂ > target x.',
+    hint: 'Arc through the glass ceiling to hit the pig inside — or break the concrete wall and let the ceiling crush it.',
     theme: THEME,
   },
 
   // ── 4-4 ──────────────────────────────────────────────────────────────────
-  // Staircase (Archetype H). Three blocks ascending right to left — pig at top.
-  // Block 1 (low):  x=5.5, y=0.6, w=0.5, h=0.5 (glass).
-  // Block 2 (mid):  x=6.5, y=0.6, w=0.5, h=1.0 (wood).
-  // Block 3 (high): x=7.5, y=0.6, w=0.5, h=1.5 (stone).
-  // Pig on top of stone block: y = 0.6+1.5+0.45 = 2.55.
-  // Both r1 and r2 unlocked so player can thread the arc over low blocks.
+  // Staircase with 2 targets at different heights. 2 shots (multiShot).
+  // Stone step 1 (∞), wood step 2 (2-hit), concrete step 3 (2-hit).
+  // Target 1 on top of wood step, target 2 on top of concrete step.
+  // Kill vectors: (1) direct arc at each target, (2) hit step base → step falls → target drops
   {
     id: 'ch4-l4', chapter: 4, levelInChapter: 4,
-    title: 'Staircase',
+    title: 'Staircase Siege',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r1', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 0, r2: 6.5, k: 0 },
+    defaultParams: { a: -0.14, r1: 0, r2: 5.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.75, y: 2.55, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'step3' }],
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Mid step target', -0.18, 0, 4.5),
+        fshot('Shot 2 — High step target', -0.12, 0, 7.5),
+      ],
+    },
+    targets: [
+      { id: 't1', x: 5.95, y: 1.85, radius: 0.42, pigType: 'helmet', hp: 1, moving: null, restingOn: 'step2' },
+      { id: 't2', x: 8.35, y: 2.65, radius: 0.42, pigType: 'letterman', hp: 1, moving: null, restingOn: 'step3' },
+    ],
     obstacles: [
-      { id: 'step1', x: 5.5, y: 0.6, width: 0.5, height: 0.5, blockType: 'glass', hp: 1, supports: [] },
-      { id: 'step2', x: 6.5, y: 0.6, width: 0.5, height: 1.0, blockType: 'wood',  hp: 2, supports: [] },
-      { id: 'step3', x: 7.5, y: 0.6, width: 0.5, height: 1.5, blockType: 'concrete', hp: 2, supports: [] },
+      { id: 'step1', x: 4.0, y: 0.6, width: 0.5, height: 0.5, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'step2', x: 5.7, y: 0.6, width: 0.5, height: 1.0, blockType: 'wood',     hp: 2, supports: [] },
+      { id: 'step3', x: 8.1, y: 0.6, width: 0.5, height: 1.6, blockType: 'concrete', hp: 2, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 6], starMode: 'moves',
+    starThresholds: [3, 7], starMode: 'moves',
     revealAfter: null,
-    hint: 'Staircase of blocks — pig is on the tallest. Arc must clear the lower steps and land on the top.',
+    hint: 'Two targets at different heights on the staircase. Arc must clear the lower steps to reach the top ones.',
     theme: THEME,
   },
 
   // ── 4-5 ──────────────────────────────────────────────────────────────────
-  // Moat + tower (Archetype J). Static wall at x=4.0, wood tower behind at x=6.5.
-  // Tower: stone base + wood mid + glass top. Pig on top.
-  // Static wall: x=4.0, h=2.2. Tower base: x=6.5, h=0.6. Mid: x=6.5, y=1.2, h=0.5. Top: y=1.7, h=0.25.
-  // Pig y = 1.7+0.25+0.45 = 2.4.
+  // Moat wall + enclosed tower. 2 shots.
+  // Static moat wall at x=4.0 (∞). Tower: concrete base + wood mid + glass top (enclosed with stone sides).
+  // Target inside tower at ground level.
+  // Kill vectors: (1) arc over moat → through glass top → hits target inside,
+  //               (2) break concrete base → tower cascades → pig exposed
   {
     id: 'ch4-l5', chapter: 4, levelInChapter: 5,
-    title: 'Moat Tower',
+    title: 'Moat Fortress',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r1', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.15, r1: 0, r2: 7.0, k: 0 },
+    defaultParams: { a: -0.12, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.05, y: 2.4, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'tower_top' }],
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Smash concrete base', -0.20, 0, 5.8),
+        fshot('Shot 2 — Finish exposed pig', -0.10, 0, 6.2),
+      ],
+    },
+    targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
-      { id: 'wall',       x: 4.0,  y: 0.6, width: 0.4,  height: 2.2 },
-      { id: 'tower_base', x: 6.6,  y: 0.6, width: 0.5,  height: 0.6, blockType: 'concrete', hp: 2, supports: ['tower_mid'] },
-      { id: 'tower_mid',  x: 6.6,  y: 1.2, width: 0.5,  height: 0.5, blockType: 'wood',  hp: 2, supports: ['tower_top'] },
-      { id: 'tower_top',  x: 6.6,  y: 1.7, width: 0.5,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'moat_wall',  x: 4.0, y: 0.6, width: 0.4,  height: 2.0 },
+      { id: 'fort_left',  x: 6.5, y: 0.6, width: 0.35, height: 2.2, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'fort_base',  x: 6.9, y: 0.6, width: 0.75, height: 0.7, blockType: 'concrete', hp: 2, supports: ['fort_mid'] },
+      { id: 'fort_mid',   x: 6.9, y: 1.3, width: 0.75, height: 0.6, blockType: 'wood',     hp: 2, supports: ['fort_roof'] },
+      { id: 'fort_roof',  x: 6.85,y: 1.9, width: 1.2,  height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
+      { id: 'fort_right', x: 8.1, y: 0.6, width: 0.35, height: 2.2, blockType: 'stone',    hp: 3, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 5], starMode: 'moves',
+    starThresholds: [2, 6], starMode: 'moves',
     revealAfter: 'roots_and_zeros',
-    hint: 'Wall blocks the approach. Arc must clear it, then hit the tower. Destroy the glass top to drop the pig.',
+    hint: 'Stone walls protect the fortress — break the concrete base underneath to bring it down, then finish the pig.',
     theme: THEME,
   },
 
   // ── 4-6 ──────────────────────────────────────────────────────────────────
-  // Two pigs: one on left shelf (A), one on right shelf (A).
-  // r1 hits left structure, r2 hits right structure.
-  // Left shelf: pillars at x=4.2 & 5.4, shelf at y=1.3, pig y=2.0.
-  // Right shelf: pillars at x=7.0 & 8.2, shelf at y=1.0, pig y=1.7.
+  // Twin structures: left = wood shelf with concrete pillar, right = glass cage.
+  // 2 targets, 2 shots. r1 lands near left structure, r2 near right.
+  // Kill vectors left: destroy concrete pillar → shelf drops → target falls.
+  //              right: arc through glass cage walls → direct hit.
   {
     id: 'ch4-l6', chapter: 4, levelInChapter: 6,
     title: 'Two Landings',
@@ -175,33 +210,39 @@ export const CHAPTER_4 = [
       r2: { min: 4.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 1.0, r2: 7.0, k: 0 },
+    defaultParams: { a: -0.10, r1: 2.0, r2: 7.5, k: 0 },
     launcher: LAUNCHER,
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Left shelf', -0.18, 0.5, 3.5),
+        fshot('Shot 2 — Right cage', -0.08, 0, 7.5),
+      ],
+    },
     targets: [
-      { id: 't1', x: 4.9,  y: 2.0, radius: 0.40, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf_l' },
+      { id: 't1', x: 4.5,  y: 1.95, radius: 0.42, pigType: 'helmet',   hp: 1, moving: null, restingOn: 'shelf_l' },
+      { id: 't2', x: 7.9,  y: 0.8,  radius: 0.42, pigType: 'letterman',hp: 1, moving: null },
     ],
     obstacles: [
-      { id: 'pl_ll', x: 4.2,  y: 0.6, width: 0.3, height: 0.7, blockType: 'wood',  hp: 2, supports: ['shelf_l'] },
-      { id: 'pl_lr', x: 5.4,  y: 0.6, width: 0.3, height: 0.7, blockType: 'wood',  hp: 2, supports: ['shelf_l'] },
-      { id: 'shelf_l', x: 4.2, y: 1.3, width: 1.5, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
-      { id: 'pl_rl', x: 7.0,  y: 0.6, width: 0.3, height: 0.4, blockType: 'wood',  hp: 2, supports: ['shelf_r'] },
-      { id: 'pl_rr', x: 8.2,  y: 0.6, width: 0.3, height: 0.4, blockType: 'wood',  hp: 2, supports: ['shelf_r'] },
-      { id: 'shelf_r', x: 7.0, y: 1.0, width: 1.5, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'pl_l',   x: 3.8,  y: 0.6, width: 0.35, height: 1.0, blockType: 'concrete', hp: 2, supports: ['shelf_l'] },
+      { id: 'pl_r',   x: 5.0,  y: 0.6, width: 0.35, height: 1.0, blockType: 'wood',     hp: 2, supports: ['shelf_l'] },
+      { id: 'shelf_l',x: 3.8,  y: 1.6, width: 1.55, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
+      { id: 'cage_l', x: 7.2,  y: 0.6, width: 0.35, height: 1.8, blockType: 'glass',    hp: 1, supports: ['cage_top'] },
+      { id: 'cage_r', x: 8.5,  y: 0.6, width: 0.35, height: 1.8, blockType: 'glass',    hp: 1, supports: ['cage_top'] },
+      { id: 'cage_top',x: 7.2, y: 2.4, width: 1.65, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
-    bonusRing: null,
-    starThresholds: [2, 6], starMode: 'moves',
+    bonusRing: { x: 5.8, y: 2.5, radius: 0.28 },
+    starThresholds: [3, 8], starMode: 'bonus',
     revealAfter: null,
-    hint: 'Both roots hit structures. r₁ takes out the left shelf, r₂ the right.',
+    hint: 'Shot 1 collapses the left shelf. Shot 2 goes through the glass cage to hit the target inside.',
     theme: THEME,
   },
 
   // ── 4-7 ──────────────────────────────────────────────────────────────────
-  // Castle with window (Archetype F partial). Stone sides, glass roof, pig inside.
-  // Left wall: x=6.0, y=0.6, w=0.35, h=2.2 (stone).
-  // Right wall: x=8.2, y=0.6, w=0.35, h=2.2 (stone).
-  // Glass roof: x=6.0, y=2.8, w=2.55, h=0.25 (glass).
-  // Window = gap between walls above ground. Pig at center: x=7.275, y=0.8.
-  // Arc passes through glass roof hole to reach pig below.
+  // Castle with glass window + pig on roof. 2 shots, 2 targets.
+  // Fortress: stone left, concrete right, glass ceiling. Pig 1 inside. Pig 2 on a wood shelf on top.
+  // Kill vectors: Shot 1: through glass ceiling → inside pig. Shot 2: destroy concrete wall → ceiling drops → roof pig falls.
   {
     id: 'ch4-l7', chapter: 4, levelInChapter: 7,
     title: 'Castle Window',
@@ -210,31 +251,41 @@ export const CHAPTER_4 = [
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.10, r1: 0, r2: 8.0, k: 0 },
+    defaultParams: { a: -0.10, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.275, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
-    obstacles: [
-      { id: 'wall_l',  x: 6.0,  y: 0.6, width: 0.35, height: 2.45, blockType: 'concrete', hp: 2, supports: ['roof'] },
-      { id: 'wall_r',  x: 8.2,  y: 0.6, width: 0.35, height: 2.45, blockType: 'concrete', hp: 2, supports: ['roof'] },
-      { id: 'roof',    x: 6.0,  y: 3.05, width: 2.55, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Through ceiling to inside pig', -0.10, 0, 6.2),
+        fshot('Shot 2 — Destroy wall, drop roof pig',   -0.14, 0, 7.4),
+      ],
+    },
+    targets: [
+      { id: 'pig_inside', x: 7.2,  y: 0.8,  radius: 0.45, pigType: 'letterman', hp: 1, moving: null },
+      { id: 'pig_roof',   x: 7.2,  y: 3.75, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null, restingOn: 'roof_shelf' },
     ],
-    bonusRing: { x: 4.5, y: 4.0, radius: 0.3 },
-    starThresholds: [2, 6], starMode: 'bonus',
+    obstacles: [
+      { id: 'wall_l',    x: 6.0,  y: 0.6, width: 0.4,  height: 2.6,  blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'wall_r',    x: 8.4,  y: 0.6, width: 0.4,  height: 2.6,  blockType: 'concrete', hp: 2, supports: ['ceiling'] },
+      { id: 'ceiling',   x: 6.0,  y: 3.2, width: 2.8,  height: 0.25, blockType: 'glass',    hp: 1, supports: ['roof_shelf'] },
+      { id: 'roof_shelf',x: 6.4,  y: 3.45, width: 1.6, height: 0.25, blockType: 'wood',     hp: 2, supports: [] },
+    ],
+    bonusRing: null,
+    starThresholds: [3, 7], starMode: 'moves',
     revealAfter: null,
-    hint: 'Hit the glass roof — once it shatters, finish the pig below.',
+    hint: 'Shot 1: arc through the glass ceiling to hit the pig inside. Shot 2: destroy the concrete wall to collapse everything onto the roof pig.',
     theme: THEME,
   },
 
   // ── 4-8 ──────────────────────────────────────────────────────────────────
-  // King pig in thick fortress (Archetype F thick). Two outer stone walls,
-  // inner wood walls, glass roof. King inside at ground level.
-  // Outer walls: x=5.5 & 8.8 (stone h=2.8).
-  // Inner walls: x=6.1 & 8.2 (wood h=2.4).
-  // Glass ceiling: x=6.1, y=3.0, w=2.1, h=0.25.
-  // King pig: x=7.15, y=0.8, hp=3.
+  // Double-walled fortress with king pig inside. 2 shots.
+  // Outer stone walls (∞), inner concrete walls (2-hit each), glass ceiling.
+  // Glass window gap on left side near ground — narrow shooting lane.
+  // Kill vectors: (1) arc through glass ceiling → 2 hits on king, (2) destroy inner concrete → ceiling collapses
   {
     id: 'ch4-l8', chapter: 4, levelInChapter: 8,
     title: "King's Fortress",
@@ -243,88 +294,126 @@ export const CHAPTER_4 = [
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.14, r1: 0, r2: 7.0, k: 0 },
+    defaultParams: { a: -0.10, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.15, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    multiShot: {
+      shotCount: 2,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Break glass ceiling', -0.12, 0, 6.5),
+        fshot('Shot 2 — Hit king inside',    -0.10, 0, 6.2),
+      ],
+    },
+    targets: [{ id: 'king', x: 7.3, y: 0.8, radius: 0.55, pigType: 'king', hp: 2, moving: null }],
     obstacles: [
-      { id: 'outer_l', x: 5.5,  y: 0.6, width: 0.4, height: 2.8, blockType: 'concrete', hp: 2, supports: [] },
-      { id: 'inner_l', x: 6.1,  y: 0.6, width: 0.35, height: 2.4, blockType: 'wood',  hp: 2, supports: ['ceiling'] },
-      { id: 'inner_r', x: 8.2,  y: 0.6, width: 0.35, height: 2.4, blockType: 'wood',  hp: 2, supports: ['ceiling'] },
-      { id: 'outer_r', x: 8.8,  y: 0.6, width: 0.4, height: 2.8, blockType: 'concrete', hp: 2, supports: [] },
-      { id: 'ceiling', x: 6.1,  y: 3.0, width: 2.5,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'outer_l',  x: 5.6,  y: 0.6, width: 0.4,  height: 3.2, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'inner_l',  x: 6.2,  y: 0.6, width: 0.35, height: 2.8, blockType: 'concrete', hp: 2, supports: ['king_roof'] },
+      { id: 'inner_r',  x: 8.2,  y: 0.6, width: 0.35, height: 2.8, blockType: 'concrete', hp: 2, supports: ['king_roof'] },
+      { id: 'outer_r',  x: 8.7,  y: 0.6, width: 0.4,  height: 3.2, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'king_roof',x: 6.2,  y: 3.4, width: 2.35, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [3, 8], starMode: 'moves',
     revealAfter: null,
-    hint: 'King Pig takes 3 hits. Break the ceiling first, then crack the inner wall to reach him.',
+    hint: 'King Pig takes 2 hits. Shot 1: smash the glass ceiling. Shot 2: finish the king through the open roof.',
     theme: THEME,
   },
 
   // ── 4-9 ──────────────────────────────────────────────────────────────────
-  // Pig on pyramid (Archetype G). Stone base wide, wood mid, glass top, pig atop.
-  // Stone base: x=6.0, y=0.6, w=2.0, h=0.5. Wood mid: x=6.35, y=1.1, w=1.3, h=0.4.
-  // Glass top: x=6.65, y=1.5, w=0.7, h=0.25. Pig y=1.5+0.25+0.45=2.2.
-  // Bonus ring above pyramid.
+  // Pyramid compound + glass cage. 2 targets, 3 shots.
+  // Pyramid: concrete base → wood mid → glass top. Target 1 on pyramid top.
+  // Glass cage beside pyramid. Target 2 inside cage.
+  // Kill vectors pyramid: (1) direct to top, (2) hit base → cascade → target falls.
+  // Kill vectors cage: (1) arc through glass cage → direct hit.
   {
     id: 'ch4-l9', chapter: 4, levelInChapter: 9,
-    title: 'Pyramid',
+    title: 'Pyramid Compound',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r1', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 0, r2: 8.5, k: 0 },
+    defaultParams: { a: -0.12, r1: 0, r2: 5.8, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.0, y: 2.2, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'pyr_top' }],
-    obstacles: [
-      { id: 'pyr_base', x: 6.0,  y: 0.6, width: 2.0,  height: 0.5, blockType: 'concrete', hp: 2, supports: ['pyr_mid'] },
-      { id: 'pyr_mid',  x: 6.35, y: 1.1, width: 1.3,  height: 0.4, blockType: 'wood',  hp: 2, supports: ['pyr_top'] },
-      { id: 'pyr_top',  x: 6.65, y: 1.5, width: 0.7,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Hit pyramid base',  -0.15, 0, 5.0),
+        fshot('Shot 2 — Finish pyramid pig',-0.12, 0, 5.8),
+        fshot('Shot 3 — Glass cage pig',    -0.08, 0, 7.8),
+      ],
+    },
+    targets: [
+      { id: 'pyr_pig',  x: 6.8,  y: 2.25, radius: 0.42, pigType: 'helmet',    hp: 1, moving: null, restingOn: 'pyr_top' },
+      { id: 'cage_pig', x: 8.6,  y: 0.8,  radius: 0.42, pigType: 'letterman', hp: 1, moving: null },
     ],
-    bonusRing: { x: 5.0, y: 2.8, radius: 0.28 },
-    starThresholds: [3, 7], starMode: 'bonus',
+    obstacles: [
+      { id: 'pyr_base', x: 5.8,  y: 0.6, width: 2.0,  height: 0.5,  blockType: 'concrete', hp: 2, supports: ['pyr_mid'] },
+      { id: 'pyr_mid',  x: 6.15, y: 1.1, width: 1.3,  height: 0.4,  blockType: 'wood',     hp: 2, supports: ['pyr_top'] },
+      { id: 'pyr_top',  x: 6.45, y: 1.5, width: 0.7,  height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
+      { id: 'cage_l',   x: 8.0,  y: 0.6, width: 0.35, height: 1.8,  blockType: 'glass',    hp: 1, supports: ['cage_roof'] },
+      { id: 'cage_r',   x: 9.2,  y: 0.6, width: 0.35, height: 1.8,  blockType: 'glass',    hp: 1, supports: ['cage_roof'] },
+      { id: 'cage_roof',x: 8.0,  y: 2.4, width: 1.55, height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
+    ],
+    bonusRing: { x: 4.5, y: 3.0, radius: 0.28 },
+    starThresholds: [3, 8], starMode: 'bonus',
     revealAfter: null,
-    hint: 'Hit the base to topple the pyramid. Bonus ring above — thread the arc through it for 3★.',
+    hint: 'Hit the pyramid base — it cascades and drops the pig. Then arc through the glass cage to finish the second target.',
     theme: THEME,
   },
 
   // ── 4-10 ─────────────────────────────────────────────────────────────────
-  // Moving pig patrolling behind a staircase (Archetype H + moving).
-  // Staircase blocks the approach. Moving pig at y=0.8 sweeps behind it.
-  // Step1 glass x=5.0 h=0.5. Step2 wood x=6.0 h=1.0. Step3 stone x=7.0 h=1.5.
-  // Pig moving behind step3 from x=7.5 to x=9.0.
+  // Compound finale: 3 targets, 3 shots.
+  // Structure 1 (left): concrete tower with pig on top.
+  // Structure 2 (center): enclosed stone/concrete fortress with king pig inside.
+  // Structure 3 (right): moving cool pig behind a glass wall.
   {
     id: 'ch4-l10', chapter: 4, levelInChapter: 10,
-    title: 'Speed Root',
+    title: 'Compound Finale',
     equationForm: 'factored',
     activeCoefficients: ['a', 'r1', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0, max: 2.0, step: 0.1 },
-      r2: { min: 3.0, max: 9.0, step: 0.1 },
+      r2: { min: 2.0, max: 9.0, step: 0.1 },
       k:  { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.14, r1: 0, r2: 7.5, k: 0 },
+    defaultParams: { a: -0.14, r1: 0, r2: 3.5, k: 0 },
     launcher: LAUNCHER,
-    targets: [{
-      id: 'cool', x: 8.0, y: 0.8, radius: 0.42, pigType: 'cool', hp: 1,
-      moving: { axis: 'x', min: 7.6, max: 9.0, speed: 1.5 },
-    }],
+    multiShot: {
+      shotCount: 3,
+      sequenceMode: 'sequential',
+      shots: [
+        fshot('Shot 1 — Left tower pig',    -0.20, 0, 3.5),
+        fshot('Shot 2 — Fortress ceiling',  -0.12, 0, 5.8),
+        fshot('Shot 3 — Moving pig',        -0.08, 0, 8.2),
+      ],
+    },
+    targets: [
+      { id: 'twr_pig',  x: 4.55, y: 2.15, radius: 0.42, pigType: 'helmet', hp: 1, moving: null, restingOn: 'twr4_top' },
+      { id: 'king',     x: 6.7,  y: 0.8,  radius: 0.55, pigType: 'king',   hp: 1, moving: null },
+      { id: 'cool',     x: 8.8,  y: 0.8,  radius: 0.42, pigType: 'cool',   hp: 1,
+        moving: { axis: 'x', min: 8.2, max: 9.3, speed: 1.5 } },
+    ],
     obstacles: [
-      { id: 'stair1', x: 5.0, y: 0.6, width: 0.5, height: 0.5, blockType: 'glass', hp: 1, supports: [] },
-      { id: 'stair2', x: 6.0, y: 0.6, width: 0.5, height: 1.0, blockType: 'wood',  hp: 2, supports: [] },
-      { id: 'stair3', x: 7.0, y: 0.6, width: 0.5, height: 1.5, blockType: 'concrete', hp: 2, supports: [] },
+      { id: 'twr4_base', x: 4.2, y: 0.6, width: 0.5, height: 0.9,  blockType: 'concrete', hp: 2, supports: ['twr4_top'] },
+      { id: 'twr4_top',  x: 4.2, y: 1.5, width: 0.5, height: 0.4,  blockType: 'wood',     hp: 2, supports: [] },
+      { id: 'fort_l',    x: 6.0, y: 0.6, width: 0.35, height: 2.4, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'fort_r',    x: 7.5, y: 0.6, width: 0.35, height: 2.4, blockType: 'concrete', hp: 2, supports: ['fort_ceil'] },
+      { id: 'fort_ceil', x: 6.0, y: 3.0, width: 1.85, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
+      { id: 'glass_bar', x: 7.9, y: 0.6, width: 0.35, height: 1.8, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [1, 3], starMode: 'moves',
+    starThresholds: [4, 9], starMode: 'moves',
     revealAfter: null,
-    hint: 'Moving pig behind the staircase. Arc must clear the tallest step — then time the landing.',
+    hint: 'Three structures, three shots. Topple the tower, break into the fortress, then time the moving pig.',
     theme: THEME,
   },
 ];

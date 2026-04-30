@@ -14,8 +14,8 @@ import { CHAPTER_8 } from '../src/levels/chapters/chapter8.js';
 const WORLD_W = 10;
 const WORLD_H = 6;
 const GROUND_Y = 0.6;
-const VALID_BLOCK_TYPES = new Set(['glass', 'wood', 'stone']);
-const DEFAULT_HP = { glass: 1, wood: 2, stone: 3 };
+const VALID_BLOCK_TYPES = new Set(['glass', 'wood', 'stone', 'concrete']);
+const DEFAULT_HP = { glass: 1, wood: 2, stone: 3, concrete: 2 };
 
 // ── Arc reachability ──────────────────────────────────────────────────────────
 // Iterates a coarse grid of slider values and checks whether any combination
@@ -29,7 +29,7 @@ function evalFormLocal(localX, form, p) {
     case 'stretch':  return p.a * localX * localX;
     case 'vertex':   return p.a * (localX - (p.h ?? 0)) ** 2 + (p.k ?? 0);
     case 'standard': return p.a * localX * localX + (p.b ?? 0) * localX + (p.c ?? 0);
-    case 'factored': return p.a * (localX - p.r1) * (localX - p.r2);
+    case 'factored': return p.a * (localX - (p.r1 ?? 0)) * (localX - (p.r2 ?? 0));
     case 'cubic':    return p.a * (localX - (p.h ?? 0)) ** 3 + (p.k ?? 0);
     case 'abs':      return p.a * Math.abs(localX - (p.h ?? 0)) + (p.k ?? 0);
     default:         return null;
