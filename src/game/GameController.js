@@ -412,9 +412,14 @@ export class GameController {
       const prevPt = lastSegPts[lastIdx - 1];
       const prevPt2 = lastSegPts[lastIdx - 2];
 
-      // Bounce off non-block walls and wood blocks. Stone absorbs/stops the arc.
+      // Bounce off non-block walls, wood, and stone. Glass shatters (arc passes through).
       const hitObs = (cfg.obstacles || []).find(obs => {
-        if (obs.blockType === 'stone') return false; // stone stops, no bounce
+        if (obs.blockType === 'stone') {
+          // Stone bounces too — harder material, ball deflects
+          if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
+          return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
+                 collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
+        }
         if (obs.blockType === 'wood') {
           // Only bounce if wood is still alive
           if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
@@ -427,8 +432,8 @@ export class GameController {
       });
       if (!hitObs) break;
 
-      // Damage wood blocks on bounce
-      if (hitObs.blockType === 'wood' && this.session) {
+      // Damage wood/stone blocks on bounce
+      if ((hitObs.blockType === 'wood' || hitObs.blockType === 'stone') && this.session) {
         this.session.hitObstacle(hitObs.id, 1);
         this.sound.playHit();
       }
@@ -473,18 +478,14 @@ export class GameController {
       if (x > WORLD_W + 1 || x < -1 || y < -3) break;
 
       for (const obs of (obstacles || [])) {
-        // Stone stops the physics segment
-        if (obs.blockType === 'stone') {
-          if (this?.session?.isObstacleAlive(obs.id) !== false &&
-              x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
-            hitObstacle = obs;
-          }
-        }
-        // Non-block obstacles cause bounces
-        if (!obs.blockType) {
-          if (x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
-            hitObstacle = obs;
-          }
+        // Glass doesn't block physics
+        if (obs.blockType === 'glass') continue;
+        // Wood, stone, and non-block obstacles cause bounces
+        const alive = obs.blockType ? (this?.session?.isObstacleAlive(obs.id) !== false) : true;
+        if (alive &&
+            x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
+          hitObstacle = obs;
+          break;
         }
         if (hitObstacle) break;
       }
