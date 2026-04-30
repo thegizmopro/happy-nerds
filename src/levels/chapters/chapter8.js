@@ -4,14 +4,15 @@
 const LAUNCHER = { x: 1, y: 0.8 };
 const THEME = 'space';
 
-function vshot(label, a, h) {
-  return { label, equationForm: 'vertex', activeCoefficients: ['a','h'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1} }, defaultParams: { a, h, k:0 } };
+function vshot(label, a, h, k) {
+  k = k || (-a * h * h);
+  return { label, equationForm: 'vertex', activeCoefficients: ['a', 'h', 'k'], sliderConfig: { a:{min:-0.45,max:-0.03,step:0.01}, h:{min:1,max:8,step:0.1}, k:{min:-2,max:6,step:0.1} }, defaultParams: { a, h, k: parseFloat(k.toFixed(4)) } };
 }
-function sshot(label, a, b, c) {
-  return { label, equationForm: 'standard', activeCoefficients: ['a','b','c'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05} }, defaultParams: { a, b, c } };
+function sshot(label, a, b, c, k = 0) {
+  return { label, equationForm: 'standard', activeCoefficients: ['a','b','c','k'], sliderConfig: { a:{min:-0.40,max:-0.01,step:0.01}, b:{min:0.1,max:4,step:0.05}, c:{min:-2,max:2,step:0.05}, k:{min:-2,max:6,step:0.1} }, defaultParams: { a, b, c, k } };
 }
-function fshot(label, a, r1, r2) {
-  return { label, equationForm: 'factored', activeCoefficients: ['a','r1','r2'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1} }, defaultParams: { a, r1, r2 } };
+function fshot(label, a, r1, r2, k = 0) {
+  return { label, equationForm: 'factored', activeCoefficients: ['a','r1','r2','k'], sliderConfig: { a:{min:-0.45,max:-0.02,step:0.01}, r1:{min:-1,max:3,step:0.1}, r2:{min:3,max:9.5,step:0.1}, k:{min:-2,max:6,step:0.1} }, defaultParams: { a, r1, r2, k } };
 }
 
 export const CHAPTER_8 = [
@@ -22,10 +23,11 @@ export const CHAPTER_8 = [
     id: 'ch8-l1', chapter: 8, levelInChapter: 1,
     title: 'Time Pressure',
     equationForm: 'vertex',
-    activeCoefficients: ['a', 'h'],
+    activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0,  max: 8.0,  step: 0.1 },
+      k: { min: -2, max: 6, step: 0.1 },
     },
     defaultParams: { a: -0.20, h: 2.5, k: 0 },
     launcher: LAUNCHER,
@@ -98,10 +100,11 @@ export const CHAPTER_8 = [
     id: 'ch8-l3', chapter: 8, levelInChapter: 3,
     title: 'Moving Army',
     equationForm: 'vertex',
-    activeCoefficients: ['a', 'h'],
+    activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: {
       a: { min: -0.45, max: -0.03, step: 0.01 },
       h: { min: 1.0,  max: 8.0,  step: 0.1 },
+      k: { min: -2, max: 6, step: 0.1 },
     },
     defaultParams: { a: -0.15, h: 4.0, k: 0 },
     launcher: LAUNCHER,
@@ -142,13 +145,14 @@ export const CHAPTER_8 = [
     id: 'ch8-l4', chapter: 8, levelInChapter: 4,
     title: 'Mixed Structures',
     equationForm: 'factored',
-    activeCoefficients: ['a', 'r1', 'r2'],
+    activeCoefficients: ['a', 'r1', 'r2', 'k'],
     sliderConfig: {
       a:  { min: -0.45, max: -0.02, step: 0.01 },
       r1: { min: -1.0,  max: 3.0,   step: 0.1 },
       r2: { min: 3.0,   max: 9.5,   step: 0.1 },
+      k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 0, r2: 8.0 },
+    defaultParams: { a: -0.12, r1: 0, r2: 8.0, k: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 90 },
     multiShot: {
@@ -189,12 +193,13 @@ export const CHAPTER_8 = [
     id: 'ch8-l5', chapter: 8, levelInChapter: 5,
     title: 'The Final Exam',
     equationForm: 'standard',
-    activeCoefficients: ['a', 'b', 'c'],
+    activeCoefficients: ['a', 'b', 'c', 'k'],
     sliderConfig: {
       a: { min: -0.40, max: -0.01, step: 0.01 },
       b: { min:  0.10, max:  4.00, step: 0.05 },
       c: { min: -2.00, max:  2.00, step: 0.05 },
-    },
+    
+      k: { min: -2, max: 6, step: 0.1 },},
     defaultParams: { a: -0.12, b: 1.8, c: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 120 },
