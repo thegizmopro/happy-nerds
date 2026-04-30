@@ -313,6 +313,11 @@ export class GameController {
       const elapsed = ts - startTime;
       const newFrame = Math.min(Math.floor((elapsed / DURATION) * total), total - 1);
 
+      // DEBUG: log frame jumps
+      if (newFrame - prevFrame > 10) {
+        console.log('[DEBUG-ANIM] BIG JUMP prevFrame=' + prevFrame + ' newFrame=' + newFrame + ' elapsed=' + elapsed + ' DURATION=' + DURATION);
+      }
+
       // Keep moving targets alive during flight
       this.session.tick(ts);
 
@@ -330,7 +335,13 @@ export class GameController {
           const wt = this.session.getTargetWorld(t);
           const dx = ballPt.x - wt.x;
           const dy = ballPt.y - wt.y;
-          if (dx * dx + dy * dy <= wt.radius * wt.radius) {
+          const distSq = dx * dx + dy * dy;
+          const rSq = wt.radius * wt.radius;
+          // DEBUG: log when we're near a target
+          if (distSq < (wt.radius * 3) * (wt.radius * 3)) {
+            console.log('[DEBUG-ANIM] fi=' + fi + ' target=' + t.id + ' ball=(' + ballPt.x.toFixed(3) + ',' + ballPt.y.toFixed(3) + ') wt=(' + wt.x + ',' + wt.y + ') dist=' + Math.sqrt(distSq).toFixed(4) + ' r=' + wt.radius + ' inHit=' + (distSq <= rSq) + ' prevIn=' + prevInTarget.has(t.id) + ' targetHit=' + this.session.targetsHit.has(t.id));
+          }
+          if (distSq <= rSq) {
             inTargetNow.add(t.id);
             if (!prevInTarget.has(t.id)) {
               // Ball just entered this target — register one hit
