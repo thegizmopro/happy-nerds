@@ -80,7 +80,7 @@ export const CHAPTER_1 = [
     // Default a=-0.12: arc hits glass (y≈1.79), pig at y=2.45 survives
     targets: [{ id: 'pig', x: 5.75, y: 2.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'glass' }],
     obstacles: [
-      { id: 'stone', x: 5.5, y: 0.6, width: 0.5, height: 0.5, blockType: 'stone', hp: 3, supports: ['wood'] },
+      { id: 'stone', x: 5.5, y: 0.6, width: 0.5, height: 0.5, blockType: 'concrete', hp: 2, supports: ['wood'] },
       { id: 'wood',  x: 5.5, y: 1.1, width: 0.5, height: 0.5, blockType: 'wood',  hp: 2, supports: ['glass'] },
       { id: 'glass', x: 5.5, y: 1.6, width: 0.5, height: 0.4, blockType: 'glass', hp: 1, supports: [] },
     ],
@@ -102,8 +102,8 @@ export const CHAPTER_1 = [
     // Default a=-0.06: hits glass shelf (y≈2.48 at x=6.8), pig at y=3.10 survives
     targets: [{ id: 'pig', x: 6.8, y: 3.10, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
-      { id: 'col_l', x: 5.8, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
-      { id: 'col_r', x: 7.4, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
+      { id: 'col_l', x: 5.8, y: 0.6, width: 0.4, height: 1.8,  blockType: 'concrete', hp: 2, supports: ['shelf'] },
+      { id: 'col_r', x: 7.4, y: 0.6, width: 0.4, height: 1.8,  blockType: 'concrete', hp: 2, supports: ['shelf'] },
       { id: 'shelf', x: 5.8, y: 2.4, width: 2.0, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
@@ -226,7 +226,7 @@ export const CHAPTER_1 = [
     targets: [{ id: 'pig', x: 6.6, y: 2.45, radius: 0.45, pigType: 'king', hp: 1, moving: null, restingOn: 'glass_top' }],
     obstacles: [
       { id: 'wall',       x: 3.0,  y: 0.6, width: 0.4, height: 3.2 },
-      { id: 'stone_base', x: 6.0,  y: 0.6, width: 1.2, height: 0.5, blockType: 'stone', hp: 3, supports: ['wood_mid'] },
+      { id: 'stone_base', x: 6.0,  y: 0.6, width: 1.2, height: 0.5, blockType: 'concrete', hp: 2, supports: ['wood_mid'] },
       { id: 'wood_mid',   x: 6.2,  y: 1.1, width: 0.8, height: 0.5, blockType: 'wood',  hp: 2, supports: ['glass_top'] },
       { id: 'glass_top',  x: 6.35, y: 1.6, width: 0.5, height: 0.4, blockType: 'glass', hp: 1, supports: [] },
     ],

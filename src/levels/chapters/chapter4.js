@@ -83,8 +83,8 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 6.9, y: 2.9, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
-      { id: 'stone_l', x: 6.0, y: 0.6, width: 0.35, height: 1.6, blockType: 'stone', hp: 3, supports: ['shelf'] },
-      { id: 'stone_r', x: 7.5, y: 0.6, width: 0.35, height: 1.6, blockType: 'stone', hp: 3, supports: ['shelf'] },
+      { id: 'stone_l', x: 6.0, y: 0.6, width: 0.35, height: 1.6, blockType: 'concrete', hp: 2, supports: ['shelf'] },
+      { id: 'stone_r', x: 7.5, y: 0.6, width: 0.35, height: 1.6, blockType: 'concrete', hp: 2, supports: ['shelf'] },
       { id: 'shelf',   x: 6.0, y: 2.2, width: 1.9,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.0, y: 3.5, radius: 0.3 },
@@ -118,7 +118,7 @@ export const CHAPTER_4 = [
     obstacles: [
       { id: 'step1', x: 5.5, y: 0.6, width: 0.5, height: 0.5, blockType: 'glass', hp: 1, supports: [] },
       { id: 'step2', x: 6.5, y: 0.6, width: 0.5, height: 1.0, blockType: 'wood',  hp: 2, supports: [] },
-      { id: 'step3', x: 7.5, y: 0.6, width: 0.5, height: 1.5, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'step3', x: 7.5, y: 0.6, width: 0.5, height: 1.5, blockType: 'concrete', hp: 2, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
@@ -148,7 +148,7 @@ export const CHAPTER_4 = [
     targets: [{ id: 'pig', x: 7.05, y: 2.4, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'tower_top' }],
     obstacles: [
       { id: 'wall',       x: 4.0,  y: 0.6, width: 0.4,  height: 2.2 },
-      { id: 'tower_base', x: 6.6,  y: 0.6, width: 0.5,  height: 0.6, blockType: 'stone', hp: 3, supports: ['tower_mid'] },
+      { id: 'tower_base', x: 6.6,  y: 0.6, width: 0.5,  height: 0.6, blockType: 'concrete', hp: 2, supports: ['tower_mid'] },
       { id: 'tower_mid',  x: 6.6,  y: 1.2, width: 0.5,  height: 0.5, blockType: 'wood',  hp: 2, supports: ['tower_top'] },
       { id: 'tower_top',  x: 6.6,  y: 1.7, width: 0.5,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
@@ -217,8 +217,8 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 7.275, y: 0.8, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
-      { id: 'wall_l',  x: 6.0,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['roof'] },
-      { id: 'wall_r',  x: 8.2,  y: 0.6, width: 0.35, height: 2.45, blockType: 'stone', hp: 3, supports: ['roof'] },
+      { id: 'wall_l',  x: 6.0,  y: 0.6, width: 0.35, height: 2.45, blockType: 'concrete', hp: 2, supports: ['roof'] },
+      { id: 'wall_r',  x: 8.2,  y: 0.6, width: 0.35, height: 2.45, blockType: 'concrete', hp: 2, supports: ['roof'] },
       { id: 'roof',    x: 6.0,  y: 3.05, width: 2.55, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.5, y: 4.0, radius: 0.3 },
@@ -250,10 +250,10 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [{ id: 'king', x: 7.15, y: 0.8, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
-      { id: 'outer_l', x: 5.5,  y: 0.6, width: 0.4, height: 2.8, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'outer_l', x: 5.5,  y: 0.6, width: 0.4, height: 2.8, blockType: 'concrete', hp: 2, supports: [] },
       { id: 'inner_l', x: 6.1,  y: 0.6, width: 0.35, height: 2.4, blockType: 'wood',  hp: 2, supports: ['ceiling'] },
       { id: 'inner_r', x: 8.2,  y: 0.6, width: 0.35, height: 2.4, blockType: 'wood',  hp: 2, supports: ['ceiling'] },
-      { id: 'outer_r', x: 8.8,  y: 0.6, width: 0.4, height: 2.8, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'outer_r', x: 8.8,  y: 0.6, width: 0.4, height: 2.8, blockType: 'concrete', hp: 2, supports: [] },
       { id: 'ceiling', x: 6.1,  y: 3.0, width: 2.5,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
@@ -283,7 +283,7 @@ export const CHAPTER_4 = [
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 7.0, y: 2.2, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'pyr_top' }],
     obstacles: [
-      { id: 'pyr_base', x: 6.0,  y: 0.6, width: 2.0,  height: 0.5, blockType: 'stone', hp: 3, supports: ['pyr_mid'] },
+      { id: 'pyr_base', x: 6.0,  y: 0.6, width: 2.0,  height: 0.5, blockType: 'concrete', hp: 2, supports: ['pyr_mid'] },
       { id: 'pyr_mid',  x: 6.35, y: 1.1, width: 1.3,  height: 0.4, blockType: 'wood',  hp: 2, supports: ['pyr_top'] },
       { id: 'pyr_top',  x: 6.65, y: 1.5, width: 0.7,  height: 0.25, blockType: 'glass', hp: 1, supports: [] },
     ],
@@ -319,7 +319,7 @@ export const CHAPTER_4 = [
     obstacles: [
       { id: 'stair1', x: 5.0, y: 0.6, width: 0.5, height: 0.5, blockType: 'glass', hp: 1, supports: [] },
       { id: 'stair2', x: 6.0, y: 0.6, width: 0.5, height: 1.0, blockType: 'wood',  hp: 2, supports: [] },
-      { id: 'stair3', x: 7.0, y: 0.6, width: 0.5, height: 1.5, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'stair3', x: 7.0, y: 0.6, width: 0.5, height: 1.5, blockType: 'concrete', hp: 2, supports: [] },
     ],
     bonusRing: null,
     starThresholds: [1, 3], starMode: 'moves',

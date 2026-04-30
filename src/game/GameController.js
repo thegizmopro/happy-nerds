@@ -412,28 +412,28 @@ export class GameController {
       const prevPt = lastSegPts[lastIdx - 1];
       const prevPt2 = lastSegPts[lastIdx - 2];
 
-      // Bounce off non-block walls, wood, and stone. Glass shatters (arc passes through).
+      // Bounce off non-block walls, stone (indestructible), concrete, and wood.
+      // Glass shatters (arc passes through).
       const hitObs = (cfg.obstacles || []).find(obs => {
+        if (obs.blockType === 'glass') return false; // glass shatters
         if (obs.blockType === 'stone') {
-          // Stone bounces too — harder material, ball deflects
+          // Stone is indestructible — always bounces
+          return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
+                 collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
+        }
+        if (obs.blockType === 'concrete' || obs.blockType === 'wood') {
           if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
           return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
                  collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
         }
-        if (obs.blockType === 'wood') {
-          // Only bounce if wood is still alive
-          if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
-          return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
-                 collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
-        }
-        if (obs.blockType) return false; // glass doesn't cause bounce (arc passes through)
+        // Non-block obstacle (wall)
         return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
                collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
       });
       if (!hitObs) break;
 
-      // Damage wood/stone blocks on bounce
-      if ((hitObs.blockType === 'wood' || hitObs.blockType === 'stone') && this.session) {
+      // Damage concrete and wood on bounce (stone is indestructible)
+      if ((hitObs.blockType === 'concrete' || hitObs.blockType === 'wood') && this.session) {
         this.session.hitObstacle(hitObs.id, 1);
         this.sound.playHit();
       }

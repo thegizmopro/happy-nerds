@@ -218,7 +218,7 @@ export class Renderer {
   }
 
   _drawBlock(ctx, obs, x, y, w, h, session) {
-    const maxHP = obs.hp ?? { glass: 1, wood: 2, stone: 3 }[obs.blockType] ?? 3;
+    const maxHP = obs.hp ?? { glass: 1, wood: 2, concrete: 2, stone: Infinity }[obs.blockType] ?? 3;
     const currentHP = session?.obstacleHP?.[obs.id] ?? maxHP;
     const flashTime = session?.obstacleHitFlash?.[obs.id];
     const flash = flashTime && (Date.now() - flashTime) < 200;
@@ -283,10 +283,10 @@ export class Renderer {
         ctx.beginPath(); ctx.moveTo(x + 4, gy); ctx.lineTo(x + w - 4, gy); ctx.stroke();
       }
     } else if (blockType === 'stone') {
-      ctx.fillStyle = healthRatio > 0.5 ? '#6b7280' : '#4b5563';
+      ctx.fillStyle = '#78716c'; // darker, more imposing
       ctx.fillRect(x, y, w, h);
-      ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#a8a29e';
+      ctx.lineWidth = 3; // thicker border = indestructible feel
       ctx.setLineDash([]);
       ctx.strokeRect(x, y, w, h);
       // Stone texture dots
@@ -294,6 +294,27 @@ export class Renderer {
       for (let dx = 6; dx < w - 4; dx += 12) {
         for (let dy = 6; dy < h - 4; dy += 10) {
           ctx.fillRect(x + dx, y + dy, 3, 3);
+        }
+      }
+      // X mark to indicate indestructible
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + 4, y + 4); ctx.lineTo(x + w - 4, y + h - 4);
+      ctx.moveTo(x + w - 4, y + 4); ctx.lineTo(x + 4, y + h - 4);
+      ctx.stroke();
+    } else if (blockType === 'concrete') {
+      ctx.fillStyle = healthRatio > 0.5 ? '#9ca3af' : '#6b7280';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = '#d1d5db';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.strokeRect(x, y, w, h);
+      // Concrete texture — small gravel dots
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      for (let dx = 5; dx < w - 3; dx += 8) {
+        for (let dy = 5; dy < h - 3; dy += 7) {
+          ctx.fillRect(x + dx, y + dy, 2, 2);
         }
       }
     }

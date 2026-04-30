@@ -213,9 +213,13 @@ export class LevelSession {
 
   // Apply damage to a destructible block. Returns true if destroyed.
   // Auto-triggers cascade (supported blocks start falling) on destruction.
+  // Stone is indestructible — immune to all damage.
   hitObstacle(id, damage = 1) {
     if (this.obstacleHP[id] === undefined) return false; // not a block
     if (!this.isObstacleAlive(id)) return false;
+    // Stone is indestructible
+    const obs = (this.config.obstacles || []).find(o => o.id === id);
+    if (obs?.blockType === 'stone') return false;
     this.obstacleHitFlash[id] = Date.now();
     this.obstacleHP[id] = Math.max(0, this.obstacleHP[id] - damage);
     if (this.obstacleHP[id] === 0) {

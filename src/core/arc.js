@@ -50,7 +50,9 @@ export function clipArcAtObstacle(arcPoints, obstacles, session) {
     if (session && obs.blockType && !session.isObstacleAlive(obs.id)) continue;
     // Glass shatters — arc passes through (damage applied in animation)
     if (obs.blockType === 'glass') continue;
-    // Wood, stone, and non-block obstacles clip the arc
+    // Stone is indestructible — always clips, never destroyed
+    // Concrete, wood — clips arc, takes damage
+    // All non-glass block obstacles and walls clip the arc
     const idx = findObstacleIntersection(arcPoints, obs);
     if (idx !== -1 && idx < clipIdx) clipIdx = idx;
   }
