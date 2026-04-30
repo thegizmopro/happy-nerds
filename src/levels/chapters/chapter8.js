@@ -198,9 +198,9 @@ export const CHAPTER_8 = [
       a: { min: -0.40, max: -0.01, step: 0.01 },
       b: { min:  0.10, max:  4.00, step: 0.05 },
       c: { min: -2.00, max:  2.00, step: 0.05 },
-    
-      k: { min: -2, max: 6, step: 0.1 },},
-    defaultParams: { a: -0.12, b: 1.8, c: 0 },
+      k: { min: -2, max: 6, step: 0.1 },
+    },
+    defaultParams: { a: -0.12, b: 1.8, c: 0, k: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 120 },
     multiShot: {
