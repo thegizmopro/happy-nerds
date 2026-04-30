@@ -230,7 +230,7 @@ export class RevealCard {
     // Touch anywhere on card backdrop dismisses too
     card.addEventListener('touchend', e => { if (e.target === card) dismiss(); });
 
-    this._timer = setTimeout(dismiss, 5000);
+    this._timer = setTimeout(dismiss, 15000);
   }
 
   hide() {

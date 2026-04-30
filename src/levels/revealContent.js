@@ -128,4 +128,54 @@ export const REVEALS = {
     ].join('\n'),
     vocabulary: ['cubic function', 'inflection point', 'S-curve', 'degree'],
   },
+
+  roots_and_zeros: {
+    conceptId: 'roots_and_zeros',
+    title: 'Roots, Zeros, and x-Intercepts',
+    subtitle: 'Three names for the same thing',
+    body: [
+      'The <b>roots</b> of a quadratic are the x-values where y = 0.',
+      'They\'re also called <b>zeros</b> or <b>x-intercepts</b> — same thing, different names.',
+      '',
+      'In factored form y = a(x − r₁)(x − r₂):',
+      '• The roots are <b>r₁</b> and <b>r₂</b>',
+      '• The axis of symmetry is at x = <b>(r₁ + r₂) / 2</b>',
+      '• The vertex is always exactly between the roots',
+      '',
+      'If you know where the arc starts and where it lands, you know the roots — and that\'s enough to define the entire parabola.',
+    ].join('\n'),
+    vocabulary: ['roots', 'zeros', 'x-intercepts', 'axis of symmetry'],
+  },
+
+  vertex_to_factored: {
+    conceptId: 'vertex_to_factored',
+    title: 'Connecting the Forms',
+    subtitle: 'Vertex ↔ Factored ↔ Standard',
+    body: [
+      'Every parabola can be written three ways:',
+      '',
+      '• <b>Vertex form</b>: y = a(x−h)² + k → tells you the peak',
+      '• <b>Factored form</b>: y = a(x−r₁)(x−r₂) → tells you the landing points',
+      '• <b>Standard form</b>: y = ax² + bx + c → tells you the y-intercept',
+      '',
+      'They\'re all the same curve — just different information highlighted.',
+      'Converting between them is algebra: expanding, factoring, completing the square.',
+    ].join('\n'),
+    vocabulary: ['equivalent forms', 'expanding', 'factoring', 'completing the square'],
+  },
+
+  piecewise_intro: {
+    conceptId: 'piecewise_intro',
+    title: 'Piecewise Functions',
+    subtitle: 'Different rules for different ranges',
+    body: [
+      'A <b>piecewise function</b> uses different equations in different parts of the domain.',
+      '',
+      'Think of it like a recipe: "If x is between 0 and 5, use this arc. If x is between 5 and 10, use that arc."',
+      '',
+      'Real-world paths often work this way — a ball bounces off a wall and changes direction.',
+      'Piecewise functions model that by stitching together simpler functions.',
+    ].join('\n'),
+    vocabulary: ['piecewise', 'domain', 'continuity', 'junction point'],
+  },
 };

@@ -148,7 +148,7 @@ export const CHAPTER_7 = [
     ],
     bonusRing: null,
     starThresholds: [2, 6], starMode: 'moves',
-    revealAfter: null,
+    revealAfter: 'piecewise_intro',
     hint: 'Inverted V peaks inside the open-top box. Set h to the center of the gap and let it drop.',
     theme: THEME,
   },

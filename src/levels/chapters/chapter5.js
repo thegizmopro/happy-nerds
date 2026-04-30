@@ -123,7 +123,7 @@ export const CHAPTER_5 = [
     ],
     bonusRing: { x: 3.5, y: 2.8, radius: 0.28 },
     starThresholds: [3, 7], starMode: 'bonus',
-    revealAfter: null,
+    revealAfter: 'vertex_to_factored',
     hint: 'Bonus ring is before the wall, pig is behind it. Tune b and c to thread both.',
     theme: THEME,
   },
