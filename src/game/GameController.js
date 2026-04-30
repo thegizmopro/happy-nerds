@@ -290,6 +290,24 @@ export class GameController {
     let prevInBlock = new Set();
     this._animating = true;
 
+    // DEBUG: log collision details for first launch
+    if (!this._debugLogged) {
+      this._debugLogged = true;
+      console.log('[DEBUG] arcPts.length:', arcPts.length, 'targets:', cfg.targets.map(t => t.id + '@(' + t.x + ',' + t.y + ') r=' + t.radius));
+      // Check which frames are near each target
+      for (const t of cfg.targets) {
+        let minDist = Infinity, bestFrame = -1;
+        for (let fi = 0; fi < arcPts.length; fi++) {
+          const dx = arcPts[fi].x - t.x;
+          const dy = arcPts[fi].y - t.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < minDist) { minDist = dist; bestFrame = fi; }
+        }
+        console.log('[DEBUG] ' + t.id + ': minDist=' + minDist.toFixed(4) + ' radius=' + t.radius + (minDist <= t.radius ? ' SHOULD_HIT' : ' MISS') + ' frame=' + bestFrame + '/' + arcPts.length);
+        if (bestFrame >= 0) console.log('[DEBUG]   closest: (' + arcPts[bestFrame].x.toFixed(3) + ',' + arcPts[bestFrame].y.toFixed(3) + ') target: (' + t.x + ',' + t.y + ')');
+      }
+    }
+
     const step = (ts) => {
       if (!startTime) startTime = ts;
       const elapsed = ts - startTime;
