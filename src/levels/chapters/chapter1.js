@@ -100,7 +100,7 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     // Exact a = (3.10 - 4.5) / (6.8 - 1)² = -1.4 / 33.64 ≈ -0.042
     // Default a=-0.06: hits glass shelf (y≈2.48 at x=6.8), pig at y=3.10 survives
-    targets: [{ id: 'pig', x: 6.8, y: 3.10, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 6.8, y: 3.10, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
       { id: 'col_l', x: 5.8, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
       { id: 'col_r', x: 7.4, y: 0.6, width: 0.4, height: 1.8,  blockType: 'stone', hp: 3, supports: ['shelf'] },
@@ -149,6 +149,7 @@ export const CHAPTER_1 = [
     targets: [{
       id: 'pig', x: 5.7, y: 2.40, radius: 0.45, pigType: 'helmet', hp: 1,
       moving: { axis: 'x', min: 4.7, max: 6.7, speed: 0.9 },
+      restingOn: 'shelf',
     }],
     obstacles: [
       { id: 'tow_l', x: 4.2, y: 0.6, width: 0.4, height: 1.1, blockType: 'glass', hp: 1, supports: ['shelf'] },
