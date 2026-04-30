@@ -432,11 +432,8 @@ export class GameController {
       });
       if (!hitObs) break;
 
-      // Damage concrete and wood on bounce (stone is indestructible)
-      if ((hitObs.blockType === 'concrete' || hitObs.blockType === 'wood') && this.session) {
-        this.session.hitObstacle(hitObs.id, 1);
-        this.sound.playHit();
-      }
+      // NOTE: damage is applied during animation, not here.
+      // This is purely geometric — compute bounce, don't deal damage.
 
       const { reflectX, reflectY } = detectBounceSurface(prevPt, hitObs);
 

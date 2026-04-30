@@ -1,8 +1,8 @@
 # Happy Nerds — Level Redesign Plan (Master)
 ## Goal: Angry Birds-style Block Structures Across 75 Levels (Ch1–7: 10 each, Ch8: 5 boss levels)
 
-**Last updated**: 2026-04-29  
-**Status**: Phase 1 (winnability) complete. Phase 2 (complex structures) pending.
+**Last updated**: 2026-04-29 23:45
+**Status**: Phase 1 (winnability) complete. Phase 2 (complex structures) starting.
 
 ---
 
@@ -132,10 +132,17 @@ Hitting the wrong part damages blocks but leaves the pig alive. A full miss visi
 **2.4 Structures Match Equation Complexity**  
 Simple equations → simple structures. Complex equations → complex structures.
 
-**2.5 Block Material Tells a Story**  
-- **Glass**: 1 hit, shatters. Shelves, thin walls.
-- **Wood**: 2 hits. Middle tiers, planks between pillars.
-- **Stone**: 3 hits. Bases, fortresses, boss-level cores.
+### Material System (updated 2026-04-29)
+
+| Material | HP | Ball behavior | Visual |
+|----------|-----|---------------|--------|
+| **Wall** (no blockType) | ∞ | Indestructible, ball bounces | Dark solid |
+| **Stone** (blockType: 'stone') | ∞ | Indestructible, ball bounces | Dark gray, thick border, X mark |
+| **Concrete** (blockType: 'concrete') | 2 | Bounces, 2 hits to destroy | Light gray, gravel texture |
+| **Wood** (blockType: 'wood') | 2 | Bounces, 2 hits to destroy | Brown, wood grain |
+| **Glass** (blockType: 'glass') | 1 | Passes through, shatters | Translucent blue |
+
+Stone is now INDESTRUCTIBLE — reserved for permanent walls/barriers. All former stone blocks converted to concrete (destructible, 2 hits).
 
 **2.6 Cascade Must Be Visible and Satisfying**  
 Every structure needs at least one `supports` chain. Destroying a key block triggers falling animation.
@@ -147,7 +154,7 @@ pig.y = block.y + block.height + pig_radius
 Standard pig radius = 0.45. Always calculate, never eyeball.
 
 **2.8 Arc Pass-Through Rule**  
-The ball arc is pre-calculated once at launch. It passes through ALL destructible blocks on its trajectory. Cannot use one block to "shield" a block behind it. Design cascades perpendicular to the arc path.
+Glass is the ONLY material the ball passes through (it shatters). Concrete and wood bounce the ball (dealing 1 damage per hit). Stone and walls bounce with no damage. The ball cannot pass through any non-glass block. Design structures so glass windows/channels create shooting lanes.
 
 **2.9 Supports Wiring Required**  
 The engine does NOT infer supports geometrically. Explicit `supports` arrays required for every physical relationship.
@@ -166,7 +173,7 @@ Everything needed for complex structures already exists. No engine changes requi
 
 | Feature | Supported? | Where |
 |---------|-----------|-------|
-| Multi-hit blocks (glass 1 / wood 2 / stone 3) | ✅ | `obstacleHP`, `hitObstacle()` |
+| Multi-hit blocks (glass 1 / wood 2 / concrete 2 / stone ∞) | ✅ | `obstacleHP`, `hitObstacle()` |
 | Cascade (block falls when support destroyed) | ✅ | `supports` wiring, `_startFalling()` |
 | Falling blocks damage targets | ✅ | `_onBlockLand()` checks pig overlap |
 | Falling blocks damage other blocks | ✅ | `_onBlockLand()` cascade damage |
@@ -679,7 +686,7 @@ These were emergency fixes. Phase 2 will supersede most of them with proper mult
 ## 16. Not In Scope
 
 - **Engine physics changes** — no momentum transfer, no block rotation
-- **New block types** — only glass/wood/stone
+- **New block types** — only glass/wood/concrete/stone (concrete added for 2-hit destructible hard blocks)
 - **Block art/sprites** — procedural drawing stays
 - **Level select UI** — grid layout stays
 - **Dynamic block spawning** — blocks are static at level load
@@ -689,7 +696,7 @@ These were emergency fixes. Phase 2 will supersede most of them with proper mult
 
 ## 17. Open Questions
 
-- [ ] Should stone blocks ever be indestructible in early levels (teach that not everything breaks)?
+- [x] Should stone blocks ever be indestructible in early levels (teach that not everything breaks)? **YES — stone is always indestructible. Use concrete for destructible "hard" blocks.**
 - [ ] Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
 - [ ] Crack preview: Ch1 all levels, Ch2 L1-L3 only, Ch3+ none? (Previously resolved — confirm still desired)
 - [ ] Should multi-shot levels show "shots remaining" counter?
