@@ -8,15 +8,6 @@
 
 ## Implementation Status
 
-### ⚠️ MANDATORY: Build After Every Level Change
-The game runs from `dist/` (built bundle), NOT from `src/`. After editing ANY level file:
-```
-npm run build
-git add -A && git commit -m "..." && git push
-```
-If you skip `npm run build`, changes will NOT appear on the deployed site.
-Game is deployed at: https://thegizmopro.github.io/happy-nerds/
-
 ### What's Done ✅
 - All 75 levels have block structures (commits `4b6d20d`→`6deba9c`)
 - 25 unwinnable levels fixed (commit `3762705`, pushed)
@@ -670,7 +661,6 @@ These were emergency fixes. Phase 2 will supersede most of them with proper mult
 
 ## 17. Open Questions
 
-- [ ] Add GitHub Actions workflow to auto-build dist/ on push to main (so we don't have to commit dist to git)
 - [ ] Should stone blocks ever be indestructible in early levels (teach that not everything breaks)?
 - [ ] Should moving targets ever sit on destructible blocks? (Block destroyed → pig lands on ground, keeps moving?)
 - [ ] Crack preview: Ch1 all levels, Ch2 L1-L3 only, Ch3+ none? (Previously resolved — confirm still desired)
