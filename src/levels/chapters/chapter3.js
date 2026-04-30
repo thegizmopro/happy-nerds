@@ -140,7 +140,7 @@ export const CHAPTER_3 = [
       h: { min: 1.0, max: 8.0, step: 0.1 },
       k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.25, h: 3.5, k: 3.1 },
+    defaultParams: { a: -0.25, h: 3.5, k: 3.0625 },
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 6.45, y: 2.85, radius: 0.40, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
@@ -269,7 +269,7 @@ export const CHAPTER_3 = [
       h: { min: 1.0, max: 8.0, step: 0.05 },
       k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.18, h: 4.0, k: 2.9 },
+    defaultParams: { a: -0.18, h: 4.0, k: 2.88 },
     launcher: LAUNCHER,
     targets: [{
       id: 'cool', x: 7.0, y: 1.5, radius: 0.38, pigType: 'cool', hp: 1,
@@ -303,7 +303,7 @@ export const CHAPTER_3 = [
       h: { min: 1.0, max: 8.0, step: 0.05 },
       k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.14, h: 4.5, k: 2.8 },
+    defaultParams: { a: -0.14, h: 4.5, k: 2.835 },
     launcher: LAUNCHER,
     targets: [{ id: 'king', x: 7.325, y: 3.05, radius: 0.55, pigType: 'king', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [

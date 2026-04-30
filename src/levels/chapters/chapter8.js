@@ -29,7 +29,7 @@ export const CHAPTER_8 = [
       h: { min: 1.0,  max: 8.0,  step: 0.1 },
       k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.20, h: 2.5, k: 0 },
+    defaultParams: { a: -0.20, h: 2.5, k: 1.25 },
     launcher: LAUNCHER,
     timer: { seconds: 60 },
     multiShot: {
@@ -106,7 +106,7 @@ export const CHAPTER_8 = [
       h: { min: 1.0,  max: 8.0,  step: 0.1 },
       k: { min: -2, max: 6, step: 0.1 },
     },
-    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
     timer: { seconds: 90 },
     multiShot: {

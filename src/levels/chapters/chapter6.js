@@ -28,7 +28,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.20, h: 2.5, k: 0 },
+    defaultParams: { a: -0.20, h: 2.5, k: 1.25 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 2,
@@ -67,7 +67,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.12, h: 4.0, k: 0 },
+    defaultParams: { a: -0.12, h: 4.0, k: 1.92 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 3,
@@ -102,7 +102,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.18, h: 3.5, k: 0 },
+    defaultParams: { a: -0.18, h: 3.5, k: 2.205 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 4,
@@ -138,7 +138,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.20, h: 3.0, k: 0 },
+    defaultParams: { a: -0.20, h: 3.0, k: 1.8 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 3,
@@ -178,7 +178,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 3,
@@ -213,7 +213,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.18, h: 3.5, k: 0 },
+    defaultParams: { a: -0.18, h: 3.5, k: 2.205 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 5,
@@ -258,7 +258,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 5,
@@ -298,7 +298,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.20, h: 2.0, k: 0 },
+    defaultParams: { a: -0.20, h: 2.0, k: 0.8 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 2,
@@ -336,7 +336,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.18, h: 3.0, k: 0 },
+    defaultParams: { a: -0.18, h: 3.0, k: 1.62 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 6,
@@ -382,7 +382,7 @@ export const CHAPTER_6 = [
     equationForm: 'vertex',
     activeCoefficients: ['a', 'h', 'k'],
     sliderConfig: stdSliders,
-    defaultParams: { a: -0.15, h: 4.0, k: 0 },
+    defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
     multiShot: {
       shotCount: 6,
