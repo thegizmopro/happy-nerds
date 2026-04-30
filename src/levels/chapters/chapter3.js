@@ -173,6 +173,7 @@ export const CHAPTER_3 = [
       h: { min: 1.0, max: 8.0, step: 0.1 },
     },
     defaultParams: { a: -0.20, h: 4.0, k: 0 },
+    shotCount: 2,
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 8.5, y: 0.8, radius: 0.42, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
