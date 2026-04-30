@@ -293,33 +293,10 @@ export class GameController {
     let prevInBlock = new Set();
     this._animating = true;
 
-    // DEBUG: log collision details for first launch
-    if (!this._debugLogged) {
-      this._debugLogged = true;
-      console.log('[DEBUG] arcPts.length:', arcPts.length, 'targets:', cfg.targets.map(t => t.id + '@(' + t.x + ',' + t.y + ') r=' + t.radius));
-      // Check which frames are near each target
-      for (const t of cfg.targets) {
-        let minDist = Infinity, bestFrame = -1;
-        for (let fi = 0; fi < arcPts.length; fi++) {
-          const dx = arcPts[fi].x - t.x;
-          const dy = arcPts[fi].y - t.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < minDist) { minDist = dist; bestFrame = fi; }
-        }
-        console.log('[DEBUG] ' + t.id + ': minDist=' + minDist.toFixed(4) + ' radius=' + t.radius + (minDist <= t.radius ? ' SHOULD_HIT' : ' MISS') + ' frame=' + bestFrame + '/' + arcPts.length);
-        if (bestFrame >= 0) console.log('[DEBUG]   closest: (' + arcPts[bestFrame].x.toFixed(3) + ',' + arcPts[bestFrame].y.toFixed(3) + ') target: (' + t.x + ',' + t.y + ')');
-      }
-    }
-
     const step = (ts) => {
       if (!startTime) startTime = ts;
       const elapsed = ts - startTime;
       const newFrame = Math.min(Math.floor((elapsed / DURATION) * total), total - 1);
-
-      // DEBUG: log frame jumps
-      if (newFrame - prevFrame > 10) {
-        console.log('[DEBUG-ANIM] BIG JUMP prevFrame=' + prevFrame + ' newFrame=' + newFrame + ' elapsed=' + elapsed + ' DURATION=' + DURATION);
-      }
 
       // Keep moving targets alive during flight
       this.session.tick(ts);
@@ -338,13 +315,7 @@ export class GameController {
           const wt = this.session.getTargetWorld(t);
           const dx = ballPt.x - wt.x;
           const dy = ballPt.y - wt.y;
-          const distSq = dx * dx + dy * dy;
-          const rSq = wt.radius * wt.radius;
-          // DEBUG: log when we're near a target
-          if (distSq < (wt.radius * 3) * (wt.radius * 3)) {
-            console.log('[DEBUG-ANIM] fi=' + fi + ' target=' + t.id + ' ball=(' + ballPt.x.toFixed(3) + ',' + ballPt.y.toFixed(3) + ') wt=(' + wt.x + ',' + wt.y + ') dist=' + Math.sqrt(distSq).toFixed(4) + ' r=' + wt.radius + ' inHit=' + (distSq <= rSq) + ' prevIn=' + prevInTarget.has(t.id) + ' targetHit=' + this.session.targetsHit.has(t.id));
-          }
-          if (distSq <= rSq) {
+          if (dx * dx + dy * dy <= wt.radius * wt.radius) {
             inTargetNow.add(t.id);
             if (!prevInTarget.has(t.id)) {
               // Ball just entered this target — register one hit
