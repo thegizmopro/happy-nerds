@@ -17,19 +17,27 @@
 - Double-comma syntax errors cleaned up
 - GitHub Actions auto-deploy configured (`.github/workflows/deploy.yml`)
 
-### Critical Bug: Ball Passes Through Targets 🔴
-In many upper levels (6-7, 8-1 confirmed), the ball arc never reaches the targets.
+### 🔴🔴 CRITICAL: 96 Target-Shot Combos Unreachable — Full Audit Done
 
-**Root cause (ch6-l7 example):** Guard target at y=2.1 but all 5 shots lock `k=0` with only `a` and `h` exposed. The arc formula `y = a*(x-h)^2 + k + launcherY` peaks at `launcherY` (0.8) when `k=0`. The guard needs y≥2.1 which requires `k≥1.3`. Physically impossible with current slider config.
+**Full collision audit report**: `COLLISION_AUDIT.md` (in repo root)
 
-**Shot-by-shot for ch6-l7:**
-- Shots 1-3: miss both guard and king (arc too low / too far)
-- Shots 4-5: hit king (y=0.24 at x=7.5, within radius 0.55) but miss guard entirely
-- Guard at (4.25, 2.1) requires k≥1.3, but k is locked at 0
+**96 target-shot combos across 28 levels are PHYSICALLY IMPOSSIBLE to hit** — no slider combination within allowed ranges reaches the target. Entire chapters (Ch4) are unplayable.
 
-**Fix:** Either expose `k` in the slider config, or lower the targets to where the arc can reach.
+**Root cause**: The `k` parameter (vertical offset) is not exposed in slider configs. With `k` auto-derived as `-a*h²`, the arc can only peak at `launcherY` (0.8). Targets above that height are unreachable.
 
-**Affected levels:** 6-7, 8-1, and potentially others in Ch6-Ch8 where targets sit high but k isn't adjustable.
+**Broken chapters**:
+- Ch3: 5 levels (L2, L5, L7, L9, L10)
+- **Ch4: ALL 10 levels** — entire chapter unplayable
+- Ch5: 3 levels (L2, L4, L8)
+- Ch6: 7 levels (L1, L4, L6, L7, L8, L9, L10)
+- Ch8: 3 levels (L1, L4, L5)
+
+**Fix (RECOMMENDED)**: Expose `k` in slider configs for Ch3+. For each broken shot:
+1. Add `"k"` to `activeCoefficients` array
+2. Add `k: { min: 0, max: 5, step: 0.1 }` to `sliderConfig`
+3. Set a `defaultParams.k` that places the arc near the first target
+
+**Priority**: This MUST be fixed before any Phase 2 work. Levels can't be tested until they're completable.
 
 ### Terminology Rule 📛
 **NEVER call targets "pigs".** They are "targets" or by their actual names: jock, varsity, coach, skater, bully. This is not an Angry Birds reskin — it's Happy Nerds.
