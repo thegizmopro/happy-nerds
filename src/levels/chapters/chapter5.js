@@ -185,7 +185,7 @@ export const CHAPTER_5 = [
     targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
       { id: 'slab_glass', x: 6.35, y: 2.9,  width: 2.45, height: 0.25, blockType: 'glass', hp: 1, supports: [] },
-      { id: 'slab_wood',  x: 6.35, y: 2.6,  width: 2.45, height: 0.3,  blockType: 'wood',  hp: 2, supports: [] },
+      { id: 'slab_wood',  x: 6.35, y: 2.6,  width: 2.45, height: 0.3,  blockType: 'wood',  hp: 2, supports: ["slab_glass"] },
       { id: 'pillar_l',   x: 6.0,  y: 0.6,  width: 0.35, height: 2.0,  blockType: 'stone', hp: 3, supports: ['slab_wood'] },
       { id: 'pillar_r',   x: 8.4,  y: 0.6,  width: 0.35, height: 2.0,  blockType: 'stone', hp: 3, supports: ['slab_wood'] },
     ],
