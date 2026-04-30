@@ -318,7 +318,14 @@ export class LevelSession {
     const landedTargets = this.fallingTargets.filter(ft => ft.currentY <= ft.landY);
     for (const ft of landedTargets) {
       const t = this.config.targets.find(t => t.id === ft.id);
-      if (t) t.y = ft.landY; // persist landed position for next shot
+      if (t) {
+        // Kill target if it fell a significant distance (>1 world unit)
+        const fallDistance = (t.y) - ft.landY; // original y minus landing y
+        if (fallDistance > 1.0 && !this.targetsHit.has(t.id)) {
+          this.recordHit(t.id);
+        }
+        t.y = ft.landY; // persist landed position for next shot
+      }
     }
     this.fallingTargets = this.fallingTargets.filter(ft => ft.currentY > ft.landY);
   }

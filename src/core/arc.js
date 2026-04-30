@@ -48,10 +48,14 @@ export function clipArcAtObstacle(arcPoints, obstacles, session) {
   for (const obs of obstacles) {
     // Skip destroyed destructible blocks
     if (session && obs.blockType && !session.isObstacleAlive(obs.id)) continue;
-    // Skip alive destructible blocks — arc passes through them (damage applied in animation)
-    if (obs.blockType) continue;
-    const idx = findObstacleIntersection(arcPoints, obs);
-    if (idx !== -1 && idx < clipIdx) clipIdx = idx;
+    // Glass shatters — arc passes through (damage applied in animation)
+    if (obs.blockType === 'glass') continue;
+    // Wood and stone block the arc — ball clips here for bounce
+    if (obs.blockType === 'wood' || obs.blockType === 'stone') {
+      const idx = findObstacleIntersection(arcPoints, obs);
+      if (idx !== -1 && idx < clipIdx) clipIdx = idx;
+      continue;
+    }
   }
   if (clipIdx === arcPoints.length) return arcPoints;
   return arcPoints.slice(0, clipIdx + 1); // include the hit point

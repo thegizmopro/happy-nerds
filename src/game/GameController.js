@@ -412,13 +412,26 @@ export class GameController {
       const prevPt = lastSegPts[lastIdx - 1];
       const prevPt2 = lastSegPts[lastIdx - 2];
 
-      // Only bounce off non-block obstacles (walls). Blocks absorb/stop the arc.
+      // Bounce off non-block walls and wood blocks. Stone absorbs/stops the arc.
       const hitObs = (cfg.obstacles || []).find(obs => {
-        if (obs.blockType) return false;
+        if (obs.blockType === 'stone') return false; // stone stops, no bounce
+        if (obs.blockType === 'wood') {
+          // Only bounce if wood is still alive
+          if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
+          return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
+                 collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
+        }
+        if (obs.blockType) return false; // glass doesn't cause bounce (arc passes through)
         return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
                collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
       });
       if (!hitObs) break;
+
+      // Damage wood blocks on bounce
+      if (hitObs.blockType === 'wood' && this.session) {
+        this.session.hitObstacle(hitObs.id, 1);
+        this.sound.playHit();
+      }
 
       const { reflectX, reflectY } = detectBounceSurface(prevPt, hitObs);
 
@@ -460,11 +473,20 @@ export class GameController {
       if (x > WORLD_W + 1 || x < -1 || y < -3) break;
 
       for (const obs of (obstacles || [])) {
-        if (obs.blockType) continue; // blocks don't cause bounces
-        if (x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
-          hitObstacle = obs;
-          break;
+        // Stone stops the physics segment
+        if (obs.blockType === 'stone') {
+          if (this?.session?.isObstacleAlive(obs.id) !== false &&
+              x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
+            hitObstacle = obs;
+          }
         }
+        // Non-block obstacles cause bounces
+        if (!obs.blockType) {
+          if (x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
+            hitObstacle = obs;
+          }
+        }
+        if (hitObstacle) break;
       }
       if (hitObstacle) break;
     }
