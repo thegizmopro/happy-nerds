@@ -18,15 +18,18 @@
 - GitHub Actions auto-deploy configured (`.github/workflows/deploy.yml`)
 
 ### Critical Bug: Ball Passes Through Targets 🔴
-In many upper levels (6-7, 8-1 confirmed), the ball arc visually passes through the target but doesn't register a hit. Target survives. This makes levels unwinnable regardless of shot count.
+In many upper levels (6-7, 8-1 confirmed), the ball arc never reaches the targets.
 
-**Possible causes:**
-- Arc point resolution too low at target position (points too sparse)
-- Target radius too small relative to arc step size
-- Arc ends before reaching target x-position
-- Collision check timing issue
+**Root cause (ch6-l7 example):** Guard target at y=2.1 but all 5 shots lock `k=0` with only `a` and `h` exposed. The arc formula `y = a*(x-h)^2 + k + launcherY` peaks at `launcherY` (0.8) when `k=0`. The guard needs y≥2.1 which requires `k≥1.3`. Physically impossible with current slider config.
 
-**Affected levels:** 6-7, 8-1, and potentially others in Ch6-Ch8
+**Shot-by-shot for ch6-l7:**
+- Shots 1-3: miss both guard and king (arc too low / too far)
+- Shots 4-5: hit king (y=0.24 at x=7.5, within radius 0.55) but miss guard entirely
+- Guard at (4.25, 2.1) requires k≥1.3, but k is locked at 0
+
+**Fix:** Either expose `k` in the slider config, or lower the targets to where the arc can reach.
+
+**Affected levels:** 6-7, 8-1, and potentially others in Ch6-Ch8 where targets sit high but k isn't adjustable.
 
 ### Terminology Rule 📛
 **NEVER call targets "pigs".** They are "targets" or by their actual names: jock, varsity, coach, skater, bully. This is not an Angry Birds reskin — it's Happy Nerds.
