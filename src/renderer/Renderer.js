@@ -1,5 +1,5 @@
 import { CANVAS_W, CANVAS_H, WORLD_W, WORLD_H, SCALE, GROUND_Y, w2c, COEFF_COLORS } from '../constants.js';
-import { evalForm } from '../core/equation.js';
+import { evalForm, formatEquation, factoredVertex, standardVertex } from '../core/equation.js';
 import { findVertexPoint } from '../core/arc.js';
 
 export class Renderer {
@@ -49,6 +49,11 @@ export class Renderer {
     this._drawSparks(session);
     this._drawProjectile(session);
     this._drawLauncher(cfg.launcher, session);
+
+    // Mini graph overlay — shows full parabola on axes
+    if (session.gameState === 'idle') {
+      this._drawMiniGraph(session);
+    }
 
     if (session.gameState === 'idle' && this._cpProvider) {
       this._drawControlPoints(this._cpProvider.getControlPoints());
@@ -452,6 +457,181 @@ export class Renderer {
     ctx.save();
     ctx.setLineDash([]);
     ctx.drawImage(img, cx - drawW / 2, cy - drawH, drawW, drawH);
+    ctx.restore();
+  }
+
+  // ── Mini Graph Overlay ──────────────────────────────────────────────────
+
+  _drawMiniGraph(session) {
+    const ctx = this.ctx;
+    const cfg = this._cfg;
+    if (!cfg) return;
+
+    const params = session.getEffectiveParams();
+    const form = session.currentForm();
+
+    // Graph box dimensions (top-right corner)
+    const gW = 200, gH = 140;
+    const gX = CANVAS_W - gW - 12;
+    const gY = 12;
+    const pad = 28; // padding inside box for axes labels
+
+    // Semi-transparent background
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.roundRect(gX, gY, gW, gH, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+
+    // Coordinate system within graph box
+    // Map math coords (x: -2 to 10, y: -2 to 6) to graph pixels
+    const xMin = -2, xMax = 10, yMin = -2, yMax = 6;
+    const plotL = gX + pad, plotR = gX + gW - 8;
+    const plotT = gY + 8, plotB = gY + gH - pad;
+    const plotW = plotR - plotL, plotH = plotB - plotT;
+
+    const toGx = (x) => plotL + ((x - xMin) / (xMax - xMin)) * plotW;
+    const toGy = (y) => plotB - ((y - yMin) / (yMax - yMin)) * plotH;
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 0.5;
+    for (let gx = 0; gx <= 10; gx += 2) {
+      const px = toGx(gx);
+      ctx.beginPath(); ctx.moveTo(px, plotT); ctx.lineTo(px, plotB); ctx.stroke();
+    }
+    for (let gy = 0; gy <= 6; gy += 2) {
+      const py = toGy(gy);
+      ctx.beginPath(); ctx.moveTo(plotL, py); ctx.lineTo(plotR, py); ctx.stroke();
+    }
+
+    // Axes (x=0, y=0)
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1;
+    // Y-axis (x=0)
+    const ax0 = toGx(0);
+    if (ax0 >= plotL && ax0 <= plotR) {
+      ctx.beginPath(); ctx.moveTo(ax0, plotT); ctx.lineTo(ax0, plotB); ctx.stroke();
+    }
+    // X-axis (y=0)
+    const ay0 = toGy(0);
+    if (ay0 >= plotT && ay0 <= plotB) {
+      ctx.beginPath(); ctx.moveTo(plotL, ay0); ctx.lineTo(plotR, ay0); ctx.stroke();
+    }
+
+    // Axis labels
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    for (let gx = 2; gx <= 8; gx += 2) {
+      ctx.fillText(gx, toGx(gx), ay0 + 11);
+    }
+    ctx.textAlign = 'right';
+    for (let gy = 2; gy <= 6; gy += 2) {
+      ctx.fillText(gy, ax0 - 4, toGy(gy) + 3);
+    }
+
+    // Draw the full parabola
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    let started = false;
+    for (let px = xMin; px <= xMax; px += 0.1) {
+      const localX = px - cfg.launcher.x; // convert world x to equation-local x
+      const localY = evalForm(localX, form, params);
+      const worldY = cfg.launcher.y + localY;
+      const sx = toGx(px);
+      const sy = toGy(worldY);
+      if (sy < plotT - 20 || sy > plotB + 20) {
+        started = false;
+        continue;
+      }
+      if (!started) { ctx.moveTo(sx, sy); started = true; }
+      else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+
+    // Draw game arc portion (highlighted)
+    const arcPts = session.arcPoints;
+    if (arcPts && arcPts.length > 1) {
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      const s0x = toGx(arcPts[0].x);
+      const s0y = toGy(arcPts[0].y);
+      ctx.moveTo(s0x, s0y);
+      for (let i = 1; i < arcPts.length; i += 3) { // sample every 3rd point for perf
+        ctx.lineTo(toGx(arcPts[i].x), toGy(arcPts[i].y));
+      }
+      ctx.stroke();
+    }
+
+    // Vertex dot
+    const launcher = cfg.launcher;
+    const span = WORLD_W - launcher.x;
+    const vertex = findVertexPoint(form, params, launcher, span);
+    const vx = toGx(vertex.x), vy = toGy(vertex.y);
+    if (vx >= plotL && vx <= plotR && vy >= plotT && vy <= plotB) {
+      ctx.fillStyle = COEFF_COLORS.k || '#34d399';
+      ctx.beginPath(); ctx.arc(vx, vy, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('vertex', vx, vy - 7);
+    }
+
+    // Root dots (for forms that have roots)
+    if (form === 'factored' && params.r1 != null && params.r2 != null) {
+      const r1World = launcher.x + params.r1;
+      const r2World = launcher.x + params.r2;
+      for (const [label, rx] of [['r\u2081', r1World], ['r\u2082', r2World]]) {
+        const gx = toGx(rx), gy = toGy(launcher.y); // roots at y = launcher.y (equation y=0)
+        if (gx >= plotL && gx <= plotR && gy >= plotT && gy <= plotB) {
+          ctx.fillStyle = label === 'r\u2081' ? COEFF_COLORS.r1 : COEFF_COLORS.r2;
+          ctx.beginPath(); ctx.arc(gx, gy, 3, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.6)';
+          ctx.font = '7px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(label, gx, gy + 10);
+        }
+      }
+    }
+
+    // Launcher dot
+    const lx = toGx(launcher.x), ly = toGy(launcher.y);
+    if (lx >= plotL && lx <= plotR && ly >= plotT && ly <= plotB) {
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Equation label at top of box
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'left';
+    const formLabels = {
+      stretch: 'y = ax\u00B2',
+      vertex: 'y = a(x\u2212h)\u00B2 + k',
+      factored: 'y = a(x\u2212r\u2081)(x\u2212r\u2082)',
+      standard: 'y = ax\u00B2 + bx + c',
+      cubic: 'y = a(x\u2212h)\u00B3 + k',
+      abs: 'y = a|x\u2212h| + k',
+    };
+    ctx.fillText(formLabels[form] || form, gX + 8, gY + gH - 6);
+
+    // Legend
+    ctx.font = '8px monospace';
+    const legX = gX + 8, legY = gY + 14;
+    ctx.fillStyle = '#60a5fa'; ctx.fillRect(legX, legY - 4, 10, 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fillText('full curve', legX + 14, legY);
+    ctx.fillStyle = '#fbbf24'; ctx.fillRect(legX, legY + 8, 10, 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fillText('your arc', legX + 14, legY + 12);
+
     ctx.restore();
   }
 

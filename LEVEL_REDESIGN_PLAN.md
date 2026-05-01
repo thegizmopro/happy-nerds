@@ -1,8 +1,8 @@
 # Happy Nerds — Level Redesign Plan (Master)
 ## Goal: Angry Birds-style Block Structures Across 75 Levels (Ch1–7: 10 each, Ch8: 5 boss levels)
 
-**Last updated**: 2026-04-29 23:45
-**Status**: Phase 1 (winnability) complete. Phase 2 (complex structures) starting.
+**Last updated**: 2026-04-30 16:44
+**Status**: Phase 2 (Ch4-Ch8 redesign) complete. Ch1-Ch3 + scoring + playtest remaining.
 
 ---
 
@@ -17,65 +17,38 @@
 - Double-comma syntax errors cleaned up
 - GitHub Actions auto-deploy configured (`.github/workflows/deploy.yml`)
 
-### 🔴🔴 CRITICAL: 96 Target-Shot Combos Unreachable — Full Audit Done
+### ~~96 Target-Shot Combos Unreachable~~ ✅ RESOLVED
 
-**Full collision audit report**: `COLLISION_AUDIT.md` (in repo root)
+Ch4-Ch8 fully redesigned by Claude Code (2026-04-30). Levels now have proper `defaultParams`, slider ranges, and `k` values. Validator passes all 75 levels.
 
-**96 target-shot combos across 28 levels are PHYSICALLY IMPOSSIBLE to hit** — no slider combination within allowed ranges reaches the target. Entire chapters (Ch4) are unplayable.
-
-**Root cause**: The `k` parameter (vertical offset) is not exposed in slider configs. With `k` auto-derived as `-a*h²`, the arc can only peak at `launcherY` (0.8). Targets above that height are unreachable.
-
-**Broken chapters**:
-- Ch3: 5 levels (L2, L5, L7, L9, L10)
-- **Ch4: ALL 10 levels** — entire chapter unplayable
-- Ch5: 3 levels (L2, L4, L8)
-- Ch6: 7 levels (L1, L4, L6, L7, L8, L9, L10)
-- Ch8: 3 levels (L1, L4, L5)
-
-**Fix (RECOMMENDED)**: Expose `k` in slider configs for Ch3+. For each broken shot:
-1. Add `"k"` to `activeCoefficients` array
-2. Add `k: { min: 0, max: 5, step: 0.1 }` to `sliderConfig`
-3. Set a `defaultParams.k` that places the arc near the first target
-
-**Priority**: This MUST be fixed before any Phase 2 work. Levels can't be tested until they're completable.
+Ch1-Ch3 may still have unreachable combos — check during Ch1-Ch3 redesign.
 
 ### Terminology Rule 📛
 **NEVER call targets "pigs".** They are "targets" or by their actual names: jock, varsity, coach, skater, bully. This is not an Angry Birds reskin — it's Happy Nerds.
 
 Applies to: all level data comments, variable names where reasonable, documentation, plan text.
 
-### Critical Bug: 28 Levels Have No Cascade Wiring 🔴
-**Blocks exist visually but `supports: []` is empty — destroying a pillar does nothing to the beam above it.**
-No falling animation, no cascade, no physics. Blocks just disappear when hit.
+### ~~28 Levels Have No Cascade Wiring~~ ✅ RESOLVED (Ch4-Ch8)
 
-**Affected levels** (all blocks have empty `supports: []`):
-- Ch1: L6
-- Ch2: L1-L10 (entire chapter)
-- Ch3: L1-L10 (entire chapter)
-- Ch4: L1, L4, L10
-- Ch6: L3
-- Ch7: L5, L9
-- Ch8: L3
+Ch4-Ch8 redesign includes proper `supports` wiring. Ch1-Ch3 still need cascade wiring during their redesign.
 
-**Root cause:** Claude Code generated block positions but left `supports` arrays empty. Blocks sit in the right visual positions but the engine doesn't know they're physically connected.
-
-**Fix required:** Wire `supports` arrays for every beam/roof block to reference the pillars/columns holding it up. This is the first thing to fix before any redesign.
-
-### What's Needed 🔴
-The current levels are **structurally boring**:
-- **60 of 75 levels have 1 target and 1 shot** — no decisions, no tension
-- **Most structures are "2 pillars + 1 beam" shelf** — the same pattern repeated
-- **No multi-story towers** — Angry Turds L3 already has 2-story, L5 has 3-story
-- **Pigs never inside structures** — always sitting on top, never enclosed
-- **No cascade chains** — blocks don't chain-fall because supports aren't wired deep
+### What's Still Needed 🔴
+Ch4-Ch8 now have complex structures. Remaining work:
+- **Ch1-Ch3 still simple** — need redesign with proper structures + cascade wiring
+- **No bonus shots** — levels currently have minimum shots only
+- **No star ratings** — no reward for efficiency
 - **No scoring system** — nothing to optimize, no reason to replay
+- **Ch1 launcher floating** — nerd at y=4.5 with no platform (deferred for now)
+- **No playtesting** — Ch4-Ch8 need human playtest pass
 
 ### Phase 2 TODO (This Plan)
-1. [ ] Restructure all 75 levels with complex multi-story structures
-2. [ ] Add multi-target + multi-shot to Ch3 onward
-3. [ ] Add point-based scoring system (engine change)
-4. [ ] Add winnability check to validator script
-5. [ ] Playtest pass (3-point checklist per level)
+1. [x] Restructure Ch4-Ch8 levels with complex multi-story structures (Claude Code, 2026-04-30)
+2. [ ] Restructure Ch1-Ch3 levels with proper structures
+3. [ ] Add bonus shots to all levels (shots ≥ min + 1-2 extra)
+4. [ ] Add star ratings tied to shot efficiency (⭐⭐⭐=min, ⭐⭐=+1, ⭐=all)
+5. [ ] Add point-based scoring system (engine change)
+6. [ ] Add winnability check to validator script
+7. [ ] Playtest pass (3-point checklist per level)
 
 ---
 
