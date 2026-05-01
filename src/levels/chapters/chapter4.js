@@ -44,7 +44,8 @@ export const CHAPTER_4 = [
       { id: 'glass_lane', x: 6.8, y: 0.6, width: 0.35, height: 1.6, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 5], starMode: 'moves',
+        bonusShots: 1,
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: 'factored_form',
     hint: 'Stone wall is indestructible — arc over it. Glass wall shatters and the ball continues through to the target.',
     theme: THEME,
@@ -74,7 +75,8 @@ export const CHAPTER_4 = [
       { id: 'twr_glass',  x: 6.8,  y: 2.0, width: 0.5,  height: 0.3, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 5], starMode: 'moves',
+        bonusShots: 1,
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: null,
     hint: 'Hit the concrete base — the whole tower cascades down and the target falls over 2 units.',
     theme: THEME,
@@ -103,7 +105,8 @@ export const CHAPTER_4 = [
       { id: 'ceiling',       x: 6.0, y: 3.2, width: 2.8,  height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.5, y: 3.8, radius: 0.28 },
-    starThresholds: [2, 5], starMode: 'bonus',
+        bonusShots: 1,
+    starThresholds: [2, 3], starMode: 'bonus',
     revealAfter: null,
     hint: 'Arc through the glass ceiling to hit the pig inside — or break the concrete wall and let the ceiling crush it.',
     theme: THEME,
@@ -127,7 +130,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.14, r1: 0, r2: 5.5, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -145,7 +149,7 @@ export const CHAPTER_4 = [
       { id: 'step3', x: 8.1, y: 0.6, width: 0.5, height: 1.6, blockType: 'concrete', hp: 2, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [3, 7], starMode: 'moves',
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: null,
     hint: 'Two targets at different heights on the staircase. Arc must clear the lower steps to reach the top ones.',
     theme: THEME,
@@ -170,7 +174,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.12, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -188,7 +193,7 @@ export const CHAPTER_4 = [
       { id: 'fort_right', x: 8.1, y: 0.6, width: 0.35, height: 2.2, blockType: 'stone',    hp: 3, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [2, 6], starMode: 'moves',
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: 'roots_and_zeros',
     hint: 'Stone walls protect the fortress — break the concrete base underneath to bring it down, then finish the pig.',
     theme: THEME,
@@ -212,7 +217,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.10, r1: 2.0, r2: 7.5, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -233,7 +239,7 @@ export const CHAPTER_4 = [
       { id: 'cage_top',x: 7.2, y: 2.4, width: 1.65, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: { x: 5.8, y: 2.5, radius: 0.28 },
-    starThresholds: [3, 8], starMode: 'bonus',
+    starThresholds: [3, 4], starMode: 'bonus',
     revealAfter: null,
     hint: 'Shot 1 collapses the left shelf. Shot 2 goes through the glass cage to hit the target inside.',
     theme: THEME,
@@ -256,7 +262,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.10, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -275,7 +282,7 @@ export const CHAPTER_4 = [
       { id: 'roof_shelf',x: 6.4,  y: 3.45, width: 1.6, height: 0.25, blockType: 'wood',     hp: 2, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [3, 7], starMode: 'moves',
+    starThresholds: [3, 4], starMode: 'moves',
     revealAfter: 'multiple_roots',
     hint: 'Shot 1: arc through the glass ceiling to hit the pig inside. Shot 2: destroy the concrete wall to collapse everything onto the roof pig.',
     theme: THEME,
@@ -299,7 +306,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.10, r1: 0, r2: 6.2, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -316,7 +324,7 @@ export const CHAPTER_4 = [
       { id: 'king_roof',x: 6.2,  y: 3.4, width: 2.35, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [3, 8], starMode: 'moves',
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: null,
     hint: 'King Pig takes 2 hits. Shot 1: smash the glass ceiling. Shot 2: finish the king through the open roof.',
     theme: THEME,
@@ -341,7 +349,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.12, r1: 0, r2: 5.8, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -363,7 +372,7 @@ export const CHAPTER_4 = [
       { id: 'cage_roof',x: 8.0,  y: 2.4, width: 1.55, height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.5, y: 3.0, radius: 0.28 },
-    starThresholds: [3, 8], starMode: 'bonus',
+    starThresholds: [2, 3], starMode: 'bonus',
     revealAfter: null,
     hint: 'Hit the pyramid base — it cascades and drops the pig. Then arc through the glass cage to finish the second target.',
     theme: THEME,
@@ -387,7 +396,8 @@ export const CHAPTER_4 = [
     },
     defaultParams: { a: -0.14, r1: 0, r2: 3.5, k: 0 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -411,7 +421,7 @@ export const CHAPTER_4 = [
       { id: 'glass_bar', x: 7.9, y: 0.6, width: 0.35, height: 1.8, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 9], starMode: 'moves',
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: 'discriminant',
     hint: 'Three structures, three shots. Topple the tower, break into the fortress, then time the moving pig.',
     theme: THEME,

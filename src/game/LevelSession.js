@@ -8,6 +8,8 @@ export class LevelSession {
     this.gameState = 'idle'; // idle | flying | hit | miss
     this.sliderMoves = 0;
     this.bonusAchieved = false;
+    this.shotsUsed = 0;
+    this.blocksDestroyed = []; // [{ id, blockType }]
 
     // Current equation params (copy of defaults)
     this.params = { ...levelConfig.defaultParams };
@@ -224,6 +226,10 @@ export class LevelSession {
     this.obstacleHP[id] = Math.max(0, this.obstacleHP[id] - damage);
     if (this.obstacleHP[id] === 0) {
       this.obstacleDestroyed[id] = Date.now();
+      // Track destroyed block for scoring
+      if (obs?.blockType) {
+        this.blocksDestroyed.push({ id, blockType: obs.blockType });
+      }
       // Cascade: blocks this one was supporting may now fall
       const toFall = this._getSupportedBlocks(id);
       for (const obs of toFall) this._startFalling(obs);

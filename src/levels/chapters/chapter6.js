@@ -34,7 +34,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.20, h: 2.5, k: 1.25 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -55,7 +56,7 @@ export const CHAPTER_6 = [
       { id: 'twr_top',  x: 7.4,  y: 1.4, width: 0.5,  height: 0.35, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 10], starMode: 'moves',
+    starThresholds: [2, 3], starMode: 'moves',
     revealAfter: 'multi_shot_strategy',
     hint: 'Shot 1 collapses the left shelf. Stone divider separates the zones. Shot 2 topples the right tower via cascade.',
     theme: THEME,
@@ -73,7 +74,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.12, h: 4.0, k: 1.92 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -91,7 +93,7 @@ export const CHAPTER_6 = [
       { id: 'castle_roof',x: 6.3, y: 3.0, width: 2.05, height: 0.25, blockType: 'glass',  hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 10], starMode: 'moves',
+    starThresholds: [3, 4], starMode: 'moves',
     revealAfter: null,
     hint: 'Peel the fortress layer by layer: shatter the glass roof, crack the inner wall, then finish the Letterman.',
     theme: THEME,
@@ -109,7 +111,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.18, h: 3.5, k: 2.205 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 4,
       sequenceMode: 'sequential',
       shots: [
@@ -130,7 +133,7 @@ export const CHAPTER_6 = [
       { id: 'col2_top',  x: 5.3, y: 1.6, width: 0.4, height: 0.6, blockType: 'concrete', hp: 2, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 10], starMode: 'moves',
+    starThresholds: [4, 5], starMode: 'moves',
     revealAfter: null,
     hint: 'Smash both columns first — then the path is clear to hit the guard and finish the King.',
     theme: THEME,
@@ -148,7 +151,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.20, h: 3.0, k: 1.8 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -171,7 +175,7 @@ export const CHAPTER_6 = [
       { id: 'twr3_top',  x: 8.5,  y: 2.0, width: 0.5, height: 0.5,  blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [5, 12], starMode: 'moves',
+    starThresholds: [3, 4], starMode: 'moves',
     revealAfter: 'combining_functions',
     hint: 'Three towers, escalating difficulty. Stone base on the third tower forces a high arc — smash the glass top.',
     theme: THEME,
@@ -189,7 +193,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -207,7 +212,7 @@ export const CHAPTER_6 = [
       { id: 'wall_hi', x: 5.0, y: 1.6, width: 0.4, height: 1.0, blockType: 'wood', hp: 2, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [3, 8], starMode: 'moves',
+    starThresholds: [3, 4], starMode: 'moves',
     revealAfter: null,
     hint: 'Break both wall blocks — then time Shot 3 to catch the pig when it is exposed.',
     theme: THEME,
@@ -224,7 +229,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.18, h: 3.5, k: 2.205 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
@@ -252,7 +258,7 @@ export const CHAPTER_6 = [
       { id: 'right_top',  x: 8.0,  y: 1.9, width: 0.5,  height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [5, 13], starMode: 'moves',
+    starThresholds: [5, 6], starMode: 'moves',
     revealAfter: null,
     hint: 'King sits behind stone walls — take out both flanks first, then shatter the glass roof to finish him.',
     theme: THEME,
@@ -269,7 +275,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
@@ -292,7 +299,7 @@ export const CHAPTER_6 = [
       { id: 'fort_roof',  x: 6.8,  y: 3.0, width: 1.85, height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 10], starMode: 'moves',
+    starThresholds: [5, 6], starMode: 'moves',
     revealAfter: null,
     hint: 'Take out the guard tower first (Letterman, 2 HP). Then breach the stone fortress to reach the King (3 HP).',
     theme: THEME,
@@ -309,7 +316,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.20, h: 2.0, k: 0.8 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 2,
       sequenceMode: 'sequential',
       shots: [
@@ -330,7 +338,7 @@ export const CHAPTER_6 = [
       { id: 'shelf_r', x: 7.0,  y: 1.3, width: 1.4,  height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: { x: 5.5, y: 3.0, radius: 0.28 },
-    starThresholds: [3, 8], starMode: 'bonus',
+    starThresholds: [2, 3], starMode: 'bonus',
     revealAfter: 'precision_matters',
     hint: 'Thread Shot 1 through the bonus ring AND smash a pillar. Shot 2 collapses the right shelf.',
     theme: THEME,
@@ -347,7 +355,8 @@ export const CHAPTER_6 = [
     sliderConfig: { ...stdSliders, k: { min: -2, max: 6, step: 0.1 } },
     defaultParams: { a: -0.18, h: 3.0, k: 1.62 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 6,
       sequenceMode: 'sequential',
       shots: [
@@ -376,7 +385,7 @@ export const CHAPTER_6 = [
       { id: 'sh3',    x: 8.2,  y: 2.2, width: 1.2,  height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [6, 14], starMode: 'moves',
+    starThresholds: [6, 7], starMode: 'moves',
     revealAfter: null,
     hint: 'Three shelves at different heights — each target takes 2 hits. Two shots per structure, plan the arc heights carefully.',
     theme: THEME,
@@ -394,7 +403,8 @@ export const CHAPTER_6 = [
     sliderConfig: stdSliders,
     defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 6,
       sequenceMode: 'sequential',
       shots: [
@@ -423,7 +433,7 @@ export const CHAPTER_6 = [
       { id: 'king_roof',x: 7.8,  y: 3.4, width: 1.85, height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: { x: 5.0, y: 4.5, radius: 0.25 },
-    starThresholds: [6, 14], starMode: 'bonus',
+    starThresholds: [6, 7], starMode: 'bonus',
     revealAfter: null,
     hint: 'Whistle Pig → Letterman → King. Six shots, plan every one. Bonus ring at the arc peak for 3★.',
     theme: THEME,

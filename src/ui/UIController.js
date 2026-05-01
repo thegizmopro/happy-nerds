@@ -240,22 +240,24 @@ export class UIController {
 
   // ─── Result Panel ─────────────────────────────────────────────────────────────
 
-  showResult({ hit, stars, moves, isLastLevel, timedOut }) {
+  showResult({ hit, stars, score, moves, shotsUsed, totalShots, isLastLevel, timedOut }) {
     const el = this._refs.result;
     if (hit) {
       el.className = 'hit';
+      const scoreStr = score != null ? ` &nbsp;<span style="color:#f59e0b;font-size:0.9rem;font-weight:bold">${score.toLocaleString()} pts</span>` : '';
+      const shotsStr = totalShots > 1 ? ` &nbsp;<span style="color:#64748b;font-size:0.85rem">${shotsUsed}/${totalShots} shots</span>` : '';
       el.innerHTML =
         `<span class="stars">${starStr(stars)}</span> ` +
         (stars === 3 ? 'Perfect!' : stars === 2 ? 'Nice shot!' : 'Got it!') +
-        ` &nbsp;<span style="color:#64748b;font-size:0.85rem">${moves} adjustment${moves !== 1 ? 's' : ''}</span>`;
+        scoreStr + shotsStr;
       if (!isLastLevel) {
         this._refs.btnNext.classList.remove('hidden');
       } else {
-        el.innerHTML += '<br><span style="font-size:0.9rem">🎓 You completed Happy Nerds!</span>';
+        el.innerHTML += '<br><span style="font-size:0.9rem">\uD83C\uDF93 You completed Happy Nerds!</span>';
       }
     } else {
       el.className = 'miss';
-      el.textContent = timedOut ? '⏰ Time\'s up! Try again.' : '😅 Wah wah... adjust and try again!';
+      el.textContent = timedOut ? "\u23F0 Time's up! Try again." : '\uD83D\uDE05 Wah wah... adjust and try again!';
     }
     el.classList.remove('hidden');
     this._refs.btnRetry.classList.remove('hidden');
@@ -428,6 +430,12 @@ export class UIController {
     this._refs.btnLaunch.disabled = !enabled;
     for (const { el, locked } of Object.values(this._sliderListeners)) {
       el.disabled = !enabled || locked;
+    }
+  }
+
+  showShotsRemaining(remaining) {
+    if (remaining > 0) {
+      this._showToast(`\uD83C\uDFF9 ${remaining} shot${remaining !== 1 ? 's' : ''} remaining`);
     }
   }
 

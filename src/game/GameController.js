@@ -2,7 +2,7 @@ import { LevelSession } from './LevelSession.js';
 import { ControlPoints } from '../ui/ControlPoints.js';
 import { buildArcPoints, clipArcAtObstacle } from '../core/arc.js';
 import { arcHitsTarget, detectBounceSurface } from '../core/collision.js';
-import { calcStars } from '../core/scoring.js';
+import { calcStars, calcScore } from '../core/scoring.js';
 import { loadProgress, saveProgress, recordStar, markRevealSeen, markChapterIntroSeen, isChapterIntroSeen, isChapterUnlocked } from '../save/ProgressStore.js';
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
 import { REVEALS } from '../levels/revealContent.js';
@@ -242,6 +242,7 @@ export class GameController {
     if (this.session.gameState !== 'idle') return;
     if (this.session.isTimedOut()) return;
 
+    this.session.shotsUsed++;
     this._ensureAudioInit();
 
     const cfg = this.session.config;
@@ -528,6 +529,22 @@ export class GameController {
         if (session.hasMovingTargets || session.timerSeconds !== null) this._startLoop();
         return;
       }
+
+      // Last mandatory shot done — check for bonus shots
+      const totalShots = cfg.multiShot.shotCount + (cfg.bonusShots ?? 0);
+      const shotsRemaining = totalShots - session.shotsUsed;
+      if (shotsRemaining > 0 && !session.allTargetsHit()) {
+        // Bonus shot available: stay in idle with current equation form
+        session.gameState = 'idle';
+        session.arcPoints = [];
+        session.trail = [];
+        this.ui.setControlsEnabled(true);
+        this.ui.showShotsRemaining(shotsRemaining);
+        this._rebuildArc();
+        this.renderer.draw(session);
+        if (session.hasMovingTargets || session.timerSeconds !== null) this._startLoop();
+        return;
+      }
     }
 
     // All shots done — evaluate final result
@@ -535,9 +552,11 @@ export class GameController {
     const hasAliveTargets = session.config.targets.some(t => (session.targetHP[t.id] ?? t.hp ?? 1) > 0);
 
     // If we hit a multi-HP target (damaged but not killed), let the player fire again.
-    // This only applies to single-shot levels — multi-shot has its own flow.
+    // Also applies when bonus shots remain — player can keep firing for more destruction.
     // Don't re-fire on a complete miss (hit nothing at all).
-    if (!allHit && hasAliveTargets && session._shotHitAlive && !session.isMultiShot) {
+    const totalShots = cfg.multiShot ? cfg.multiShot.shotCount : 1 + (cfg.bonusShots ?? 0);
+    const shotsRemaining = totalShots - session.shotsUsed;
+    if (!allHit && hasAliveTargets && (session._shotHitAlive || shotsRemaining > 0) && !session.isMultiShot) {
       session.gameState = 'idle';
       session.arcPoints = [];
       session.trail = [];
@@ -545,6 +564,7 @@ export class GameController {
       session.bounceFrames = [];
       session.bouncePoints = [];
       this.ui.setControlsEnabled(true);
+      this.ui.showShotsRemaining(shotsRemaining);
       this._rebuildArc();
       this.renderer.draw(session);
       if (session.hasMovingTargets || session.timerSeconds !== null) this._startLoop();
@@ -570,12 +590,25 @@ export class GameController {
 
     if (allHit) {
       if (session.bonusAchieved) this.sound.playBonusChime();
+
+      // Shot-based star calculation
+      const totalShots = cfg.multiShot ? cfg.multiShot.shotCount : 1 + (cfg.bonusShots ?? 0);
       const stars = calcStars({
-        sliderMoves: session.sliderMoves,
+        shotsUsed: session.shotsUsed,
         starThresholds: cfg.starThresholds,
         starMode: cfg.starMode,
         bonusAchieved: session.bonusAchieved,
       });
+
+      // Score calculation
+      const score = calcScore({
+        blocksDestroyed: session.blocksDestroyed,
+        targetsKilled: session.targetsHit.size,
+        shotsUsed: session.shotsUsed,
+        totalShots,
+        sliderMoves: session.sliderMoves,
+      });
+
       recordStar(this.progress, this.currentLevelIndex, stars);
       if (stars > 0) this.sound.playStar();
 
@@ -589,10 +622,10 @@ export class GameController {
       if (revealId && !this.progress.revealsSeen.includes(revealId) && REVEALS[revealId]) {
         markRevealSeen(this.progress, revealId);
         this.ui.showRevealCard(REVEALS[revealId], () => {
-          this.ui.showResult({ hit: true, stars, moves: session.sliderMoves, isLastLevel: this._isLastLevel() });
+          this.ui.showResult({ hit: true, stars, score, moves: session.sliderMoves, shotsUsed: session.shotsUsed, totalShots, isLastLevel: this._isLastLevel() });
         });
       } else {
-        this.ui.showResult({ hit: true, stars, moves: session.sliderMoves, isLastLevel: this._isLastLevel() });
+        this.ui.showResult({ hit: true, stars, score, moves: session.sliderMoves, shotsUsed: session.shotsUsed, totalShots, isLastLevel: this._isLastLevel() });
       }
     } else {
       this.ui.showResult({ hit: false });

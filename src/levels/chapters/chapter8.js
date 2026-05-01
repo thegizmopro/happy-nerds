@@ -41,7 +41,8 @@ export const CHAPTER_8 = [
     defaultParams: { a: -0.20, h: 2.5, k: 1.25 },
     launcher: LAUNCHER,
     timer: { seconds: 60 },
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -64,7 +65,7 @@ export const CHAPTER_8 = [
       { id: 'b1_shelf2',x: 7.5,  y: 1.3, width: 1.4,  height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: { x: 6.5, y: 4.0, radius: 0.28 },
-    starThresholds: [4, 10], starMode: 'bonus',
+    starThresholds: [3, 4], starMode: 'bonus',
     revealAfter: null,
     hint: '60 seconds. Two shelves, two pigs, stone divider. Smash a pillar to drop the shelf. Decide fast — the clock is running.',
     theme: THEME,
@@ -100,7 +101,8 @@ export const CHAPTER_8 = [
       { id: 'fort_roof',x: 7.0,  y: 3.4, width: 1.55, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.0, y: 4.2, radius: 0.25 },
-    starThresholds: [3, 8], starMode: 'bonus',
+        bonusShots: 1,
+    starThresholds: [3, 4], starMode: 'bonus',
     revealAfter: 'math_mastery',
     hint: '90 seconds. Two moat walls, stone outer shell, concrete inner walls, glass ceiling. King takes 2 hits — plan every arc.',
     theme: THEME,
@@ -123,7 +125,8 @@ export const CHAPTER_8 = [
     defaultParams: { a: -0.15, h: 4.0, k: 2.4 },
     launcher: LAUNCHER,
     timer: { seconds: 90 },
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -147,7 +150,7 @@ export const CHAPTER_8 = [
       { id: 'cage3rb', x: 9.3,  y: 0.6, width: 0.35, height: 1.8, blockType: 'stone',    hp: 3, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [4, 10], starMode: 'moves',
+    starThresholds: [3, 4], starMode: 'moves',
     revealAfter: null,
     hint: '90 seconds. Left pig in glass (easy), center in concrete (needs bounce-through), right behind stone (glass front only). Time each shot carefully.',
     theme: THEME,
@@ -170,7 +173,8 @@ export const CHAPTER_8 = [
     defaultParams: { a: -0.12, r1: 0, r2: 8.0, k: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 90 },
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 3,
       sequenceMode: 'sequential',
       shots: [
@@ -196,7 +200,7 @@ export const CHAPTER_8 = [
       { id: 'k8_4rf',    x: 8.1,  y: 3.2, width: 1.85, height: 0.25, blockType: 'glass',  hp: 1, supports: [] },
     ],
     bonusRing: null,
-    starThresholds: [5, 12], starMode: 'moves',
+    starThresholds: [5, 6], starMode: 'moves',
     revealAfter: null,
     hint: 'Three equation forms — one per structure. Read the structure, choose the right form. King takes 2 hits inside the stone fortress.',
     theme: THEME,
@@ -220,7 +224,8 @@ export const CHAPTER_8 = [
     defaultParams: { a: -0.12, b: 1.8, c: 0, k: 0 },
     launcher: LAUNCHER,
     timer: { seconds: 120 },
-    multiShot: {
+        bonusShots: 1,
+multiShot: {
       shotCount: 5,
       sequenceMode: 'sequential',
       shots: [
@@ -249,7 +254,7 @@ export const CHAPTER_8 = [
       { id: 'king_rf',  x: 7.6,  y: 3.6, width: 2.05, height: 0.25, blockType: 'glass',    hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.8, y: 4.5, radius: 0.25 },
-    starThresholds: [5, 12], starMode: 'bonus',
+    starThresholds: [2, 3], starMode: 'bonus',
     revealAfter: 'strategic_thinking',
     hint: '120 seconds. Whistle Pig on a shelf, Letterman in a castle, moving King in a stone fortress. Five shots, three equation forms. This IS the final exam.',
     theme: THEME,
