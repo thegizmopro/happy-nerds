@@ -353,10 +353,12 @@ function evalForm(x, form, p) {
 
 function buildArcPts(form, params, launcher, steps=300) {
   const span = WW - launcher.x + 0.5;
+  // Offset so arc starts at launcher (evalForm(0) may not be 0)
+  const yOff = evalForm(0, form, params);
   const pts = [];
   for(let i=0; i<=steps; i++) {
     const lx = (i/steps)*span;
-    const ly = evalForm(lx, form, params);
+    const ly = evalForm(lx, form, params) - yOff;
     pts.push({x: launcher.x+lx, y: launcher.y+ly});
     if(i>10 && ly < -launcher.y-1) break;
   }
