@@ -35,6 +35,7 @@ export class UIController {
         <span id="level-num"></span>
         <span id="level-title"></span>
         <span id="timer-display" class="hidden"></span>
+        <span id="shot-counter" class="hidden"></span>
         <span id="prev-stars"></span>
         <button id="btn-mute" title="Toggle mute">🔊</button>
       </div>
@@ -60,6 +61,7 @@ export class UIController {
     this._refs = {
       levelNum: $('level-num'), levelTitle: $('level-title'), prevStars: $('prev-stars'),
       timer: $('timer-display'),
+      shotCounter: $('shot-counter'),
       canvas: $('game-canvas'),
       equationDisplay: $('equation-display'),
       shotTabs: $('shot-tabs'),
@@ -102,6 +104,9 @@ export class UIController {
     this._refs.levelTitle.textContent = cfg.title;
     const best = getStars(progress, globalIndex);
     this._refs.prevStars.textContent = best > 0 ? `Best: ${starStr(best)}` : '';
+    // Show cumulative score in header
+    const totalScore = progress.totalScore ?? 0;
+    this._refs.prevStars.textContent += totalScore > 0 ? ` &nbsp; Σ ${totalScore.toLocaleString()}` : '';
 
     // Timer
     if (cfg.timer) {
@@ -110,6 +115,16 @@ export class UIController {
     } else {
       this._refs.timer.classList.add('hidden');
     }
+
+    // Shot counter
+    const totalShots = cfg.multiShot ? cfg.multiShot.shotCount + (cfg.bonusShots ?? 0) : 1 + (cfg.bonusShots ?? 0);
+    if (totalShots > 1) {
+      this._refs.shotCounter.textContent = `\uD83C\uDFF9 1/${totalShots}`;
+      this._refs.shotCounter.classList.remove('hidden');
+    } else {
+      this._refs.shotCounter.classList.add('hidden');
+    }
+    this._totalShots = totalShots;
 
     // Shot tabs for multi-shot
     if (cfg.multiShot) {
@@ -434,6 +449,7 @@ export class UIController {
   }
 
   showShotsRemaining(remaining) {
+    this._refs.shotCounter.textContent = `\uD83C\uDFF9 ${this._totalShots - remaining}/${this._totalShots}`;
     if (remaining > 0) {
       this._showToast(`\uD83C\uDFF9 ${remaining} shot${remaining !== 1 ? 's' : ''} remaining`);
     }

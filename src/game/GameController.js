@@ -3,7 +3,7 @@ import { ControlPoints } from '../ui/ControlPoints.js';
 import { buildArcPoints, clipArcAtObstacle } from '../core/arc.js';
 import { arcHitsTarget, detectBounceSurface } from '../core/collision.js';
 import { calcStars, calcScore } from '../core/scoring.js';
-import { loadProgress, saveProgress, recordStar, markRevealSeen, markChapterIntroSeen, isChapterIntroSeen, isChapterUnlocked } from '../save/ProgressStore.js';
+import { loadProgress, saveProgress, recordStar, addScore, markRevealSeen, markChapterIntroSeen, isChapterIntroSeen, isChapterUnlocked } from '../save/ProgressStore.js';
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
 import { REVEALS } from '../levels/revealContent.js';
 import { WORLD_W } from '../constants.js';
@@ -610,6 +610,7 @@ export class GameController {
       });
 
       recordStar(this.progress, this.currentLevelIndex, stars);
+      addScore(this.progress, score);
       if (stars > 0) this.sound.playStar();
 
       if (stars >= 3) {

@@ -9,6 +9,7 @@ const DEFAULTS = {
   volume: 70,         // master volume 0-100
   muted: false,       // mute toggle
   tutorialDone: false,
+  totalScore: 0,     // cumulative score across all levels
 };
 
 export function loadProgress() {
@@ -34,6 +35,11 @@ export function recordStar(progress, levelIndex, stars) {
   const cur = progress.stars[levelIndex] ?? 0;
   progress.stars[levelIndex] = Math.max(cur, stars);
   progress.currentLevel = Math.max(progress.currentLevel, levelIndex);
+  saveProgress(progress);
+}
+
+export function addScore(progress, score) {
+  progress.totalScore = (progress.totalScore ?? 0) + score;
   saveProgress(progress);
 }
 

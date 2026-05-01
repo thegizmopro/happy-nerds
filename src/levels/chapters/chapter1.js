@@ -99,10 +99,10 @@ export const CHAPTER_1 = [
     sliderConfig: { a: { min: -0.50, max: -0.03, step: 0.005 } },
     defaultParams: { a: -0.20, h: 0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.5, y: 0.6, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 6.8, y: 0.6, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
-      { id: 'stone_wall', x: 4.5, y: 0.6, width: 0.5, height: 3.0, blockType: 'stone', hp: 3, supports: [] },
-      { id: 'glass_lane', x: 6.5, y: 0.6, width: 0.35, height: 1.2, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'stone_wall', x: 4.5, y: 0.6, width: 0.5, height: 2.0, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'glass_lane', x: 5.8, y: 0.6, width: 0.35, height: 1.2, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
         bonusShots: 1,

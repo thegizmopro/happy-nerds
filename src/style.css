@@ -234,6 +234,12 @@ button.premium-dismiss:hover { color: #94a3b8; }
 .ls-chapter-premium-locked .ls-chapter-title { color: #f59e0b; }
 .ls-lock-info { font-size: 0.8rem; color: #64748b; padding: 4px 0; }
 .premium-lock-info { color: #f59e0b; font-weight: bold; }
+#shot-counter {
+  background: #1e293b; color: #38bdf8; padding: 3px 10px;
+  border-radius: 4px; font-size: 0.85rem; font-weight: bold;
+  border: 1px solid #334155;
+}
+
 #toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
   background: #1e293b; color: #e2e8f0; padding: 10px 18px;
