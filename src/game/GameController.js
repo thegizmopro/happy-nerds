@@ -3,7 +3,7 @@ import { ControlPoints } from '../ui/ControlPoints.js';
 import { buildArcPoints, clipArcAtObstacle } from '../core/arc.js';
 import { arcHitsTarget, detectBounceSurface } from '../core/collision.js';
 import { calcStars } from '../core/scoring.js';
-import { loadProgress, saveProgress, recordStar, markRevealSeen, isChapterUnlocked } from '../save/ProgressStore.js';
+import { loadProgress, saveProgress, recordStar, markRevealSeen, markChapterIntroSeen, isChapterIntroSeen, isChapterUnlocked } from '../save/ProgressStore.js';
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
 import { REVEALS } from '../levels/revealContent.js';
 import { WORLD_W } from '../constants.js';
@@ -79,6 +79,18 @@ export class GameController {
       this.ui.showPaywall(cfg.chapter);
       return;
     }
+
+    // Chapter intro — show once per chapter when entering first level
+    if (!isChapterIntroSeen(this.progress, cfg.chapter)) {
+      markChapterIntroSeen(this.progress, cfg.chapter);
+      this.ui.showChapterIntro(cfg.chapter, () => this._initLevel(cfg, globalIndex));
+      return;
+    }
+
+    this._initLevel(cfg, globalIndex);
+  }
+
+  _initLevel(cfg, globalIndex) {
 
     this.session = new LevelSession(cfg);
     this._stopLoop();

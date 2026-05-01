@@ -138,6 +138,41 @@ button {
 }
 .reveal-card-dismiss:hover { background: #6d28d9; }
 
+/* ── Chapter Intro (full-screen overlay) ────────────────────── */
+.chapter-intro-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 400;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.chapter-intro-enter { opacity: 1; }
+.chapter-intro-exit { opacity: 0; transition: opacity 0.28s ease-in; }
+.chapter-intro-card {
+  background: #0f172a; border: 2px solid #3b82f6; border-radius: 16px;
+  padding: 24px 28px; max-width: 480px; width: calc(100% - 32px);
+  text-align: center;
+}
+.chapter-intro-title { font-size: 1.5rem; font-weight: bold; color: #60a5fa; margin-bottom: 4px; }
+.chapter-intro-subtitle { font-size: 1rem; color: #93c5fd; margin-bottom: 16px; font-family: 'Courier New', monospace; }
+.chapter-intro-canvas {
+  display: block; width: 100%; max-width: 260px; height: 120px;
+  border-radius: 8px; margin: 0 auto 16px;
+  border: 1px solid #1e293b; background: #050510;
+}
+.chapter-intro-body {
+  font-size: 0.9rem; line-height: 1.7; color: #e2e8f0;
+  margin-bottom: 14px; text-align: left; white-space: pre-line;
+}
+.chapter-intro-vocab { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 18px; }
+.chapter-intro-start {
+  background: #3b82f6; color: #fff; width: 100%;
+  padding: 12px; font-size: 1rem; border-radius: 10px; border: none; cursor: pointer;
+  font-family: inherit; font-weight: bold;
+}
+.chapter-intro-start:hover { background: #2563eb; }
+
 /* ── Premium Modal ────────────────────────────────────────────── */
 #paywall-screen {
   position: fixed; inset: 0; background: rgba(0,0,0,0.85);

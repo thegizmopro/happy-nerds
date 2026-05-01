@@ -5,6 +5,7 @@ import { COEFF_COLORS, COEFF_LABELS } from '../constants.js';
 import { starStr } from '../core/scoring.js';
 import { Tutorial } from './Tutorial.js';
 import { RevealCard } from './RevealCard.js';
+import { CHAPTER_INTROS, INTRO_DRAW } from '../levels/chapterIntros.js';
 
 export class UIController {
   // Callbacks wired by GameController
@@ -364,6 +365,61 @@ export class UIController {
     el.classList.remove('hidden');
     clearTimeout(this._toastTimer);
     this._toastTimer = setTimeout(() => el.classList.add('hidden'), 2500);
+  }
+
+  // ─── Chapter Intro ──────────────────────────────────────────────────────────
+
+  showChapterIntro(chapterNum, onDismiss) {
+    const data = CHAPTER_INTROS[chapterNum];
+    if (!data) { onDismiss?.(); return; }
+
+    // Remove any existing intro
+    this.hideChapterIntro();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'chapter-intro-overlay';
+    overlay.id = 'chapter-intro';
+
+    const vocabHTML = (data.vocab ?? [])
+      .map(v => `<span class="vocab-chip">${v}</span>`)
+      .join('');
+
+    overlay.innerHTML = `
+      <div class="chapter-intro-card">
+        <div class="chapter-intro-title">${data.title}</div>
+        <div class="chapter-intro-subtitle">${data.subtitle}</div>
+        <canvas class="chapter-intro-canvas" width="260" height="120"></canvas>
+        <div class="chapter-intro-body">${data.body.replace(/\n/g, '<br>')}</div>
+        <div class="chapter-intro-vocab">${vocabHTML}</div>
+        <button class="chapter-intro-start">Let's Go!</button>
+      </div>
+    `;
+
+    document.getElementById('app').appendChild(overlay);
+
+    // Draw mini-canvas
+    const drawFn = INTRO_DRAW[chapterNum];
+    if (drawFn) {
+      const canvas = overlay.querySelector('.chapter-intro-canvas');
+      try { drawFn(canvas.getContext('2d'), canvas.width, canvas.height); } catch (_) {}
+    }
+
+    // Animate in
+    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('chapter-intro-enter')));
+
+    const dismiss = () => {
+      overlay.classList.remove('chapter-intro-enter');
+      overlay.classList.add('chapter-intro-exit');
+      setTimeout(() => { overlay.remove(); onDismiss?.(); }, 300);
+    };
+
+    overlay.querySelector('.chapter-intro-start').addEventListener('click', dismiss);
+    overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  }
+
+  hideChapterIntro() {
+    const existing = document.getElementById('chapter-intro');
+    if (existing) existing.remove();
   }
 
   // ─── Misc ──────────────────────────────────────────────────────────────────────

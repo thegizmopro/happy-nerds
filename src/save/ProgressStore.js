@@ -2,6 +2,7 @@ const KEY = 'happynerds_v1';
 
 const DEFAULTS = {
   stars: [],          // number[] indexed by global level index (0-74)
+  chapterIntrosSeen: [], // number[] of chapter nums whose intro has been shown
   revealsSeen: [],    // string[] of conceptIds already shown
   isPremium: false,   // premium unlock
   currentLevel: 0,   // last level played
@@ -41,6 +42,18 @@ export function markRevealSeen(progress, conceptId) {
     progress.revealsSeen.push(conceptId);
     saveProgress(progress);
   }
+}
+
+export function markChapterIntroSeen(progress, chapterNum) {
+  if (!progress.chapterIntrosSeen) progress.chapterIntrosSeen = [];
+  if (!progress.chapterIntrosSeen.includes(chapterNum)) {
+    progress.chapterIntrosSeen.push(chapterNum);
+    saveProgress(progress);
+  }
+}
+
+export function isChapterIntroSeen(progress, chapterNum) {
+  return (progress.chapterIntrosSeen || []).includes(chapterNum);
 }
 
 export function getStars(progress, levelIndex) {
