@@ -8,8 +8,8 @@ export function evalStandard(x, { a, b = 0, c = 0 }) {
   return a * x * x + b * x + c;
 }
 
-export function evalFactored(x, { a, r1, r2 }) {
-  return a * (x - r1) * (x - r2);
+export function evalFactored(x, { a, r1, r2, k = 0 }) {
+  return a * (x - r1) * (x - r2) + k;
 }
 
 export function evalCubic(x, { a, h = 0, k = 0 }) {
@@ -70,11 +70,16 @@ export function formatEquation(form, params, colors = {}) {
       const ks = params.k >= 0 ? `+ ${params.k.toFixed(2)}` : `− ${Math.abs(params.k).toFixed(2)}`;
       return `y = ${c('a')}(x ${hs})² ${ks}`;
     }
-    case 'factored': {
+        case 'factored': {
       const r1s = params.r1 >= 0 ? `− ${params.r1.toFixed(2)}` : `+ ${Math.abs(params.r1).toFixed(2)}`;
       const r2s = params.r2 >= 0 ? `− ${params.r2.toFixed(2)}` : `+ ${Math.abs(params.r2).toFixed(2)}`;
-      return `y = ${c('a')}(x ${r1s})(x ${r2s})`;
+      const kVal = params.k ?? 0;
+      const ks = kVal >= 0 ? `+ ${kVal.toFixed(2)}` : `− ${Math.abs(kVal).toFixed(2)}`;
+      return kVal !== 0
+        ? `y = ${c('a')}(x ${r1s})(x ${r2s}) ${ks}`
+        : `y = ${c('a')}(x ${r1s})(x ${r2s})`;
     }
+
     case 'standard': {
       const bs = params.b >= 0 ? `+ ${params.b.toFixed(2)}x` : `− ${Math.abs(params.b).toFixed(2)}x`;
       const cs = params.c >= 0 ? `+ ${params.c.toFixed(2)}` : `− ${Math.abs(params.c).toFixed(2)}`;
