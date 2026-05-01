@@ -252,7 +252,7 @@ export const CHAPTER_3 = [
     ],
     bonusRing: null,
     starThresholds: [2, 5], starMode: 'moves',
-    revealAfter: null,
+    revealAfter: 'domain_and_range',
     hint: 'Hit the Whistle Pig to trigger its special ability.',
     theme: THEME,
   },
