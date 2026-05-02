@@ -7,7 +7,7 @@ export const CANVAS_H = WORLD_H * SCALE;
 export const GROUND_Y = 0.6; // world y of the ground line
 
 export function w2c(wx, wy) {
-  return { cx: wx * SCALE, cy: CANVAS_H - wy * SCALE };
+  return { cx: wx * SCALE, cy: CANVAS_H - (wy - GROUND_Y) * SCALE };
 }
 
 // Coefficient color palette — consistent across sliders, equation display, canvas

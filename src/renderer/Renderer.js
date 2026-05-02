@@ -113,7 +113,6 @@ export class Renderer {
     const ctx = this.ctx;
     const chapter = this._cfg?.chapter ?? 1;
     const { cy: groundCy } = w2c(0, GROUND_Y);
-    const { cy: worldBottom } = w2c(0, 0);
 
     const bgMap = {
       1: 'bg_ch1', 2: 'bg_ch2', 3: 'bg_ch3',
@@ -132,10 +131,6 @@ export class Renderer {
     }
     ctx.restore();
 
-    // Ground fill — brown earth below GROUND_Y
-    ctx.fillStyle = 'rgba(60, 30, 10, 0.5)';
-    ctx.fillRect(0, groundCy, CANVAS_W, worldBottom - groundCy + 2);
-
     // Grid overlay
     ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 1;
@@ -144,16 +139,21 @@ export class Renderer {
       const cx = x * SCALE;
       ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, CANVAS_H); ctx.stroke();
     }
-    for (let y = 0; y <= WORLD_H; y++) {
-      const cy = CANVAS_H - y * SCALE;
+    // Grid lines relative to ground
+    for (let y = 0; y <= 8; y++) {
+      const { cy } = w2c(0, GROUND_Y + y);
+      if (cy < 0) break;
       ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(CANVAS_W, cy); ctx.stroke();
     }
 
-    // Ground line
+    // Ground line at bottom of canvas
     ctx.strokeStyle = '#65a30d';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(0, groundCy); ctx.lineTo(CANVAS_W, groundCy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, CANVAS_H); ctx.lineTo(CANVAS_W, CANVAS_H); ctx.stroke();
+    // Ground label
+    ctx.fillStyle = '#65a30d'; ctx.font = '10px monospace';
+    ctx.fillText('ground', 4, CANVAS_H - 4);
   }
 
   // ── Obstacles ───────────────────────────────────────────────────────────────

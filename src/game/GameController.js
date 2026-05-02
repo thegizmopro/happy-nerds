@@ -6,7 +6,7 @@ import { calcStars, calcScore } from '../core/scoring.js';
 import { loadProgress, saveProgress, recordStar, addScore, markRevealSeen, markChapterIntroSeen, isChapterIntroSeen, isChapterUnlocked } from '../save/ProgressStore.js';
 import { getLevelConfig, CHAPTERS, totalLevels, isChapterLocked } from '../levels/levelLoader.js';
 import { REVEALS } from '../levels/revealContent.js';
-import { WORLD_W } from '../constants.js';
+import { WORLD_W, GROUND_Y } from '../constants.js';
 import { SoundManager } from '../audio/SoundManager.js';
 
 const HIT_LINES   = ['NICE!', 'Calculated!', 'Bullseye!', "That's what I call a solution!", 'Textbook!'];
@@ -489,7 +489,7 @@ export class GameController {
       cvy += gravity;
       pts.push({ x, y });
 
-      if (x > WORLD_W + 1 || x < -1 || y < -3) break;
+      if (x > WORLD_W + 1 || x < -1 || y < GROUND_Y) break;
 
       for (const obs of (obstacles || [])) {
         // Glass doesn't block physics
