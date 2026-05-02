@@ -4,7 +4,7 @@ export const SCALE   = 70;
 export const CANVAS_W = WORLD_W * SCALE;
 export const CANVAS_H = WORLD_H * SCALE;
 
-export const GROUND_Y = 0.6; // world y of the ground line
+export const GROUND_Y = 0; // world y of the ground line (bottom of world)
 
 export function w2c(wx, wy) {
   return { cx: wx * SCALE, cy: CANVAS_H - (wy - GROUND_Y) * SCALE };

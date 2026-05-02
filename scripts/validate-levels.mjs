@@ -13,7 +13,7 @@ import { CHAPTER_8 } from '../src/levels/chapters/chapter8.js';
 
 const WORLD_W = 10;
 const WORLD_H = 6;
-const GROUND_Y = 0.6;
+const GROUND_Y = 0;
 const VALID_BLOCK_TYPES = new Set(['glass', 'wood', 'stone', 'concrete']);
 const DEFAULT_HP = { glass: 1, wood: 2, stone: 3, concrete: 2 };
 
