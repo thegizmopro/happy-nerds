@@ -427,6 +427,7 @@ export class GameController {
 
       // Bounce off non-block walls, stone (indestructible), concrete, and wood.
       // Glass shatters (arc passes through).
+      // Destructible blocks with hp <= 1 break on contact — ball passes through (no bounce).
       const hitObs = (cfg.obstacles || []).find(obs => {
         if (obs.blockType === 'glass') return false; // glass shatters
         if (obs.blockType === 'stone') {
@@ -436,6 +437,9 @@ export class GameController {
         }
         if (obs.blockType === 'concrete' || obs.blockType === 'wood') {
           if (this.session && !this.session.isObstacleAlive(obs.id)) return false;
+          // If this hit will destroy the block (hp <= 1), don't bounce — ball passes through
+          const curHP = this.session?.obstacleHP?.[obs.id] ?? obs.hp ?? 2;
+          if (curHP <= 1) return false;
           return collPt.x >= obs.x && collPt.x <= obs.x + obs.width &&
                  collPt.y >= obs.y && collPt.y <= obs.y + obs.height;
         }
@@ -490,9 +494,10 @@ export class GameController {
       for (const obs of (obstacles || [])) {
         // Glass doesn't block physics
         if (obs.blockType === 'glass') continue;
-        // Wood, stone, and non-block obstacles cause bounces
+        // Destructible blocks with hp <= 1 break on contact
         const alive = obs.blockType ? (this?.session?.isObstacleAlive(obs.id) !== false) : true;
-        if (alive &&
+        const curHP = obs.blockType ? (this?.session?.obstacleHP?.[obs.id] ?? obs.hp ?? 2) : Infinity;
+        if (alive && curHP > 1 &&
             x >= obs.x && x <= obs.x + obs.width && y >= obs.y && y <= obs.y + obs.height) {
           hitObstacle = obs;
           break;

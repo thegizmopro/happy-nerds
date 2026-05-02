@@ -112,7 +112,8 @@ export class Renderer {
   _drawBackground(launcher) {
     const ctx = this.ctx;
     const chapter = this._cfg?.chapter ?? 1;
-    const { cy: groundCy } = w2c(0, launcher.y);
+    const { cy: groundCy } = w2c(0, GROUND_Y);
+    const { cy: worldBottom } = w2c(0, 0);
 
     const bgMap = {
       1: 'bg_ch1', 2: 'bg_ch2', 3: 'bg_ch3',
@@ -131,6 +132,10 @@ export class Renderer {
     }
     ctx.restore();
 
+    // Ground fill — brown earth below GROUND_Y
+    ctx.fillStyle = 'rgba(60, 30, 10, 0.5)';
+    ctx.fillRect(0, groundCy, CANVAS_W, worldBottom - groundCy + 2);
+
     // Grid overlay
     ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 1;
@@ -144,10 +149,10 @@ export class Renderer {
       ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(CANVAS_W, cy); ctx.stroke();
     }
 
-    // Ground line (subtle, just for reference)
-    ctx.strokeStyle = 'rgba(100,116,139,0.3)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
+    // Ground line
+    ctx.strokeStyle = '#65a30d';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
     ctx.beginPath(); ctx.moveTo(0, groundCy); ctx.lineTo(CANVAS_W, groundCy); ctx.stroke();
   }
 
@@ -472,13 +477,14 @@ export class Renderer {
 
     // Graph box dimensions (top-right corner)
     const gW = 200, gH = 140;
-    const gX = CANVAS_W - gW - 12;
+    const chapter = this._cfg?.chapter ?? 1;
+    const gX = chapter === 1 ? CANVAS_W - gW - 12 : 12;  // Left for ch2+, right for ch1
     const gY = 12;
     const pad = 28; // padding inside box for axes labels
 
     // Semi-transparent background
     ctx.save();
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 0.55;
     ctx.fillStyle = '#1e293b';
     ctx.strokeStyle = '#475569';
     ctx.lineWidth = 1;
