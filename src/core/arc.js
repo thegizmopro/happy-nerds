@@ -46,9 +46,12 @@ export function findLandingX(form, params, launcher, worldSpan) {
 export function clipArcAtObstacle(arcPoints, obstacles, session) {
   let clipIdx = arcPoints.length; // sentinel: no clip
 
-  // Ground collision — stop at GROUND_Y
+  // Ground collision — only clip after the arc has risen above ground
+  // (In factored form, the arc can start below ground before its first root)
+  let hasBeenAboveGround = false;
   for (let i = 1; i < arcPoints.length; i++) {
-    if (arcPoints[i].y < GROUND_Y) {
+    if (arcPoints[i].y >= GROUND_Y) hasBeenAboveGround = true;
+    if (hasBeenAboveGround && arcPoints[i].y < GROUND_Y) {
       // Interpolate to exact ground hit
       const prev = arcPoints[i - 1];
       const cur = arcPoints[i];
