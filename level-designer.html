@@ -1169,12 +1169,13 @@ function closeImport()  { document.getElementById('importModal').classList.remov
 function doImport() {
   const txt=document.getElementById('importTxt').value.trim();
   if(!txt) return;
-  // Strip comments and resolve common level references
+  // Strip comments, resolve refs, clean trailing punctuation
   const cleaned=txt
-    .replace(/^export\s+(const|let|var)\s+\w+\s*=\s*/,'')
-    .replace(/;?\s*$/,'')
     .replace(/\/\/[^\n]*/g,'')           // strip single-line comments
     .replace(/\/\*[\s\S]*?\*\//g,'')     // strip block comments
+    .replace(/^export\s+(const|let|var)\s+\w+\s*=\s*/,'')
+    .replace(/[,;]?\s*$/, '')           // strip trailing comma or semicolon
+    .trim()
     .replace(/\bLAUNCHER\b/g,'({x:0.7,y:0.8})')  // resolve LAUNCHER ref
     .replace(/\bTHEME\b/g,"('school')")         // resolve THEME ref
   ;
@@ -1182,7 +1183,7 @@ function doImport() {
   try {
     obj=new Function(`return (${cleaned})`)();
   } catch(e) {
-    try{ obj=JSON.parse(txt); } catch(e2){ alert('Parse error: '+e.message); return; }
+    try{ obj=JSON.parse(txt); } catch(e2){ alert('Parse error: '+e.message+'\n\nCleaned text starts with: '+cleaned.substring(0,100)); return; }
   }
   loadLevel(obj); closeImport();
 }
