@@ -55,30 +55,40 @@ export const CHAPTER_4 = [
   // 2-story tower (concrete base → wood mid → glass top). Target on top.
   // Stone blocker wall at x=4.5 forces arc to go high.
   // Kill vectors: (1) direct arc at target, (2) hit concrete base → cascade all 3 layers → target falls 2+ units
+  // ── 4-2 ──────────────────────────────────────────────────────────────────
+  // Designed by Kenzo — breakaway
+  // Strategy: Shot 1 hits wood (obs_2), bounces to pig_2.
+  //           Shot 2 breaks through destroyed obs_2, kills pig_1.
+  //           Pig_3 is in the corridor between walls.
   {
     id: 'ch4-l2', chapter: 4, levelInChapter: 2,
-    title: 'The Tower',
+    title: 'Breakaway',
     equationForm: 'factored',
-    activeCoefficients: ['a', 'r2', 'k'],
+    activeCoefficients: ['a', 'r1'],
     sliderConfig: {
-      a:  { min: -0.45, max: -0.02, step: 0.01 },
-      r2: { min: 2.0, max: 9.0, step: 0.1 },
-      k:  { min: -2, max: 6, step: 0.1 },
+      a:  { min: -3, max: 3, step: 0.01 },
+      r1: { min: -2, max: 12, step: 0.1 },
     },
-    defaultParams: { a: -0.12, r1: 0, r2: 6.25, k: 0 },
-    launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.05, y: 2.75, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'twr_glass' }],
-    obstacles: [
-      { id: 'stone_block', x: 4.5,  y: 0.6, width: 0.4,  height: 1.5, blockType: 'stone', hp: 3, supports: [] },
-      { id: 'twr_base',   x: 6.8,  y: 0.6, width: 0.5,  height: 0.8, blockType: 'concrete', hp: 2, supports: ['twr_wood'] },
-      { id: 'twr_wood',   x: 6.8,  y: 1.4, width: 0.5,  height: 0.6, blockType: 'wood',     hp: 2, supports: ['twr_glass'] },
-      { id: 'twr_glass',  x: 6.8,  y: 2.0, width: 0.5,  height: 0.3, blockType: 'glass',    hp: 1, supports: [] },
+    defaultParams: { a: -0.2, r1: 1.3, r2: 8, k: 0 },
+    launcher: { x: 0.7, y: 0.8 },
+    targets: [
+      { id: 'pig_1', x: 9, y: 2.4, radius: 0.45, pigType: 'coach', hp: 1, moving: null },
+      { id: 'pig_2', x: 9.3, y: 1.0, radius: 0.45, pigType: 'coach', hp: 1, moving: null },
+      { id: 'pig_3', x: 6.8, y: 2.5, radius: 0.45, pigType: 'coach', hp: 1, moving: null },
     ],
-    bonusRing: null,
-        bonusShots: 1,
-    starThresholds: [2, 3], starMode: 'moves',
+    obstacles: [
+      { id: 'obs_1', x: 5.8, y: 0.6, width: 0.5, height: 3.9, blockType: 'concrete', hp: 2, supports: [] },
+      { id: 'obs_2', x: 7.5, y: 2.6, width: 0.5, height: 1.8, blockType: 'wood', hp: 2, supports: [] },
+      { id: 'obs_3', x: 7.5, y: 0.6, width: 0.5, height: 2.0, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'obs_4', x: 9.5, y: 4.4, width: 0.5, height: 1.6, blockType: 'wood', hp: 2, supports: [] },
+      { id: 'obs_5', x: 7.5, y: 4.4, width: 2.0, height: 0.5, blockType: 'wood', hp: 2, supports: [] },
+      { id: 'obs_8', x: 9.5, y: 0.6, width: 0.5, height: 3.8, blockType: 'stone', hp: 3, supports: [] },
+    ],
+    bonusRing: { x: 4.7, y: 5.5, radius: 0.28 },
+    bonusShots: 3,
+    starThresholds: [2, 3], starMode: 'shots',
     revealAfter: null,
-    hint: 'Hit the concrete base — the whole tower cascades down and the target falls over 2 units.',
+    hint: 'Hit the wood to bounce — or break through to reach the far target.',
     theme: THEME,
   },
 
