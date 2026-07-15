@@ -154,9 +154,9 @@ export const CHAPTER_1 = [
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 7.2, y: 0.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
-      { id: 'stone_left',     x: 6.0, y: 0, width: 0.4, height: 2.4, blockType: 'stone',    hp: 3, supports: [] },
-      { id: 'concrete_right', x: 8.4, y: 0, width: 0.4, height: 2.4, blockType: 'concrete', hp: 2, supports: ['ceiling'] },
-      { id: 'ceiling',        x: 6.0, y: 2.4, width: 2.8, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
+      { id: 'stone_left',     x: 6.0, y: 0, width: 0.4, height: 1.0, blockType: 'stone',    hp: 3, supports: [] },
+      { id: 'concrete_right', x: 8.4, y: 0, width: 0.4, height: 1.0, blockType: 'concrete', hp: 2, supports: ['ceiling'] },
+      { id: 'ceiling',        x: 6.0, y: 1.0, width: 2.8, height: 0.25, blockType: 'glass',   hp: 1, supports: [] },
     ],
     bonusRing: { x: 4.5, y: 2.9, radius: 0.28 },
     bonusShots: 1,

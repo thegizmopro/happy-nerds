@@ -1,43 +1,67 @@
+# 1-6: Launcher at (1, 2.5), enclosed chamber
+# stone_left at x=6.0 height=2.4, concrete_right at x=8.4 height=2.4
+# glass ceiling at y=2.4 spanning x=6.0..8.8
+# Target at (7.2, 0.45) inside chamber at ground level
+#
+# The arc must either:
+#   (a) pass THROUGH the glass ceiling (glass doesn't block arc) -> direct hit
+#   (b) arc over everything and come down inside
+#
+# Glass is pass-through for arc (clipArcAtObstacle skips glass)!
+# So the arc just needs to reach x=7.2, y=0.45
+# a = (0.45 - 2.5) / (7.2 - 1)^2 = -2.05 / 38.44 = -0.0533
+#
+# Check: does stone_left block it? stone at x=6.0, width=0.4, height=2.4
+# Arc y at x=6.0: 2.5 + (-0.0533)*(5.0)^2 = 2.5 - 1.333 = 1.167
+# Stone height = 2.4 -> 1.167 < 2.4 -> BLOCKED by stone!
+#
+# The stone wall is too tall. Arc hits it going in.
+# Need to lower stone_left so arc clears it.
+# Arc y at x=6.0 is 1.167. Stone must be < 1.167.
+# Set stone_left height = 1.0
+
+# Also check concrete_right at x=8.4:
+# Arc y at x=8.4: 2.5 + (-0.0533)*(7.4)^2 = 2.5 - 2.919 = -0.419
+# That's below ground -- arc has already landed at x=7.2
+# So concrete_right doesn't matter for the winning arc.
+
+# With stone_left at 1.0, ceiling must also come down
+# ceiling sits on top of stone_left and concrete_right
+# If stone=1.0 and concrete=1.0, ceiling at y=1.0
+# But that changes the level aesthetic... let's think about this differently.
+
+# Actually the KEY insight: the kill vector for 1-6 is supposed to be
+# "arc through glass ceiling". Glass doesn't block arcs. So the winning
+# shot goes: launcher -> over/through stone_left -> through glass ceiling -> hit target.
+# But stone DOES block. So arc must clear stone_left.
+#
+# With launcher at 2.5 and a=-0.0533:
+#   At stone_left front (x=6.0): y = 1.167
+#   Stone height needs to be < 1.167 for arc to clear
+#
+# Let's set both walls to 1.0 and ceiling at 1.0
+
 import math
 
-# 1-4: Launcher at (1, 2.5), stone wall at x=4.5, height=2.0
-# The arc must clear x=4.5..5.0 at y=2.0 (top of wall)
-# Then come back down to hit target at (6.8, 0)
-#
-# worldY = 2.5 + a*(worldX - 1)^2
-# At wall front (x=4.5): y = 2.5 + a*(3.5)^2 = 2.5 + 12.25a  -- needs to be > 2.0
-# At target (x=6.8):     y = 2.5 + a*(5.8)^2 = 2.5 + 33.64a  -- needs to equal ~0.45 (radius above ground)
-#
-# From target: a = (0.45 - 2.5) / 33.64 = -2.05/33.64 = -0.0609
-# Check wall clearance: y = 2.5 + (-0.0609)*12.25 = 2.5 - 0.746 = 1.754
-# Wall is 2.0 tall -> 1.754 < 2.0 -> BLOCKED. Confirmed.
+lx, ly = 1.0, 2.5
+tx, ty = 7.2, 0.45
+a = (ty - ly) / (tx - lx)**2
+print(f"Exact a: {a:.4f}")
 
-# Options:
-# 1. Lower wall height to 1.5 -> clearance needed: y > 1.5
-#    At a=-0.0609: y at wall = 1.754 > 1.5 -> clears! ✓
-# 2. Move wall closer (smaller dx -> less drop)
-# 3. Raise launcher for this level only
-
-# Let's check option 1: wall height 1.5
-# Also need to check the glass_lane obstacle: x=5.8, height=1.2
-# At x=5.8: y = 2.5 + (-0.0609)*(4.8)^2 = 2.5 - 1.404 = 1.096
-# Glass lane top = 1.2 -> 1.096 < 1.2 -> also blocked!
-# Lower glass_lane to height 0.8
-
-# Let's verify with wall=1.5, glass=0.8
-launcher_x, launcher_y = 1.0, 2.5
-exact_a = (0.45 - launcher_y) / (6.8 - launcher_x)**2
-print(f"Exact a for target hit: {exact_a:.4f}")
-
-for x, label in [(4.5, "wall_front"), (5.0, "wall_back"), (5.8, "glass_lane")]:
-    y = launcher_y + exact_a * (x - launcher_x)**2
-    print(f"  {label} at x={x}: arc y={y:.3f}")
+# Check arc height at key x positions
+for x, label in [(4.5, "bonus_ring"), (6.0, "stone_left_front"), (6.4, "stone_left_back"),
+                  (7.2, "target"), (8.4, "concrete_right_front"), (8.8, "concrete_right_back")]:
+    y = ly + a * (x - lx)**2
+    print(f"  x={x:5.1f} ({label:25s}): arc_y={y:.3f}")
 
 print()
-print("Wall height 1.5: ", "CLEAR" if 2.5 + exact_a * 12.25 > 1.5 else "BLOCKED")
-print("Glass height 0.8: ", "CLEAR" if 2.5 + exact_a * 23.04 > 0.8 else "BLOCKED")
-
-# Also check: target at y=0, radius 0.45 -> center should be at y=0.45 so it sits ON ground
+print("Stone wall at 1.0: arc clears at y=1.167 > 1.0:", 1.167 > 1.0)
+print("Concrete wall at 1.0: arc already past target by x=8.4, doesn't matter")
 print()
-print("--- Target Y fix ---")
-print(f"Targets at y=0 should be y=0.45 (radius) so they sit on ground, not sink")
+print("New structure: stone_left h=1.0, concrete_right h=1.0, ceiling at y=1.0")
+print("Ceiling still supported by walls. Target still inside. Just shorter chamber.")
+
+# Verify ceiling span: stone_left at x=6.0 w=0.4 -> top at x=6.0..6.4
+# concrete_right at x=8.4 w=0.4 -> top at x=8.4..8.8
+# ceiling spans x=6.0..8.8 (width 2.8) at y=1.0
+# Target at (7.2, 0.45) is inside, below ceiling. Good.
