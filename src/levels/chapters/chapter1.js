@@ -1,9 +1,9 @@
 // Chapter 1: STRETCH — y = ax²
-// Launcher on a platform at (1, 2.5). Arc descends to targets below.
+// Launcher on a platform at (1, 2.5). Some levels override to higher platforms.
 // Player controls only 'a'. Bigger |a| = narrower/steeper arc = shorter range.
 //
-// Math: worldY = 2.5 + a*(worldX - 1)²
-// Exact a to hit target at (tx, ty): a = (ty - 2.5) / (tx - 1)²
+// Math: worldY = launcherY + a*(worldX - 1)²
+// Exact a to hit target at (tx, ty): a = (ty - launcherY) / (tx - 1)²
 //
 // Design: Early game introduces materials gradually.
 // L1: No obstacles (tutorial). L2-3: Glass only. L4-5: Glass + wood.
@@ -16,16 +16,16 @@ const THEME = 'desert';
 export const CHAPTER_1 = [
   // ── 1-1 ──────────────────────────────────────────────────────────────────
   // Pure tutorial: no obstacles, just find the right a to hit the target.
-  // Exact a = (0.0 - 2.5) / (4.0 - 1)² = -2.5 / 9 ≈ -0.278
+  // Exact a = (0.45 - 2.5) / (4.0 - 1)² = -2.05 / 9 ≈ -0.228
   {
     id: 'ch1-l1', chapter: 1, levelInChapter: 1,
     title: 'First Shot',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.70, max: -0.05, step: 0.01 } },
-    defaultParams: { a: -0.17, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.57, max: -0.08, step: 0.01 } },
+    defaultParams: { a: -0.14, h: 0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'main', x: 4.0, y: 0, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    targets: [{ id: 'main', x: 4.0, y: 0.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [],
     bonusRing: null,
     bonusShots: 0,
@@ -38,14 +38,14 @@ export const CHAPTER_1 = [
   // ── 1-2 ──────────────────────────────────────────────────────────────────
   // Glass cage: target behind glass walls. Ball passes through glass.
   // Introduces: glass shatters, ball continues.
-  // Exact a = (1.05 - 2.5) / (5.8 - 1)² = -1.45 / 23.04 ≈ -0.063
+  // Exact a = (1.2 - 2.5) / (5.8 - 1)² = -1.3 / 23.04 ≈ -0.056
   {
     id: 'ch1-l2', chapter: 1, levelInChapter: 2,
     title: 'Glass House',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.16, max: -0.02, step: 0.005 } },
-    defaultParams: { a: -0.04, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.14, max: -0.02, step: 0.005 } },
+    defaultParams: { a: -0.034, h: 0, k: 0 },
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 5.8, y: 1.2, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'glass_floor' }],
     obstacles: [
@@ -64,14 +64,14 @@ export const CHAPTER_1 = [
   // ── 1-3 ──────────────────────────────────────────────────────────────────
   // Glass shelf with target on top. Destroy shelf → target falls.
   // Introduces: falling kills (destroy restingOn block).
-  // Exact a = (1.25 - 2.5) / (6.5 - 1)² = -1.25 / 30.25 ≈ -0.041
+  // Exact a = (1.7 - 2.5) / (6.5 - 1)² = -0.8 / 30.25 ≈ -0.026
   {
     id: 'ch1-l3', chapter: 1, levelInChapter: 3,
     title: 'Shelf Shot',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.10, max: -0.01, step: 0.005 } },
-    defaultParams: { a: -0.025, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.066, max: -0.009, step: 0.005 } },
+    defaultParams: { a: -0.016, h: 0, k: 0 },
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 6.5, y: 1.7, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'shelf' }],
     obstacles: [
@@ -90,19 +90,19 @@ export const CHAPTER_1 = [
   // ── 1-4 ──────────────────────────────────────────────────────────────────
   // Stone wall (indestructible) forces arc over it. Target behind wall at ground level.
   // Introduces: stone = permanent barrier, must arc over.
-  // Exact a = (0.0 - 2.5) / (6.8 - 1)² = -2.5 / 33.64 ≈ -0.074
+  // Exact a = (0.45 - 2.5) / (6.8 - 1)² = -2.05 / 33.64 ≈ -0.061
   {
     id: 'ch1-l4', chapter: 1, levelInChapter: 4,
     title: 'Over the Wall',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.19, max: -0.02, step: 0.005 } },
-    defaultParams: { a: -0.045, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.15, max: -0.02, step: 0.005 } },
+    defaultParams: { a: -0.037, h: 0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 6.8, y: 0, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 6.8, y: 0.45, radius: 0.45, pigType: 'letterman', hp: 1, moving: null }],
     obstacles: [
-      { id: 'stone_wall', x: 4.5, y: 0, width: 0.5, height: 2.0, blockType: 'stone', hp: 3, supports: [] },
-      { id: 'glass_lane', x: 5.8, y: 0, width: 0.35, height: 1.2, blockType: 'glass', hp: 1, supports: [] },
+      { id: 'stone_wall', x: 4.5, y: 0, width: 0.5, height: 1.5, blockType: 'stone', hp: 3, supports: [] },
+      { id: 'glass_lane', x: 5.8, y: 0, width: 0.35, height: 0.8, blockType: 'glass', hp: 1, supports: [] },
     ],
     bonusRing: null,
     bonusShots: 1,
@@ -115,15 +115,16 @@ export const CHAPTER_1 = [
   // ── 1-5 ──────────────────────────────────────────────────────────────────
   // Stacked tower: concrete base, wood mid, glass top. Target on top.
   // Kill vectors: (1) direct arc at target, (2) hit concrete base → cascade → target falls.
-  // Exact a = (1.7 - 2.5) / (5.8 - 1)² = -0.8 / 23.04 ≈ -0.035
+  // Launcher raised to y=3.5 for this level (target is high).
+  // Exact a = (2.5 - 3.5) / (5.8 - 1)² = -1.0 / 23.04 ≈ -0.043
   {
     id: 'ch1-l5', chapter: 1, levelInChapter: 5,
     title: 'The Tower',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.09, max: -0.01, step: 0.002 } },
-    defaultParams: { a: -0.021, h: 0, k: 0 },
-    launcher: LAUNCHER,
+    sliderConfig: { a: { min: -0.11, max: -0.015, step: 0.005 } },
+    defaultParams: { a: -0.026, h: 0, k: 0 },
+    launcher: { x: 1, y: 3.5 },
     targets: [{ id: 'pig', x: 5.8, y: 2.5, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_top' }],
     obstacles: [
       { id: 'concrete_base', x: 5.5, y: 0, width: 0.6, height: 0.8, blockType: 'concrete', hp: 2, supports: ['wood_mid'] },
@@ -142,16 +143,16 @@ export const CHAPTER_1 = [
   // Enclosed chamber: stone left wall (∞), concrete right wall (2-hit), glass ceiling.
   // Target inside at ground level.
   // Kill vectors: (1) arc through glass ceiling → direct hit, (2) break concrete wall → ceiling falls → crushes target.
-  // Exact a = (0.0 - 2.5) / (7.2 - 1)² = -2.5 / 38.44 ≈ -0.065
+  // Exact a = (0.45 - 2.5) / (7.2 - 1)² = -2.05 / 38.44 ≈ -0.053
   {
     id: 'ch1-l6', chapter: 1, levelInChapter: 6,
     title: 'Enclosed',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.16, max: -0.02, step: 0.005 } },
-    defaultParams: { a: -0.039, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.13, max: -0.02, step: 0.005 } },
+    defaultParams: { a: -0.032, h: 0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'pig', x: 7.2, y: 0, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
+    targets: [{ id: 'pig', x: 7.2, y: 0.45, radius: 0.45, pigType: 'helmet', hp: 1, moving: null }],
     obstacles: [
       { id: 'stone_left',     x: 6.0, y: 0, width: 0.4, height: 2.4, blockType: 'stone',    hp: 3, supports: [] },
       { id: 'concrete_right', x: 8.4, y: 0, width: 0.4, height: 2.4, blockType: 'concrete', hp: 2, supports: ['ceiling'] },
@@ -168,15 +169,16 @@ export const CHAPTER_1 = [
   // ── 1-7 ──────────────────────────────────────────────────────────────────
   // Two-story fortress: stone ground floor, wood + glass upper floor.
   // Target on glass beam (2nd floor). Destroy concrete pillars → whole floor drops.
-  // Exact a = (2.2 - 2.5) / (6.5 - 1)² = -0.3 / 30.25 ≈ -0.010
+  // Launcher raised to y=4.0 for this level (target on 2nd floor).
+  // Exact a = (2.9 - 4.0) / (6.5 - 1)² = -1.1 / 30.25 ≈ -0.036
   {
     id: 'ch1-l7', chapter: 1, levelInChapter: 7,
     title: 'Two Stories',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.025, max: -0.003, step: 0.002 } },
-    defaultParams: { a: -0.006, h: 0, k: 0 },
-    launcher: LAUNCHER,
+    sliderConfig: { a: { min: -0.09, max: -0.013, step: 0.005 } },
+    defaultParams: { a: -0.022, h: 0, k: 0 },
+    launcher: { x: 1, y: 4.0 },
     targets: [{ id: 'pig', x: 6.5, y: 2.9, radius: 0.45, pigType: 'letterman', hp: 1, moving: null, restingOn: 'glass_beam' }],
     obstacles: [
       { id: 'col_l1',     x: 5.5, y: 0, width: 0.4, height: 1.0, blockType: 'concrete', hp: 2, supports: ['floor1'] },
@@ -197,14 +199,14 @@ export const CHAPTER_1 = [
   // ── 1-8 ──────────────────────────────────────────────────────────────────
   // Moving target on a glass shelf. Lock arc height, then time the shot.
   // Target slides between two wood pillars.
-  // Exact a = (1.15 - 2.5) / (6.2 - 1)² = -1.35 / 27.04 ≈ -0.050
+  // Exact a = (1.6 - 2.5) / (6.2 - 1)² = -0.9 / 27.04 ≈ -0.033
   {
     id: 'ch1-l8', chapter: 1, levelInChapter: 8,
     title: 'Moving Target',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.13, max: -0.015, step: 0.005 } },
-    defaultParams: { a: -0.030, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.083, max: -0.012, step: 0.005 } },
+    defaultParams: { a: -0.020, h: 0, k: 0 },
     launcher: LAUNCHER,
     targets: [{
       id: 'pig', x: 6.2, y: 1.6, radius: 0.45, pigType: 'cool', hp: 1,
@@ -230,14 +232,14 @@ export const CHAPTER_1 = [
   // Left cage: glass ceiling + target. Right cage: glass wall + target.
   // The single a control means both targets share the same arc shape —
   // ball passes through glass in the left cage, continues to right cage.
-  // Exact a = (0.25 - 2.5) / (7.2 - 1)² = -2.25 / 38.44 ≈ -0.059
+  // Exact a = (0.8 - 2.5) / (7.2 - 1)² = -1.7 / 38.44 ≈ -0.044
   {
     id: 'ch1-l9', chapter: 1, levelInChapter: 9,
     title: 'Double Chamber',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.15, max: -0.02, step: 0.005 } },
-    defaultParams: { a: -0.035, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.11, max: -0.016, step: 0.005 } },
+    defaultParams: { a: -0.027, h: 0, k: 0 },
     launcher: LAUNCHER,
     targets: [{ id: 'pig', x: 7.2, y: 0.8, radius: 0.45, pigType: 'helmet', hp: 1, moving: null, restingOn: 'glass_floor' }],
     obstacles: [
@@ -259,16 +261,16 @@ export const CHAPTER_1 = [
   // Fortress finale: stone walls + concrete base + glass ceiling. King target inside.
   // Kill vectors: (1) arc through glass ceiling, (2) destroy concrete base → ceiling collapses → crushes king.
   // King hp: 1 (stretch form only has 1 shot, so king must be 1-hittable).
-  // Exact a = (0.2 - 2.5) / (7.2 - 1)² = -2.3 / 38.44 ≈ -0.060
+  // Exact a = (0.55 - 2.5) / (7.2 - 1)² = -1.95 / 38.44 ≈ -0.051
   {
     id: 'ch1-l10', chapter: 1, levelInChapter: 10,
     title: 'The Fortress',
     equationForm: 'stretch',
     activeCoefficients: ['a'],
-    sliderConfig: { a: { min: -0.15, max: -0.02, step: 0.002 } },
-    defaultParams: { a: -0.036, h: 0, k: 0 },
+    sliderConfig: { a: { min: -0.13, max: -0.018, step: 0.005 } },
+    defaultParams: { a: -0.030, h: 0, k: 0 },
     launcher: LAUNCHER,
-    targets: [{ id: 'king', x: 7.2, y: 0.2, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
+    targets: [{ id: 'king', x: 7.2, y: 0.55, radius: 0.55, pigType: 'king', hp: 1, moving: null }],
     obstacles: [
       { id: 'wall_front',  x: 4.2, y: 0, width: 0.5, height: 2.8, blockType: 'stone',    hp: 3, supports: [] },
       { id: 'fort_left',   x: 6.0, y: 0, width: 0.4, height: 2.0, blockType: 'stone',    hp: 3, supports: [] },
