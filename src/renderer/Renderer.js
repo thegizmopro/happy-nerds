@@ -463,6 +463,65 @@ export class Renderer {
     ctx.setLineDash([]);
     ctx.drawImage(img, cx - drawW / 2, cy - drawH, drawW, drawH);
     ctx.restore();
+
+    // Draw platform under launcher so it doesn't look like it's floating
+    this._drawLauncherPlatform(drawX, drawY);
+  }
+
+  _drawLauncherPlatform(worldX, worldY) {
+    const ctx = this.ctx;
+    const { cx, cy } = w2c(worldX, worldY);
+    const { cy: groundCy } = w2c(worldX, GROUND_Y);
+
+    // Platform dimensions — a sturdy podium
+    const platW = 80;
+    const platTopH = 12;  // lip at top
+    const stemW = 56;
+
+    // Only draw if launcher is noticeably above ground
+    const gap = groundCy - cy;
+    if (gap < 20) return;
+
+    ctx.save();
+    ctx.setLineDash([]);
+
+    // Stone/concrete platform stem — tapered pedestal
+    const stemTop = cy + 2;
+    const stemBottom = groundCy;
+
+    // Gradient for 3D-ish look
+    const grad = ctx.createLinearGradient(cx - stemW / 2, 0, cx + stemW / 2, 0);
+    grad.addColorStop(0, '#a8a29e');
+    grad.addColorStop(0.5, '#d1d5db');
+    grad.addColorStop(1, '#78716c');
+
+    // Tapered stem (wider at bottom)
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(cx - stemW / 2 + 4, stemTop);
+    ctx.lineTo(cx + stemW / 2 - 4, stemTop);
+    ctx.lineTo(cx + platW / 2, stemBottom);
+    ctx.lineTo(cx - platW / 2, stemBottom);
+    ctx.closePath();
+    ctx.fill();
+
+    // Top slab (overhang)
+    ctx.fillStyle = '#d1d5db';
+    ctx.fillRect(cx - platW / 2, stemTop - platTopH, platW, platTopH);
+    ctx.strokeStyle = '#6b7280';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx - platW / 2, stemTop - platTopH, platW, platTopH);
+
+    // Texture dots on stem
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    for (let dy = stemTop + 8; dy < stemBottom - 4; dy += 12) {
+      const widthHere = stemW + (platW - stemW) * ((dy - stemTop) / (stemBottom - stemTop));
+      for (let dx = -widthHere / 2 + 6; dx < widthHere / 2 - 4; dx += 10) {
+        ctx.fillRect(cx + dx, dy, 2, 2);
+      }
+    }
+
+    ctx.restore();
   }
 
   // ── Mini Graph Overlay ──────────────────────────────────────────────────
